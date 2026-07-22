@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.annulusgames.alchemy": {
+      "version": "https://github.com/annulusgames/Alchemy.git?path=/Alchemy/Assets/Alchemy",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "33e88d06919e847a4c5c6adca4a928e418c1ea69"
+    },
     "com.unity.ai.navigation": {
       "version": "2.0.11",
       "depth": 0,
