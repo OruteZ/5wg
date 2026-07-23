@@ -1,6 +1,6 @@
 ---
 name: git-commit-push
-description: Stage changes, commit using this repo's tag convention (.claude/rules/git.md), and push. Use when the user asks to commit and push.
+description: Stage changes, commit and push. Use when the user asks to commit and push.
 ---
 
 # git-commit-push
