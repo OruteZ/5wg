@@ -18,7 +18,7 @@ public sealed class WeaponHandler : MonoBehaviour
 
     [Title("서비스 (비우면 자동 생성)")]
     [SerializeField, LabelText("투사체 풀")] private ProjectilePool _projectilePool;
-    [SerializeField, LabelText("타겟 탐색")] private PhysicsTargetProvider _targetProvider;
+    [SerializeField, LabelText("타겟 탐색")] private TargetProviderBehaviour _targetProvider;
     [SerializeField, LabelText("발사구 (비우면 자기 자신)")] private Transform _muzzle;
 
     [Title("시작 무기")]
@@ -108,7 +108,8 @@ public sealed class WeaponHandler : MonoBehaviour
 
         if (_targetProvider == null)
         {
-            _targetProvider = GetComponent<PhysicsTargetProvider>() ?? gameObject.AddComponent<PhysicsTargetProvider>();
+            // 기본은 레지스트리 기반. 물리 질의가 필요하면 인스펙터에서 PhysicsTargetProvider를 연결한다.
+            _targetProvider = GetComponent<TargetProviderBehaviour>() ?? gameObject.AddComponent<EnemyTargetProvider>();
         }
     }
 
@@ -160,7 +161,10 @@ public sealed class WeaponHandler : MonoBehaviour
         }
 
         int subPerBeat = Mathf.Max(1, _clock.SubPerBeat);
-        long current = (long)_clock.CurrentBeat * subPerBeat + _clock.CurrentSubBeat;
+
+        // 박과 서브박을 따로 읽으면 Quantize가 두 번 돈다.
+        (int beat, int sub) = _clock.CurrentPosition;
+        long current = (long)beat * subPerBeat + sub;
 
         // 첫 프레임이거나 곡이 되감긴 경우 현재 위치에 다시 앵커한다.
         if (_lastSubIndex < 0 || current < _lastSubIndex)

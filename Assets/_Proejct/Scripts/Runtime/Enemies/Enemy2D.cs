@@ -16,6 +16,12 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
     [ShowInInspector, ReadOnly, LabelText("현재 체력")]
     private float CurrentHealth => _health;
 
+    /// <summary>EnemyRegistry 전용. 목록에서의 자기 위치라 O(1) 해제가 가능하다. -1이면 미등록.</summary>
+    public int RegistryIndex { get; set; } = -1;
+
+    /// <summary>매번 transform 프로퍼티를 타지 않도록 캐시해둔 것. 타겟 탐색이 프레임마다 훑는다.</summary>
+    public Transform Transform { get; private set; }
+
     private Rigidbody2D _rigidbody;
     private SpriteRenderer _spriteRenderer;
     private Action<Enemy2D> _release;
@@ -27,6 +33,7 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
 
     private void Awake()
     {
+        Transform = transform;
         _rigidbody = GetComponent<Rigidbody2D>();
         _rigidbody.gravityScale = 0f;
         _rigidbody.freezeRotation = true;
@@ -34,6 +41,11 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         if (_spriteRenderer != null) _baseColor = _spriteRenderer.color;
     }
+
+    // 풀이 SetActive로 꺼내고 넣으므로 등록·해제 시점이 활성 여부와 정확히 일치한다.
+    private void OnEnable() => EnemyRegistry.Register(this);
+
+    private void OnDisable() => EnemyRegistry.Unregister(this);
 
     /// <summary>풀 생성 시 1회만 호출한다.</summary>
     public void SetReleaseCallback(Action<Enemy2D> release) => _release = release;

@@ -3,10 +3,10 @@ using Alchemy.Inspector;
 using UnityEngine;
 
 /// <summary>
-/// Physics2D 오버랩으로 적을 찾는 기본 구현. 적 쪽에 등록 코드를 넣지 않아도 바로 동작한다.
-/// 적 수가 많아져 오버랩 비용이 문제가 되면 이 인터페이스를 유지한 채 등록 기반 레지스트리로 교체한다.
+/// Physics2D 오버랩으로 대상을 찾는 구현. 발사마다 콜라이더를 훑고 후보마다 인터페이스 조회를 하므로
+/// 기본값은 EnemyTargetProvider다. Enemy2D가 아닌 대상(파괴 가능한 오브젝트 등)까지 잡아야 할 때 쓴다.
 /// </summary>
-public sealed class PhysicsTargetProvider : MonoBehaviour, ITargetProvider
+public sealed class PhysicsTargetProvider : TargetProviderBehaviour
 {
     [Title("탐색")]
     [SerializeField, LabelText("적 레이어")] private LayerMask _targetLayers = ~0;
@@ -27,7 +27,7 @@ public sealed class PhysicsTargetProvider : MonoBehaviour, ITargetProvider
         };
     }
 
-    public bool TryGetNearest(Vector2 origin, float maxRange, out Transform target)
+    public override bool TryGetNearest(Vector2 origin, float maxRange, out Transform target)
     {
         target = null;
         if (maxRange <= 0f) return false;
@@ -50,7 +50,7 @@ public sealed class PhysicsTargetProvider : MonoBehaviour, ITargetProvider
         return target != null;
     }
 
-    public int GetInRange(Vector2 origin, float maxRange, List<Transform> results)
+    public override int GetInRange(Vector2 origin, float maxRange, List<Transform> results)
     {
         results.Clear();
         if (maxRange <= 0f) return 0;
