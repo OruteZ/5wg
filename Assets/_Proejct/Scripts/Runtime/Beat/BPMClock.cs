@@ -51,26 +51,27 @@ namespace BeatTemplate
         public int Bpm => bpm;
         public int SubPerBeat => subPerBeat;
 
-        public int CurrentBeat
-        {
-            get
-            {
-                (int beat, int _) = Quantizer.Quantize(bpm, ElapsedSec, subPerBeat, 0.0);
-                return beat;
-            }
-        }
+        /// <summary>
+        /// 박과 서브박을 한 번에 돌려준다.
+        /// CurrentBeat/CurrentSubBeat를 따로 읽으면 ElapsedSec 계산과 Quantize가 두 번 돌기 때문에,
+        /// 둘 다 필요한 쪽(WeaponHandler, BeatEvent)은 이걸 쓴다.
+        /// </summary>
+        public (int beat, int sub) CurrentPosition => Quantizer.Quantize(bpm, ElapsedSec, subPerBeat, 0.0);
 
-        public int CurrentSubBeat
-        {
-            get
-            {
-                (int _, int sb) = Quantizer.Quantize(bpm, ElapsedSec, subPerBeat, 0.0);
-                return sb;
-            }
-        }
+        public int CurrentBeat => CurrentPosition.beat;
+
+        public int CurrentSubBeat => CurrentPosition.sub;
 
         // 시각 메트로놈(진자/링/플래시)용 0~1 진행도
-        public float BeatProgress => (float)(ElapsedSec / (60.0 / bpm)) - CurrentBeat;
+        public float BeatProgress
+        {
+            get
+            {
+                double elapsed = ElapsedSec;
+                (int beat, int _) = Quantizer.Quantize(bpm, elapsed, subPerBeat, 0.0);
+                return (float)(elapsed / (60.0 / bpm)) - beat;
+            }
+        }
 
         public BeatState State => _beatState;
 

@@ -34,8 +34,8 @@ namespace BeatTemplate
             if (beat.State is not (BeatState.Playing or BeatState.Paused)) return;
 
 
-            int b = beat.CurrentBeat;
-            int s = beat.CurrentSubBeat;
+            // 둘을 따로 읽으면 Quantize가 두 번 돈다.
+            (int b, int s) = beat.CurrentPosition;
 
 
             if (b != _lastBeat)
@@ -52,8 +52,8 @@ namespace BeatTemplate
                 OnSubBeat?.Invoke(b, s);
             }
 #if UNITY_EDITOR
-            beatCnt = beat.CurrentBeat;
-            subBeatCnt = beat.CurrentSubBeat;
+            beatCnt = b;
+            subBeatCnt = s;
             elapsedSec = beat.ElapsedSec;
 #endif
         }
