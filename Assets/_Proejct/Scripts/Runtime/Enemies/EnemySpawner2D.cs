@@ -84,6 +84,8 @@ public sealed class EnemySpawner2D : MonoBehaviour
             {
                 await Awaitable.WaitForSecondsAsync(_spawnInterval, token);
 
+                // Awaitable이 unscaled 시간으로 깨어나더라도 일시정지 중에는 스폰하지 않는다.
+                if (PauseState.IsPaused) continue;
                 if (!_autoSpawnEnabled) continue;
                 if (_enemyPrefab == null || _target == null) continue;
                 if (_activeEnemies.Count >= _maxAlive) continue;

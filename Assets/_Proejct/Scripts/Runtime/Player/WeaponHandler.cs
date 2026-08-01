@@ -66,6 +66,11 @@ public sealed class WeaponHandler : MonoBehaviour
             new WeaponContext(transform, _projectilePool, _targetProvider, _camera));
 
         GrantStartingWeapons();
+
+        // 클록이 멈추면 틱이 끊겨 어차피 발사되지 않지만, 씬에 PauseController가 없어
+        // 클록이 계속 도는 경우까지 막으려면 게이트로도 걸어둬야 한다.
+        AddGate(new DelegateFireGate(() => !PauseState.IsPaused));
+
         WarnIfCannotFire();
     }
 

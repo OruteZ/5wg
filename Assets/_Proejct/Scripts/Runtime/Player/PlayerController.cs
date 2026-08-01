@@ -80,7 +80,7 @@ public sealed class PlayerController : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        if (!IsAlive) return;
+        if (!IsAlive || PauseState.IsPaused) return;
 
         _movement.SetMoveInput(_moveAction?.ReadValue<Vector2>() ?? Vector2.zero);
         _weapon.SetAimInput(_lookAction?.ReadValue<Vector2>() ?? Vector2.zero);
