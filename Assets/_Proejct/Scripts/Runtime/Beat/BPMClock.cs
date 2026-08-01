@@ -19,6 +19,9 @@ namespace BeatTemplate
         [SerializeField] private int bpm = 120;
         [SerializeField, Min(1)] private int subPerBeat = 4;
 
+        // 끄면 Play() 버튼이나 외부 호출 전까지 Idle로 남는다.
+        [SerializeField] private bool playOnStart = true;
+
         // runtime
         private double _dspBeat0;              // 비트 0 앵커(DSP 시각)
         private BeatState _beatState = BeatState.Idle;
@@ -44,6 +47,10 @@ namespace BeatTemplate
             }
         }
 
+        // 외부에서 박 그리드를 재구성하려면 bpm/subPerBeat가 필요하다(예: WeaponHandler의 BeatTick).
+        public int Bpm => bpm;
+        public int SubPerBeat => subPerBeat;
+
         public int CurrentBeat
         {
             get
@@ -66,6 +73,12 @@ namespace BeatTemplate
         public float BeatProgress => (float)(ElapsedSec / (60.0 / bpm)) - CurrentBeat;
 
         public BeatState State => _beatState;
+
+        // Awake가 아니라 Start에서 앵커를 잡아 다른 컴포넌트의 초기화가 끝난 뒤 비트0이 시작되게 한다.
+        private void Start()
+        {
+            if (playOnStart) Play();
+        }
 
         [Button]
         public void Play()
