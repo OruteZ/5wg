@@ -170,6 +170,77 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1189532217
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1189532219}
+  - component: {fileID: 1189532218}
+  - component: {fileID: 1189532220}
+  m_Layer: 0
+  m_Name: Clock
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1189532218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189532217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9501743723a94a69b592ad629d102386, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BeatTemplate.BpmClock
+  bpm: 120
+  subPerBeat: 4
+  playOnStart: 1
+--- !u!4 &1189532219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189532217}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.97981, y: 0, z: -0.29255}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1189532220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189532217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 673ea3c7236a4c50861427d97336698e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BeatTemplate.BeatEvent
+  beat: {fileID: 0}
+  emitSubBeats: 1
+  OnBeat:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSubBeat:
+    m_PersistentCalls:
+      m_Calls: []
+  elapsedSec: 0
+  beatCnt: 0
+  subBeatCnt: 0
 --- !u!1 &1291069491
 GameObject:
   m_ObjectHideFlags: 0
@@ -310,9 +381,10 @@ GameObject:
   - component: {fileID: 1865809638}
   - component: {fileID: 1865809637}
   - component: {fileID: 1865809636}
+  - component: {fileID: 1865809639}
   - component: {fileID: 1865809635}
   - component: {fileID: 1865809634}
-  - component: {fileID: 1865809639}
+  - component: {fileID: 1865809640}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -347,12 +419,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ce76956c9bd0cc42900009473bcbd0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Prototype.PlayerShooter2D
-  _clock: {fileID: 0}
+  _clock: {fileID: 1189532218}
   _maxCatchUpTicks: 8
   _projectilePool: {fileID: 0}
   _targetProvider: {fileID: 0}
   _muzzle: {fileID: 0}
-  _startingWeapons: []
+  _startingWeapons:
+  - {fileID: 11400000, guid: 7bdddf565aab86b4d9ada8e8ddc9e128, type: 2}
 --- !u!114 &1865809635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,7 +469,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -504,6 +577,22 @@ MonoBehaviour:
   _moveActionPath: Player/Move
   _lookActionPath: Player/Look
   _maxHealth: 100
+--- !u!114 &1865809640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865809632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3027d35644882b548b796c9c3a8db8f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhysicsTargetProvider
+  _targetLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  _maxResults: 64
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -511,3 +600,4 @@ SceneRoots:
   - {fileID: 1291069494}
   - {fileID: 1865809633}
   - {fileID: 56706868}
+  - {fileID: 1189532219}
