@@ -10,6 +10,9 @@ public sealed class Projectile2D : MonoBehaviour
     [SerializeField, LabelText("수명 (sec)")] private float _lifetime = 2f;
     [SerializeField, LabelText("기본 데미지 (무기가 덮어쓸 수 있음)")] private float _damage = 10f;
 
+    /// <summary>ProjectilePool 전용. 활성 목록에서의 자기 위치라 O(1) 제거가 가능하다. -1이면 미등록.</summary>
+    public int ActiveIndex { get; set; } = -1;
+
     private Rigidbody2D _rigidbody;
     private float _currentDamage;
     private Transform _ownerRoot;
@@ -51,9 +54,15 @@ public sealed class Projectile2D : MonoBehaviour
         _isSpent = false;
     }
 
-    private void Update()
+    /// <summary>
+    /// 수명 갱신. 투사체마다 Update를 두면 개체 수만큼 네이티브↔매니지드 전환이 생기므로
+    /// ProjectilePool이 활성 목록을 한 번에 돌면서 호출한다.
+    /// </summary>
+    public void TickLifetime(float deltaTime)
     {
-        _remainingLifetime -= Time.deltaTime;
+        if (_isSpent) return;
+
+        _remainingLifetime -= deltaTime;
         if (_remainingLifetime <= 0f)
         {
             Despawn();
