@@ -1,5 +1,11 @@
 # Project Overview
 
+> **관련 문서** — `CLAUDE.md`의 인덱스에는 아직 없지만 `.claude/docs/`에 함께 있다.
+> - [architecture.md](architecture.md) — 시스템이 왜 그렇게 조립됐는지. 설계를 건드리기 전에 읽는다.
+> - [session-guide.md](session-guide.md) — 새 세션 시작 안내. 컴파일 검증 방법과 Unity 특유의 함정.
+> - [progress.md](progress.md) — 진행 중인 작업과 미해결 항목.
+
+
 Unity project built on the URP Empty Template. `Assets/TutorialInfo/` is stock template onboarding content (a `Readme` asset shown in the editor) — not project code, can be deleted once no longer needed.
 
 - **Unity Editor version:** `6000.3.11f1` (Unity 6) — pinned in `ProjectSettings/ProjectVersion.txt`. Use this exact editor version when opening the project or invoking the Unity CLI, since Unity will attempt an in-place project upgrade if a different version opens it.
