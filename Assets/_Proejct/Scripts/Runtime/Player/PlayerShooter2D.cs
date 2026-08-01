@@ -4,9 +4,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Pool;
 
-/// <summary>
-/// Attack 입력을 누르고 있는 동안 마우스 방향으로 투사체를 발사한다. 투사체는 ObjectPool로 재사용한다.
-/// </summary>
 [RequireComponent(typeof(PlayerMovement2D))]
 public sealed class PlayerShooter2D : MonoBehaviour
 {
@@ -41,6 +38,7 @@ public sealed class PlayerShooter2D : MonoBehaviour
         _camera = Camera.main;
         if (_muzzle == null) _muzzle = transform;
 
+        // throwIfNotFound: false → 인스펙터 연결 실수를 예외 대신 로그로 잡는다.
         _attackAction = _inputActions == null
             ? null
             : _inputActions.FindAction(_attackActionPath, throwIfNotFound: false);
@@ -50,7 +48,7 @@ public sealed class PlayerShooter2D : MonoBehaviour
             Debug.LogError($"[{nameof(PlayerShooter2D)}] '{_attackActionPath}' 액션을 찾지 못했다.", this);
         }
 
-        // 하이라키가 투사체로 더러워지지 않도록 부모 하나를 만들어 모아둔다.
+        // 하이라키가 투사체로 더러워지지 않도록 부모 하나에 모아둔다.
         _projectileRoot = new GameObject("ProjectilePool").transform;
 
         // 델리게이트를 한 번만 만들어 재사용한다(발사마다 GC 할당 방지).
@@ -66,6 +64,7 @@ public sealed class PlayerShooter2D : MonoBehaviour
             maxSize: _poolMaxSize);
     }
 
+    // InputAction의 소유자는 에셋이므로 Dispose가 아니라 Enable/Disable로 수명만 맞춘다.
     private void OnEnable() => _attackAction?.Enable();
 
     private void OnDisable() => _attackAction?.Disable();
@@ -95,9 +94,9 @@ public sealed class PlayerShooter2D : MonoBehaviour
         projectile.Launch(origin, GetAimDirection(origin));
     }
 
-    /// <summary>마우스가 있으면 커서 방향, 없으면(패드 등) 오른쪽을 기본 방향으로 쓴다.</summary>
     private Vector2 GetAimDirection(Vector2 origin)
     {
+        // 마우스가 없는 입력(패드 등)에서는 오른쪽을 기본 방향으로 쓴다.
         if (Mouse.current is null || _camera == null) return Vector2.right;
 
         Vector2 screenPosition = Mouse.current.position.ReadValue();

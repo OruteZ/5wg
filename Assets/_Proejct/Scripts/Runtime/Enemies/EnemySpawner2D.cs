@@ -1,12 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Alchemy.Inspector;
 using UnityEngine;
 using UnityEngine.Pool;
 
-/// <summary>
-/// 플레이어 주변 링 위에 적을 주기적으로 스폰한다. 대기는 Unity 6의 Awaitable + CancellationToken으로 처리한다.
-/// </summary>
 public sealed class EnemySpawner2D : MonoBehaviour
 {
     [Title("대상")]
@@ -22,9 +20,14 @@ public sealed class EnemySpawner2D : MonoBehaviour
     [SerializeField, LabelText("기본 용량")] private int _poolDefaultCapacity = 32;
     [SerializeField, LabelText("최대 크기")] private int _poolMaxSize = 256;
 
-    [ShowInInspector, ReadOnly, LabelText("현재 살아있는 수")]
-    private int AliveCount => _pool?.CountActive ?? 0;
+    [Title("디버그")]
+    [ShowInInspector, ReadOnly, LabelText("자동 스폰")]
+    private bool _autoSpawnEnabled = true;
 
+    [ShowInInspector, ReadOnly, LabelText("현재 살아있는 수")]
+    private int AliveCount => _activeEnemies.Count;
+
+    private readonly List<Enemy2D> _activeEnemies = new();
     private ObjectPool<Enemy2D> _pool;
     private Action<Enemy2D> _releaseCallback;
     private Transform _enemyRoot;
@@ -33,6 +36,8 @@ public sealed class EnemySpawner2D : MonoBehaviour
     private void Awake()
     {
         _enemyRoot = new GameObject("EnemyPool").transform;
+
+        // 델리게이트를 한 번만 만들어 재사용한다(스폰마다 GC 할당 방지).
         _releaseCallback = ReleaseEnemy;
 
         _pool = new ObjectPool<Enemy2D>(
@@ -59,7 +64,7 @@ public sealed class EnemySpawner2D : MonoBehaviour
 
     private void OnDisable()
     {
-        // 루프는 토큰 취소로만 끝난다. 취소 후 반드시 Dispose 해서 CTS를 남기지 않는다.
+        // 루프는 토큰 취소로만 끝난다. 취소 후 Dispose 해서 CTS를 남기지 않는다.
         _cts?.Cancel();
         _cts?.Dispose();
         _cts = null;
@@ -71,9 +76,6 @@ public sealed class EnemySpawner2D : MonoBehaviour
         if (_enemyRoot != null) Destroy(_enemyRoot.gameObject);
     }
 
-    /// <summary>
-    /// 데드락 불가: 블로킹 대기(.Result/.Wait)가 없고 락도 없으며, 모든 대기가 취소 토큰을 받는다.
-    /// </summary>
     private async Awaitable SpawnLoopAsync(CancellationToken token)
     {
         try
@@ -82,8 +84,9 @@ public sealed class EnemySpawner2D : MonoBehaviour
             {
                 await Awaitable.WaitForSecondsAsync(_spawnInterval, token);
 
+                if (!_autoSpawnEnabled) continue;
                 if (_enemyPrefab == null || _target == null) continue;
-                if (_pool.CountActive >= _maxAlive) continue;
+                if (_activeEnemies.Count >= _maxAlive) continue;
 
                 SpawnOne();
             }
@@ -94,15 +97,31 @@ public sealed class EnemySpawner2D : MonoBehaviour
         }
     }
 
-    [Button, LabelText("지금 한 마리 스폰")]
+    [Button, LabelText("자동 스폰 켜기 / 끄기")]
+    private void ToggleAutoSpawn()
+    {
+        _autoSpawnEnabled = !_autoSpawnEnabled;
+    }
+
+    [Button, LabelText("적 전부 제거")]
+    private void ClearAllEnemies()
+    {
+        if (!Application.isPlaying) return;
+
+        // 반납이 리스트를 수정하므로 뒤에서부터 훑는다.
+        for (int i = _activeEnemies.Count - 1; i >= 0; i--)
+        {
+            ReleaseEnemy(_activeEnemies[i]);
+        }
+    }
+
     private void SpawnOne()
     {
-        if (!Application.isPlaying || _pool is null || _enemyPrefab == null || _target == null) return;
-
         float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
         Vector2 offset = new(Mathf.Cos(angle) * _spawnRadius, Mathf.Sin(angle) * _spawnRadius);
 
         Enemy2D enemy = _pool.Get();
+        _activeEnemies.Add(enemy);
         enemy.Spawn((Vector2)_target.position + offset, _target);
     }
 
@@ -113,7 +132,12 @@ public sealed class EnemySpawner2D : MonoBehaviour
         return enemy;
     }
 
-    private void ReleaseEnemy(Enemy2D enemy) => _pool.Release(enemy);
+    private void ReleaseEnemy(Enemy2D enemy)
+    {
+        // 사망과 일괄 제거가 겹쳐도 같은 개체를 두 번 반납하지 않게 막는다.
+        if (!_activeEnemies.Remove(enemy)) return;
+        _pool.Release(enemy);
+    }
 
     private static void OnGetEnemy(Enemy2D enemy) => enemy.gameObject.SetActive(true);
 

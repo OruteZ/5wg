@@ -2,9 +2,6 @@ using System;
 using Alchemy.Inspector;
 using UnityEngine;
 
-/// <summary>
-/// 직선으로 날아가는 투사체. 풀에서 재사용되므로 스스로 Destroy 하지 않고 반납 콜백을 호출한다.
-/// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
 public sealed class Projectile2D : MonoBehaviour
 {
@@ -25,10 +22,9 @@ public sealed class Projectile2D : MonoBehaviour
         _rigidbody.freezeRotation = true;
     }
 
-    /// <summary>풀 생성 시 1회만 호출한다. 매 발사마다 델리게이트를 새로 만들지 않기 위함.</summary>
+    /// <summary>풀 생성 시 1회만 호출한다.</summary>
     public void SetReleaseCallback(Action<Projectile2D> release) => _release = release;
 
-    /// <summary>지정 위치에서 지정 방향으로 발사한다.</summary>
     public void Launch(Vector2 position, Vector2 direction)
     {
         Vector2 normalized = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
@@ -44,7 +40,6 @@ public sealed class Projectile2D : MonoBehaviour
 
     private void Update()
     {
-        // 수명 카운트다운. 단순 타이머라 Awaitable/코루틴보다 할당·취소 처리가 없어 풀링과 잘 맞는다.
         _remainingLifetime -= Time.deltaTime;
         if (_remainingLifetime <= 0f)
         {
@@ -63,7 +58,7 @@ public sealed class Projectile2D : MonoBehaviour
 
     private void Despawn()
     {
-        // 같은 프레임에 수명 만료와 충돌이 겹쳐도 두 번 반납되지 않게 막는다.
+        // 같은 프레임에 수명 만료와 피격이 겹쳐도 두 번 반납되지 않게 막는다.
         if (_isSpent) return;
         _isSpent = true;
 

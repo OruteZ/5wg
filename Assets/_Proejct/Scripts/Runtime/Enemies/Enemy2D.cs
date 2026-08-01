@@ -2,9 +2,6 @@ using System;
 using Alchemy.Inspector;
 using UnityEngine;
 
-/// <summary>
-/// 플레이어를 향해 직진하는 적. 투사체에 맞으면 체력이 깎이고 0 이하가 되면 스포너 풀로 반납된다.
-/// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
 public sealed class Enemy2D : MonoBehaviour, IDamageable
 {
@@ -41,7 +38,7 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
     /// <summary>풀 생성 시 1회만 호출한다.</summary>
     public void SetReleaseCallback(Action<Enemy2D> release) => _release = release;
 
-    /// <summary>스폰될 때마다 호출. 체력과 상태를 초기화한다.</summary>
+    /// <summary>풀에서 꺼낼 때마다 호출한다. 재사용되므로 상태를 전부 되돌린다.</summary>
     public void Spawn(Vector2 position, Transform target)
     {
         transform.position = position;
