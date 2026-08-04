@@ -54,7 +54,7 @@ public sealed class EnemySpawner2D : MonoBehaviour
     {
         if (_target == null)
         {
-            PlayerMovement2D player = FindFirstObjectByType<PlayerMovement2D>();
+            PlayerController player = FindFirstObjectByType<PlayerController>();
             if (player != null) _target = player.transform;
         }
 
