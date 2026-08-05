@@ -186,7 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Prototype.EnemySpawner2D
   _enemyPrefab: {fileID: 1825767638987215925, guid: 5f84069730b712246b2b184280df83f4, type: 3}
   _target: {fileID: 1865809633}
-  _experiencePool: {fileID: 822901126}
+  _expPool: {fileID: 822901126}
   _spawnInterval: 0.8
   _spawnRadius: 12
   _maxAlive: 40
@@ -888,7 +888,7 @@ MonoBehaviour:
     m_Value: 0
   OutputChannel: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 0
+  m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
     TrackingTarget: {fileID: 1865809633}
@@ -1359,7 +1359,7 @@ GameObject:
   - component: {fileID: 914077840}
   - component: {fileID: 914077839}
   m_Layer: 0
-  m_Name: ExperienceBar
+  m_Name: ExpBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1914,9 +1914,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
+  near clip plane: 0.1
+  far clip plane: 5000
+  field of view: 40
   orthographic: 1
   orthographic size: 5
   m_Depth: 0
@@ -2118,7 +2118,7 @@ MonoBehaviour:
   _healthBar: {fileID: 848560850}
   _progressBar: {fileID: 600718647}
   _healthLabel: {fileID: 676303518}
-  _experienceBar: {fileID: 914077839}
+  _expBar: {fileID: 914077839}
   _levelLabel: {fileID: 1190620289}
 --- !u!114 &1321242912
 MonoBehaviour:

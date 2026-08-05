@@ -128,14 +128,14 @@ public sealed class MusicOrchestrator : StageEndSource
 
 적이 죽은 자리에 경험치 오브가 떨어지고, 플레이어가 가까이 가면 끌려와 수집된다.
 누적이 요구량을 넘으면 레벨이 오른다. **레벨업 시 무엇을 강화할지는 아직 아무도 모른다** —
-`PlayerExperience`는 이벤트만 쏘고 끝난다(업그레이드 UI는 다음 브랜치).
+`PlayerExp`는 이벤트만 쏘고 끝난다(업그레이드 UI는 다음 브랜치).
 
 | 타입 | 역할 |
 | --- | --- |
-| `IExperienceReceiver` | 경험치를 받는 대상. 오브가 수집자의 구체 타입을 모르게 한다 |
-| `PlayerExperience` | 누적·레벨 계산. `OnLeveledUp` / `OnExperienceChanged`만 발행 |
-| `ExperienceOrb` | 픽업. 자석 반경에 들어오면 가속하며 끌려온다 |
-| `ExperienceOrbPool` | 오브 소유자. 드랍 요청을 받고, 스테이지 종료 시 전부 회수 |
+| `IExpReceiver` | 경험치를 받는 대상. 오브가 수집자의 구체 타입을 모르게 한다 |
+| `PlayerExp` | 누적·레벨 계산. `OnLeveledUp` / `OnExpChanged`만 발행 |
+| `ExpOrb` | 픽업. 자석 반경에 들어오면 가속하며 끌려온다 |
+| `ExpOrbPool` | 오브 소유자. 드랍 요청을 받고, 스테이지 종료 시 전부 회수 |
 
 ### 드랍 경로
 
@@ -143,7 +143,7 @@ public sealed class MusicOrchestrator : StageEndSource
 Enemy2D.Die()
   → OnDiedWithReward(위치, 보상)      ← 사망일 때만. 일괄 회수는 여기로 오지 않는다
       → EnemySpawner2D.HandleEnemyDied  ← 적을 만드는 곳이 스포너라 구독도 여기서 한 번만
-          → ExperienceOrbPool.Drop(위치, 값)
+          → ExpOrbPool.Drop(위치, 값)
 ```
 
 스포너가 중계하는 이유는 그곳이 적의 **팩토리**이기 때문이다. 풀에서 꺼낸 개체에 콜백을 다는

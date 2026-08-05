@@ -10,7 +10,7 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
     [SerializeField, LabelText("이동 속도 (units/sec)")] private float _moveSpeed = 2f;
 
     [Title("보상")]
-    [SerializeField, LabelText("드랍 경험치")] private float _experienceReward = 1f;
+    [SerializeField, LabelText("드랍 경험치")] private float _expReward = 1f;
 
     [Title("접촉 공격")]
     [SerializeField, LabelText("접촉 데미지")] private float _contactDamage = 10f;
@@ -130,7 +130,7 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
         _rigidbody.linearVelocity = Vector2.zero;
 
         // 반납보다 먼저 알린다. 반납 후에는 위치가 다음 스폰으로 덮일 수 있다.
-        OnDiedWithReward?.Invoke(_rigidbody.position, _experienceReward);
+        OnDiedWithReward?.Invoke(_rigidbody.position, _expReward);
 
         _release?.Invoke(this);
     }

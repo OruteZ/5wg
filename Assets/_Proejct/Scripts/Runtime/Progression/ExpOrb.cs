@@ -8,7 +8,7 @@ using UnityEngine;
 /// 콜라이더를 쓰지 않고 거리 계산으로 판정한다. 오브는 수십 개가 동시에 떠 있을 수 있는데
 /// 그만큼의 트리거를 물리 엔진에 얹을 이유가 없다.
 /// </summary>
-public sealed class ExperienceOrb : MonoBehaviour
+public sealed class ExpOrb : MonoBehaviour
 {
     [Title("수집")]
     [SerializeField, LabelText("자석 반경")] private float _magnetRadius = 2.5f;
@@ -25,19 +25,19 @@ public sealed class ExperienceOrb : MonoBehaviour
     [ShowInInspector, ReadOnly, LabelText("경험치 값")]
     private float ValueDebug => _value;
 
-    private Action<ExperienceOrb> _release;
+    private Action<ExpOrb> _release;
     private Transform _target;
-    private IExperienceReceiver _receiver;
+    private IExpReceiver _receiver;
     private float _value;
     private float _speed;
     private bool _isMagnetized;
     private bool _isCollected;
 
     /// <summary>풀 생성 시 1회만 호출한다.</summary>
-    public void SetReleaseCallback(Action<ExperienceOrb> release) => _release = release;
+    public void SetReleaseCallback(Action<ExpOrb> release) => _release = release;
 
     /// <summary>풀에서 꺼낼 때마다 호출한다. 재사용되므로 상태를 전부 되돌린다.</summary>
-    public void Spawn(Vector2 position, float value, Transform target, IExperienceReceiver receiver)
+    public void Spawn(Vector2 position, float value, Transform target, IExpReceiver receiver)
     {
         // 같은 자리에서 여러 마리가 죽어도 오브가 한 점에 겹치지 않게 흩뿌린다.
         transform.position = position + UnityEngine.Random.insideUnitCircle * _scatter;
@@ -79,7 +79,7 @@ public sealed class ExperienceOrb : MonoBehaviour
         if (_isCollected) return;
         _isCollected = true;
 
-        _receiver?.AddExperience(_value);
+        _receiver?.AddExp(_value);
         _release?.Invoke(this);
     }
 }

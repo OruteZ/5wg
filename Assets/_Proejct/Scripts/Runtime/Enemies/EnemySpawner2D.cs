@@ -12,7 +12,7 @@ public sealed class EnemySpawner2D : MonoBehaviour
     [SerializeField, LabelText("추적 대상 (비우면 자동 탐색)")] private Transform _target;
 
     [Title("보상")]
-    [SerializeField, LabelText("경험치 오브 풀 (비우면 자동 탐색)")] private ExperienceOrbPool _experiencePool;
+    [SerializeField, LabelText("경험치 오브 풀 (비우면 자동 탐색)")] private ExpOrbPool _expPool;
 
     [Title("스폰")]
     [SerializeField, LabelText("스폰 간격 (sec)")] private float _spawnInterval = 0.8f;
@@ -61,7 +61,7 @@ public sealed class EnemySpawner2D : MonoBehaviour
             if (player != null) _target = player.transform;
         }
 
-        if (_experiencePool == null) _experiencePool = FindFirstObjectByType<ExperienceOrbPool>();
+        if (_expPool == null) _expPool = FindFirstObjectByType<ExpOrbPool>();
 
         _cts = new CancellationTokenSource();
         _ = SpawnLoopAsync(_cts.Token);
@@ -146,7 +146,7 @@ public sealed class EnemySpawner2D : MonoBehaviour
     /// <summary>적이 죽은 자리에 경험치를 떨어뜨린다. 스포너는 오브의 동작을 모른다.</summary>
     private void HandleEnemyDied(Vector2 position, float reward)
     {
-        if (_experiencePool != null) _experiencePool.Drop(position, reward);
+        if (_expPool != null) _expPool.Drop(position, reward);
     }
 
     private void ReleaseEnemy(Enemy2D enemy)

@@ -7,7 +7,7 @@ using UnityEngine;
 /// 레벨업 시 무엇을 보여주고 무엇을 강화할지는 이 컴포넌트가 모른다 — 이벤트만 쏜다.
 /// (레벨업 UI·업그레이드 선택은 다음 브랜치)
 /// </summary>
-public sealed class PlayerExperience : MonoBehaviour, IExperienceReceiver
+public sealed class PlayerExp : MonoBehaviour, IExpReceiver
 {
     [Title("레벨 곡선")]
     [SerializeField, LabelText("1→2레벨 요구 경험치"), Min(1f)] private float _baseRequirement = 5f;
@@ -19,23 +19,23 @@ public sealed class PlayerExperience : MonoBehaviour, IExperienceReceiver
 
     [Title("디버그")]
     [ShowInInspector, ReadOnly, LabelText("레벨")] private int LevelDebug => Level;
-    [ShowInInspector, ReadOnly, LabelText("현재 레벨 경험치")] private float CurrentDebug => CurrentExperience;
-    [ShowInInspector, ReadOnly, LabelText("다음 레벨까지")] private float RequiredDebug => RequiredExperience;
-    [ShowInInspector, ReadOnly, LabelText("누적 획득")] private float TotalDebug => TotalExperience;
+    [ShowInInspector, ReadOnly, LabelText("현재 레벨 경험치")] private float CurrentDebug => CurrentExp;
+    [ShowInInspector, ReadOnly, LabelText("다음 레벨까지")] private float RequiredDebug => RequiredExp;
+    [ShowInInspector, ReadOnly, LabelText("누적 획득")] private float TotalDebug => TotalExp;
 
     public int Level { get; private set; } = 1;
 
     /// <summary>현재 레벨에서 모은 경험치. 레벨업하면 요구량만큼 빠진다.</summary>
-    public float CurrentExperience { get; private set; }
+    public float CurrentExp { get; private set; }
 
     /// <summary>지금 레벨에서 다음 레벨로 가는 데 필요한 총량.</summary>
-    public float RequiredExperience { get; private set; }
+    public float RequiredExp { get; private set; }
 
     /// <summary>스테이지 내내 모은 총합. 리셋되지 않아 결과 집계에 쓸 수 있다.</summary>
-    public float TotalExperience { get; private set; }
+    public float TotalExp { get; private set; }
 
     /// <summary>0~1 진행도. HUD가 그대로 그린다.</summary>
-    public float Progress => RequiredExperience <= 0f ? 1f : Mathf.Clamp01(CurrentExperience / RequiredExperience);
+    public float Progress => RequiredExp <= 0f ? 1f : Mathf.Clamp01(CurrentExp / RequiredExp);
 
     public bool IsMaxLevel => _maxLevel > 0 && Level >= _maxLevel;
 
@@ -43,46 +43,46 @@ public sealed class PlayerExperience : MonoBehaviour, IExperienceReceiver
     public event Action<int> OnLeveledUp;
 
     /// <summary>경험치가 변할 때마다 발행된다. (현재, 요구량)</summary>
-    public event Action<float, float> OnExperienceChanged;
+    public event Action<float, float> OnExpChanged;
 
-    private void Awake() => RequiredExperience = RequirementFor(Level);
+    private void Awake() => RequiredExp = RequirementFor(Level);
 
     /// <summary>레벨 L에서 L+1로 가는 데 필요한 양.</summary>
     private float RequirementFor(int level) => _baseRequirement * Mathf.Pow(_growth, level - 1);
 
-    public void AddExperience(float amount)
+    public void AddExp(float amount)
     {
         if (amount <= 0f) return;
 
-        TotalExperience += amount;
+        TotalExp += amount;
 
         if (IsMaxLevel)
         {
             // 최대 레벨에서는 바를 채운 채로 둔다. 누적만 계속 쌓는다.
-            OnExperienceChanged?.Invoke(CurrentExperience, RequiredExperience);
+            OnExpChanged?.Invoke(CurrentExp, RequiredExp);
             return;
         }
 
-        CurrentExperience += amount;
+        CurrentExp += amount;
 
         // 한 번에 여러 레벨이 오를 수 있다(보스 처치·후반 오브 폭식).
-        while (!IsMaxLevel && CurrentExperience >= RequiredExperience)
+        while (!IsMaxLevel && CurrentExp >= RequiredExp)
         {
-            CurrentExperience -= RequiredExperience;
+            CurrentExp -= RequiredExp;
             Level++;
-            RequiredExperience = RequirementFor(Level);
+            RequiredExp = RequirementFor(Level);
 
             OnLeveledUp?.Invoke(Level);
         }
 
-        if (IsMaxLevel) CurrentExperience = RequiredExperience;
+        if (IsMaxLevel) CurrentExp = RequiredExp;
 
-        OnExperienceChanged?.Invoke(CurrentExperience, RequiredExperience);
+        OnExpChanged?.Invoke(CurrentExp, RequiredExp);
     }
 
     [Button, LabelText("경험치 10 지급")]
     private void DebugGrant()
     {
-        if (Application.isPlaying) AddExperience(10f);
+        if (Application.isPlaying) AddExp(10f);
     }
 }

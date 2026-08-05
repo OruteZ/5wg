@@ -10,11 +10,11 @@ using UnityEngine.Pool;
 /// 수집 대상(플레이어)을 여기서 한 번만 찾아 오브에 넘긴다. 오브마다 탐색하지 않게.
 /// 스테이지를 구독하는 방향은 Progression → Stage 한 방향이다. 디렉터는 경험치를 모른다.
 /// </summary>
-public sealed class ExperienceOrbPool : MonoBehaviour
+public sealed class ExpOrbPool : MonoBehaviour
 {
     [Title("대상")]
-    [SerializeField, Required("경험치 오브 프리팹")] private ExperienceOrb _orbPrefab;
-    [SerializeField, LabelText("수집자 (비우면 자동 탐색)")] private PlayerExperience _collector;
+    [SerializeField, Required("경험치 오브 프리팹")] private ExpOrb _orbPrefab;
+    [SerializeField, LabelText("수집자 (비우면 자동 탐색)")] private PlayerExp _collector;
 
     [Title("스테이지")]
     [SerializeField, LabelText("디렉터 (비우면 자동 탐색). 종료 시 오브 회수")]
@@ -27,20 +27,20 @@ public sealed class ExperienceOrbPool : MonoBehaviour
     [ShowInInspector, ReadOnly, LabelText("떠 있는 오브 수")]
     private int ActiveCount => _activeOrbs.Count;
 
-    private readonly List<ExperienceOrb> _activeOrbs = new();
-    private ObjectPool<ExperienceOrb> _pool;
-    private Action<ExperienceOrb> _releaseCallback;
+    private readonly List<ExpOrb> _activeOrbs = new();
+    private ObjectPool<ExpOrb> _pool;
+    private Action<ExpOrb> _releaseCallback;
     private Transform _root;
     private bool _isSubscribed;
 
     private void Awake()
     {
-        _root = new GameObject("ExperienceOrbPool").transform;
+        _root = new GameObject("ExpOrbPool").transform;
 
         // 델리게이트를 한 번만 만들어 재사용한다(드랍마다 GC 할당 방지).
         _releaseCallback = ReleaseOrb;
 
-        _pool = new ObjectPool<ExperienceOrb>(
+        _pool = new ObjectPool<ExpOrb>(
             createFunc: CreateOrb,
             actionOnGet: orb => orb.gameObject.SetActive(true),
             actionOnRelease: orb => orb.gameObject.SetActive(false),
@@ -55,13 +55,13 @@ public sealed class ExperienceOrbPool : MonoBehaviour
 
     private void Start()
     {
-        if (_collector == null) _collector = FindFirstObjectByType<PlayerExperience>();
+        if (_collector == null) _collector = FindFirstObjectByType<PlayerExp>();
         if (_director == null) _director = FindFirstObjectByType<StageDirector>();
 
         if (_collector == null)
         {
             Debug.LogWarning(
-                $"[{nameof(ExperienceOrbPool)}] PlayerExperience를 찾지 못했다. 오브가 수집되지 않는다.", this);
+                $"[{nameof(ExpOrbPool)}] PlayerExp를 찾지 못했다. 오브가 수집되지 않는다.", this);
         }
 
         if (_director != null)
@@ -84,7 +84,7 @@ public sealed class ExperienceOrbPool : MonoBehaviour
     {
         if (value <= 0f || _orbPrefab == null || _collector == null) return;
 
-        ExperienceOrb orb = _pool.Get();
+        ExpOrb orb = _pool.Get();
         _activeOrbs.Add(orb);
         orb.Spawn(position, value, _collector.transform, _collector);
     }
@@ -107,14 +107,14 @@ public sealed class ExperienceOrbPool : MonoBehaviour
         if (state is StageState.Cleared or StageState.Failed) ReleaseAll();
     }
 
-    private ExperienceOrb CreateOrb()
+    private ExpOrb CreateOrb()
     {
-        ExperienceOrb orb = Instantiate(_orbPrefab, _root);
+        ExpOrb orb = Instantiate(_orbPrefab, _root);
         orb.SetReleaseCallback(_releaseCallback);
         return orb;
     }
 
-    private void ReleaseOrb(ExperienceOrb orb)
+    private void ReleaseOrb(ExpOrb orb)
     {
         // 수집과 일괄 회수가 겹쳐도 같은 개체를 두 번 반납하지 않게 막는다.
         if (!_activeOrbs.Remove(orb)) return;
