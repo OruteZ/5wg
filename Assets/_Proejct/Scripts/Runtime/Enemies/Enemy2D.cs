@@ -9,6 +9,9 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
     [SerializeField, LabelText("최대 체력")] private float _maxHealth = 30f;
     [SerializeField, LabelText("이동 속도 (units/sec)")] private float _moveSpeed = 2f;
 
+    [Title("보상")]
+    [SerializeField, LabelText("드랍 경험치")] private float _experienceReward = 1f;
+
     [Title("접촉 공격")]
     [SerializeField, LabelText("접촉 데미지")] private float _contactDamage = 10f;
 
@@ -32,6 +35,12 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
     private float _hitFlashRemaining;
     private float _contactCooldown;
     private bool _isDead;
+
+    /// <summary>
+    /// 사망으로 죽었을 때만 발행된다. 인자는 (사망 위치, 드랍 경험치).
+    /// 스테이지 종료 시의 일괄 회수는 여기로 오지 않는다 — 그때는 보상이 없어야 하기 때문.
+    /// </summary>
+    public event Action<Vector2, float> OnDiedWithReward;
 
     private void Awake()
     {
@@ -119,6 +128,10 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
         _isDead = true;
 
         _rigidbody.linearVelocity = Vector2.zero;
+
+        // 반납보다 먼저 알린다. 반납 후에는 위치가 다음 스폰으로 덮일 수 있다.
+        OnDiedWithReward?.Invoke(_rigidbody.position, _experienceReward);
+
         _release?.Invoke(this);
     }
 }

@@ -11,6 +11,9 @@ public sealed class EnemySpawner2D : MonoBehaviour
     [SerializeField, Required("적 프리팹")] private Enemy2D _enemyPrefab;
     [SerializeField, LabelText("추적 대상 (비우면 자동 탐색)")] private Transform _target;
 
+    [Title("보상")]
+    [SerializeField, LabelText("경험치 오브 풀 (비우면 자동 탐색)")] private ExperienceOrbPool _experiencePool;
+
     [Title("스폰")]
     [SerializeField, LabelText("스폰 간격 (sec)")] private float _spawnInterval = 0.8f;
     [SerializeField, LabelText("스폰 거리")] private float _spawnRadius = 10f;
@@ -57,6 +60,8 @@ public sealed class EnemySpawner2D : MonoBehaviour
             PlayerController player = FindFirstObjectByType<PlayerController>();
             if (player != null) _target = player.transform;
         }
+
+        if (_experiencePool == null) _experiencePool = FindFirstObjectByType<ExperienceOrbPool>();
 
         _cts = new CancellationTokenSource();
         _ = SpawnLoopAsync(_cts.Token);
@@ -132,7 +137,16 @@ public sealed class EnemySpawner2D : MonoBehaviour
     {
         Enemy2D enemy = Instantiate(_enemyPrefab, _enemyRoot);
         enemy.SetReleaseCallback(_releaseCallback);
+
+        // 적을 만드는 곳이 여기뿐이라 구독도 여기서 한 번만 한다. 개체는 풀과 함께 파괴된다.
+        enemy.OnDiedWithReward += HandleEnemyDied;
         return enemy;
+    }
+
+    /// <summary>적이 죽은 자리에 경험치를 떨어뜨린다. 스포너는 오브의 동작을 모른다.</summary>
+    private void HandleEnemyDied(Vector2 position, float reward)
+    {
+        if (_experiencePool != null) _experiencePool.Drop(position, reward);
     }
 
     private void ReleaseEnemy(Enemy2D enemy)

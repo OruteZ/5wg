@@ -102,6 +102,17 @@ Weapons/
 
 UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜을 안 받아도 되게.
 
+## 성장·카메라 (빌드 피드백 폴리싱)
+
+`Assets/_Proejct/Scripts/Runtime/Progression/`
+
+- 적이 죽으면 경험치 오브를 떨어뜨리고, 플레이어가 가까이 가면 끌려와 수집된다.
+  누적이 요구량을 넘으면 레벨업. **레벨업 UI·업그레이드 선택은 다음 브랜치.**
+- `Stage01` 카메라를 Cinemachine으로 교체. Main Camera는 `CinemachineBrain`만 들고,
+  `CM Player Camera`가 플레이어를 따라간다(데드존 0.12 / 감쇠 0.35).
+
+구조와 결정 사항은 `architecture.md`의 "성장", "카메라" 절에 있다.
+
 ## 해결한 문제
 
 **클록이 돌지 않아 발사가 아예 안 됨** — `BpmClock`이 `Idle`로 시작하는데 아무도 `Play()`를 호출하지
