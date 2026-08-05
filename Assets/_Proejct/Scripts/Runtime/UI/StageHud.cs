@@ -15,8 +15,11 @@ public sealed class StageHud : MonoBehaviour
     [SerializeField, LabelText("체력 바")] private Slider _healthBar;
     [SerializeField, LabelText("진행도 바")] private Slider _progressBar;
     [SerializeField, LabelText("체력 수치 텍스트")] private Text _healthLabel;
+    [SerializeField, LabelText("경험치 바")] private Slider _expBar;
+    [SerializeField, LabelText("레벨 텍스트")] private Text _levelLabel;
 
     private PlayerController _player;
+    private PlayerExp _exp;
 
     private void Awake()
     {
@@ -34,6 +37,7 @@ public sealed class StageHud : MonoBehaviour
 
         // 디렉터가 Awake에서 플레이어를 찾으므로 첫 프레임 이후부터 잡힌다.
         if (_player == null) _player = _director.Player;
+        if (_exp == null && _player != null) _exp = _player.GetComponent<PlayerExp>();
 
         if (_healthBar != null && _player != null)
         {
@@ -48,6 +52,16 @@ public sealed class StageHud : MonoBehaviour
         if (_progressBar != null)
         {
             _progressBar.value = _director.Progress;
+        }
+
+        if (_expBar != null && _exp != null)
+        {
+            _expBar.value = _exp.Progress;
+        }
+
+        if (_levelLabel != null && _exp != null)
+        {
+            _levelLabel.text = $"Lv {_exp.Level}";
         }
     }
 }
