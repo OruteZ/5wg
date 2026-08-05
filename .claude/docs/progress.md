@@ -62,6 +62,46 @@ Weapons/
 - 투사체 풀은 무기가 아닌 `ProjectilePool`이 프리팹별로 소유한다. 6개 무기가 서로 다른 탄을 쓰기 때문.
 - `WeaponHandler`는 `BpmClock`을 폴링해 서브비트 경계를 감지하고, 프레임이 밀리면 최대 N틱까지 보정 발사한다.
 
+## 스테이지 흐름 (버티컬 슬라이스)
+
+`Assets/_Proejct/Scripts/Runtime/Stage/`, `.../UI/`
+
+시작·종료 규칙을 갖춘 최소 플레이 루프. 수치는 전부 임시다.
+
+### 축 분리
+
+| 축 | 담당 | 비고 |
+| --- | --- | --- |
+| 상태를 소유 | `StageDirector` | Ready→Playing→Cleared/Failed. 종료 조건은 모른다 |
+| 언제 끝나는가 | `StageEndSource` | `RequestClear`/`RequestFail`로 디렉터에 알린다 |
+| 화면에 뭘 띄우나 | `StageHud` / `StageResultView` | 디렉터 상태만 구독 |
+| 씬 사이 이동 | `GameFlow` | 씬 이름 문자열을 여기만 안다 |
+
+종료 소스는 현재 둘. `BeatTimelineEndSource`(N마디 버티면 클리어, **임시**)와
+`PlayerDeathEndSource`(사망→실패). 나중에 음악 오케스트레이터가 들어오면
+`StageEndSource`를 상속해 씬에서 컴포넌트만 갈아끼운다. 디렉터·UI·스포너는 그대로 둔다.
+
+### 결정 사항
+
+- 종료 판정을 초가 아니라 **박 기준**으로 잰다. 실제 곡을 물릴 때 "몇 마디"가 그대로 이식된다.
+- 종료 시 `Time.timeScale`을 건드리지 않는다. 클록이 dspTime 기준이라 비트 그리드와 어긋난다.
+  대신 스폰·발사·입력을 개별로 끈다.
+- 재도전은 상태 되돌리기가 아니라 씬 재로드. 풀·인벤토리 리셋 경로를 따로 만들지 않으려고.
+- 버튼 배선은 인스펙터 UnityEvent가 아니라 코드(`onClick.AddListener`). 씬 파일에 로직이 숨지 않게.
+- `Stage01`의 `BpmClock`은 `playOnStart`를 껐다. 시작 시점은 디렉터가 소유한다(`Stop()`→`Play()`로 재앵커).
+- 적 접촉 데미지는 트리거 1회 타격 + 재타격 간격(기본 0.8초). 플레이어 콜라이더가 트리거라
+  겹친 채 머무르면 Enter가 다시 오지 않기 때문. 대상 판정은 `IDamageable`로만 한다.
+
+### 씬
+
+| 씬 | 역할 |
+| --- | --- |
+| `Scenes/MainMenu.unity` | START / QUIT. Build Settings 0번 |
+| `Scenes/Stage01.unity` | 스테이지 본편. Prototype 복제본에서 출발. Build Settings 1번 |
+| `Scenes/Prototype.unity` | 무기 검증용으로 그대로 보존 |
+
+UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜을 안 받아도 되게.
+
 ## 해결한 문제
 
 **클록이 돌지 않아 발사가 아예 안 됨** — `BpmClock`이 `Idle`로 시작하는데 아무도 `Play()`를 호출하지
@@ -86,3 +126,10 @@ Weapons/
 - `PhysicsTargetProvider`는 매 발사마다 오버랩을 돈다. 적이 많아지면 등록 기반 레지스트리로 교체.
 - `Camera.main`을 `WeaponHandler.Awake`에서 한 번만 잡는다. 런타임에 카메라를 바꾸면 참조가 낡는다.
 - `Prototype_PlayerMovement.unity`는 `BpmClock`·시작 무기가 비어 있어 발사되지 않는다.
+- **스테이지 종료 조건이 임시**(`BeatTimelineEndSource`, 8마디). 기획이 정해지면 실제 곡을 소유하는
+  오케스트레이터로 교체한다. `_barsToClear`/`_beatsPerBar`는 그때 사라질 값.
+- 클록이 dspTime 기준이라 프레임이 멈춰도(창 비활성·긴 히치) 박은 계속 간다. 복귀 순간 진행도가
+  한 번에 뛴다. `runInBackground`가 꺼져 있으면 빌드에서 알트탭 시 드러난다.
+- 카운트다운·일시정지·성장(무기 획득/레벨업) UI는 이번 슬라이스 범위 밖.
+- 스테이지 밸런스 미조정. 스폰 간격 0.8초 / 접촉 데미지 10 / 체력 100 / 클리어 8마디(120BPM에서 16초)로,
+  가만히 서 있으면 클리어 전에 죽는다. 이동으로 카이팅하는 걸 전제한 값.

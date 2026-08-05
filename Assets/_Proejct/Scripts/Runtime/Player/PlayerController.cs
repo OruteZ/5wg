@@ -34,6 +34,16 @@ public sealed class PlayerController : MonoBehaviour, IDamageable
 
     public bool IsAlive => _health > 0f;
 
+    /// <summary>입력 수용 여부. 스테이지 시작 전/종료 후에 StageDirector가 잠근다.</summary>
+    public bool ControlEnabled { get; set; } = true;
+
+    public float MaxHealth => _maxHealth;
+
+    public float Health => _health;
+
+    /// <summary>0~1 체력 비율. HUD용.</summary>
+    public float HealthNormalized => _maxHealth <= 0f ? 0f : Mathf.Clamp01(_health / _maxHealth);
+
     public event Action OnDied;
 
     private void Awake()
@@ -81,6 +91,13 @@ public sealed class PlayerController : MonoBehaviour, IDamageable
     private void Update()
     {
         if (!IsAlive) return;
+
+        if (!ControlEnabled)
+        {
+            // 입력이 잠긴 동안 마지막 입력이 남아 계속 미끄러지지 않게 매 프레임 0으로 눌러둔다.
+            _movement.SetMoveInput(Vector2.zero);
+            return;
+        }
 
         _movement.SetMoveInput(_moveAction?.ReadValue<Vector2>() ?? Vector2.zero);
         _weapon.SetAimInput(_lookAction?.ReadValue<Vector2>() ?? Vector2.zero);

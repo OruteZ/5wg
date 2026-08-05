@@ -97,6 +97,9 @@ public sealed class EnemySpawner2D : MonoBehaviour
         }
     }
 
+    /// <summary>스폰 on/off. StageDirector가 스테이지 시작·종료에 맞춰 호출한다.</summary>
+    public void SetSpawning(bool enabled) => _autoSpawnEnabled = enabled;
+
     [Button, LabelText("자동 스폰 켜기 / 끄기")]
     private void ToggleAutoSpawn()
     {
@@ -104,7 +107,7 @@ public sealed class EnemySpawner2D : MonoBehaviour
     }
 
     [Button, LabelText("적 전부 제거")]
-    private void ClearAllEnemies()
+    public void ClearAll()
     {
         if (!Application.isPlaying) return;
 
