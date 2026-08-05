@@ -11,5 +11,6 @@ This file only routes to where the real project context lives. Read the referenc
 - **Docs** — `.claude/docs/`: project design and status.
   - `overview.md` — tech stack, engine version, packages, project structure.
   - `progress.md` — current work, milestones, decisions.
+  - `architecture.md` — 스테이지 플레이 루프의 구조, 의존 방향, 확장 지점.
 
 
