@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using Alchemy.Inspector;
 using UnityEngine;
-using UnityEngine.Pool;
 
 public sealed class EnemySpawner2D : MonoBehaviour
 {
@@ -28,29 +26,23 @@ public sealed class EnemySpawner2D : MonoBehaviour
     private bool _autoSpawnEnabled = true;
 
     [ShowInInspector, ReadOnly, LabelText("현재 살아있는 수")]
-    private int AliveCount => _activeEnemies.Count;
+    private int AliveCount => _pool?.ActiveCount ?? 0;
 
-    private readonly List<Enemy2D> _activeEnemies = new();
-    private ObjectPool<Enemy2D> _pool;
-    private Action<Enemy2D> _releaseCallback;
-    private Transform _enemyRoot;
+    private PrefabPool<Enemy2D> _pool;
     private CancellationTokenSource _cts;
 
     private void Awake()
     {
-        _enemyRoot = new GameObject("EnemyPool").transform;
+        if (_enemyPrefab == null)
+        {
+            Debug.LogError($"[{nameof(EnemySpawner2D)}] 적 프리팹이 비어 있다. 스폰이 일어나지 않는다.", this);
+            return;
+        }
 
-        // 델리게이트를 한 번만 만들어 재사용한다(스폰마다 GC 할당 방지).
-        _releaseCallback = ReleaseEnemy;
-
-        _pool = new ObjectPool<Enemy2D>(
-            createFunc: CreateEnemy,
-            actionOnGet: OnGetEnemy,
-            actionOnRelease: OnReleaseEnemy,
-            actionOnDestroy: OnDestroyEnemy,
-            collectionCheck: true,
-            defaultCapacity: _poolDefaultCapacity,
-            maxSize: _poolMaxSize);
+        // 적을 만드는 곳이 여기뿐이라 사망 구독도 생성 시 한 번만 건다. 개체는 풀과 함께 파괴된다.
+        _pool = new PrefabPool<Enemy2D>(
+            _enemyPrefab, "EnemyPool", _poolDefaultCapacity, _poolMaxSize,
+            onCreate: enemy => enemy.OnDiedWithReward += HandleEnemyDied);
     }
 
     private void OnEnable()
@@ -75,11 +67,7 @@ public sealed class EnemySpawner2D : MonoBehaviour
         _cts = null;
     }
 
-    private void OnDestroy()
-    {
-        _pool?.Dispose();
-        if (_enemyRoot != null) Destroy(_enemyRoot.gameObject);
-    }
+    private void OnDestroy() => _pool?.Dispose();
 
     private async Awaitable SpawnLoopAsync(CancellationToken token)
     {
@@ -90,8 +78,8 @@ public sealed class EnemySpawner2D : MonoBehaviour
                 await Awaitable.WaitForSecondsAsync(_spawnInterval, token);
 
                 if (!_autoSpawnEnabled) continue;
-                if (_enemyPrefab == null || _target == null) continue;
-                if (_activeEnemies.Count >= _maxAlive) continue;
+                if (_pool == null || _target == null) continue;
+                if (_pool.ActiveCount >= _maxAlive) continue;
 
                 SpawnOne();
             }
@@ -115,12 +103,7 @@ public sealed class EnemySpawner2D : MonoBehaviour
     public void ClearAll()
     {
         if (!Application.isPlaying) return;
-
-        // 반납이 리스트를 수정하므로 뒤에서부터 훑는다.
-        for (int i = _activeEnemies.Count - 1; i >= 0; i--)
-        {
-            ReleaseEnemy(_activeEnemies[i]);
-        }
+        _pool?.ReleaseAll();
     }
 
     private void SpawnOne()
@@ -129,39 +112,12 @@ public sealed class EnemySpawner2D : MonoBehaviour
         Vector2 offset = new(Mathf.Cos(angle) * _spawnRadius, Mathf.Sin(angle) * _spawnRadius);
 
         Enemy2D enemy = _pool.Get();
-        _activeEnemies.Add(enemy);
         enemy.Spawn((Vector2)_target.position + offset, _target);
-    }
-
-    private Enemy2D CreateEnemy()
-    {
-        Enemy2D enemy = Instantiate(_enemyPrefab, _enemyRoot);
-        enemy.SetReleaseCallback(_releaseCallback);
-
-        // 적을 만드는 곳이 여기뿐이라 구독도 여기서 한 번만 한다. 개체는 풀과 함께 파괴된다.
-        enemy.OnDiedWithReward += HandleEnemyDied;
-        return enemy;
     }
 
     /// <summary>적이 죽은 자리에 경험치를 떨어뜨린다. 스포너는 오브의 동작을 모른다.</summary>
     private void HandleEnemyDied(Vector2 position, float reward)
     {
         if (_expPool != null) _expPool.Drop(position, reward);
-    }
-
-    private void ReleaseEnemy(Enemy2D enemy)
-    {
-        // 사망과 일괄 제거가 겹쳐도 같은 개체를 두 번 반납하지 않게 막는다.
-        if (!_activeEnemies.Remove(enemy)) return;
-        _pool.Release(enemy);
-    }
-
-    private static void OnGetEnemy(Enemy2D enemy) => enemy.gameObject.SetActive(true);
-
-    private static void OnReleaseEnemy(Enemy2D enemy) => enemy.gameObject.SetActive(false);
-
-    private static void OnDestroyEnemy(Enemy2D enemy)
-    {
-        if (enemy != null) Destroy(enemy.gameObject);
     }
 }

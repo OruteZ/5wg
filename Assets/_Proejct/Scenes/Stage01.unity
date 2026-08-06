@@ -2927,8 +2927,8 @@ GameObject:
   - component: {fileID: 1865809639}
   - component: {fileID: 1865809635}
   - component: {fileID: 1865809634}
-  - component: {fileID: 1865809640}
   - component: {fileID: 1865809641}
+  - component: {fileID: 1865809642}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2966,7 +2966,7 @@ MonoBehaviour:
   _clock: {fileID: 1189532218}
   _maxCatchUpTicks: 8
   _projectilePool: {fileID: 0}
-  _targetProvider: {fileID: 0}
+  _targetProvider: {fileID: 1865809642}
   _muzzle: {fileID: 0}
   _startingWeapons:
   - {fileID: 11400000, guid: 7bdddf565aab86b4d9ada8e8ddc9e128, type: 2}
@@ -3121,22 +3121,6 @@ MonoBehaviour:
   _moveActionPath: Player/Move
   _lookActionPath: Player/Look
   _maxHealth: 100
---- !u!114 &1865809640
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1865809632}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3027d35644882b548b796c9c3a8db8f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PhysicsTargetProvider
-  _targetLayers:
-    serializedVersion: 2
-    m_Bits: 8
-  _maxResults: 64
 --- !u!114 &1865809641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3152,6 +3136,19 @@ MonoBehaviour:
   _baseRequirement: 5
   _growth: 1.25
   _maxLevel: 0
+--- !u!114 &1865809642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865809632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caebc9c790e20494ba6ad73a77b9f270, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RegistryTargetProvider
+  _maxResults: 64
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ using UnityEngine;
 /// 콜라이더를 쓰지 않고 거리 계산으로 판정한다. 오브는 수십 개가 동시에 떠 있을 수 있는데
 /// 그만큼의 트리거를 물리 엔진에 얹을 이유가 없다.
 /// </summary>
-public sealed class ExpOrb : MonoBehaviour
+public sealed class ExpOrb : MonoBehaviour, IPooledObject<ExpOrb>
 {
     [Title("수집")]
     [SerializeField, LabelText("자석 반경")] private float _magnetRadius = 2.5f;

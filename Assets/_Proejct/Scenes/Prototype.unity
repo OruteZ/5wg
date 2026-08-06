@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Prototype.EnemySpawner2D
   _enemyPrefab: {fileID: 1825767638987215925, guid: 5f84069730b712246b2b184280df83f4, type: 3}
   _target: {fileID: 1865809633}
+  _expPool: {fileID: 0}
   _spawnInterval: 0.8
   _spawnRadius: 12
   _maxAlive: 40
@@ -513,7 +514,7 @@ MonoBehaviour:
   _clock: {fileID: 1189532218}
   _maxCatchUpTicks: 8
   _projectilePool: {fileID: 0}
-  _targetProvider: {fileID: 0}
+  _targetProvider: {fileID: 1865809640}
   _muzzle: {fileID: 0}
   _startingWeapons:
   - {fileID: 11400000, guid: 7bdddf565aab86b4d9ada8e8ddc9e128, type: 2}
@@ -677,12 +678,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1865809632}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3027d35644882b548b796c9c3a8db8f0, type: 3}
+  m_Script: {fileID: 11500000, guid: caebc9c790e20494ba6ad73a77b9f270, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PhysicsTargetProvider
-  _targetLayers:
-    serializedVersion: 2
-    m_Bits: 8
+  m_EditorClassIdentifier: Assembly-CSharp::RegistryTargetProvider
   _maxResults: 64
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

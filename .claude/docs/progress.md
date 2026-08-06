@@ -113,6 +113,15 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
 
 구조와 결정 사항은 `architecture.md`의 "성장", "카메라" 절에 있다.
 
+## 풀링·조준 정리 (최적화)
+
+- 세 곳에 흩어져 있던 오브젝트 풀 보일러플레이트를 `PrefabPool<T>`(합성)로 합쳤다.
+  이 과정에서 `ProjectilePool`만 없던 일괄 회수가 생겨, 스테이지 종료 후에도 날아가던 탄이 정리된다.
+- 조준 대상 탐색을 물리 오버랩에서 `DamageableRegistry` 기반으로 바꿨다.
+  발사마다 쿼리를 돌던 걸 목록 순회로 대체 — 무기가 6개로 늘면 차이가 커진다.
+
+구조와 결정 사항은 `architecture.md`의 "풀링", "조준 대상 탐색" 절에 있다.
+
 ## 해결한 문제
 
 **클록이 돌지 않아 발사가 아예 안 됨** — `BpmClock`이 `Idle`로 시작하는데 아무도 `Play()`를 호출하지
@@ -134,7 +143,6 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
   `WeaponDefinition`의 `_intervalBeats`/`_offsetBeats`는 그때 제거될 임시 필드.
 - 무기가 아직 `ProjectileWeapon` 1종뿐. 나머지 5종의 형태(장판·오라·근접 등)가 정해져야 한다.
 - 레이어 마스크는 아직 `~0` 기본값. 코드로 막아뒀지만 성능을 위해 적 레이어는 지정하는 게 좋다.
-- `PhysicsTargetProvider`는 매 발사마다 오버랩을 돈다. 적이 많아지면 등록 기반 레지스트리로 교체.
 - `Camera.main`을 `WeaponHandler.Awake`에서 한 번만 잡는다. 런타임에 카메라를 바꾸면 참조가 낡는다.
 - `Prototype_PlayerMovement.unity`는 `BpmClock`·시작 무기가 비어 있어 발사되지 않는다.
 - **스테이지 종료 조건이 임시**(`BeatTimelineEndSource`, 8마디). 기획이 정해지면 실제 곡을 소유하는

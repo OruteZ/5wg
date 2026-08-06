@@ -1,11 +1,12 @@
-using System;
 using System.Collections.Generic;
 using Alchemy.Inspector;
 using UnityEngine;
-using UnityEngine.Pool;
 
 /// <summary>
 /// 프리팹별 투사체 풀. 6개 무기가 서로 다른 투사체를 쓰므로 풀을 무기가 아닌 이곳이 공유 소유한다.
+///
+/// 프리팹마다 PrefabPool을 하나씩 두고, 이 클래스는 "어느 프리팹의 풀인가"만 고른다.
+/// 스테이지가 끝나면 날아가던 탄을 전부 회수한다 — 적이 사라진 뒤 탄만 남아 떠다니지 않게.
 /// </summary>
 public sealed class ProjectilePool : MonoBehaviour
 {
@@ -13,66 +14,77 @@ public sealed class ProjectilePool : MonoBehaviour
     [SerializeField, LabelText("프리팹당 기본 용량")] private int _defaultCapacity = 32;
     [SerializeField, LabelText("프리팹당 최대 크기")] private int _maxSize = 256;
 
+    [Title("스테이지")]
+    [SerializeField, LabelText("디렉터 (비우면 자동 탐색). 종료 시 투사체 회수")]
+    private StageDirector _director;
+
     [ShowInInspector, ReadOnly, LabelText("등록된 프리팹 수")]
-    private int PrefabCount => _pools?.Count ?? 0;
+    private int PrefabCount => _pools.Count;
 
-    private readonly Dictionary<Projectile2D, ObjectPool<Projectile2D>> _pools = new();
-    private Transform _root;
-
-    private void Awake()
+    [ShowInInspector, ReadOnly, LabelText("날아다니는 탄 수")]
+    private int ActiveCount
     {
-        // 하이라키가 투사체로 더러워지지 않도록 부모 하나에 모아둔다.
-        _root = new GameObject("ProjectilePool").transform;
+        get
+        {
+            int total = 0;
+            foreach (PrefabPool<Projectile2D> pool in _pools.Values) total += pool.ActiveCount;
+            return total;
+        }
+    }
+
+    private readonly Dictionary<Projectile2D, PrefabPool<Projectile2D>> _pools = new();
+    private bool _isSubscribed;
+
+    private void Start()
+    {
+        // WeaponHandler가 런타임에 붙일 수도 있어 인스펙터 연결에 기대지 않는다.
+        if (_director == null) _director = FindFirstObjectByType<StageDirector>();
+
+        if (_director != null)
+        {
+            _director.OnStateChanged += HandleStageStateChanged;
+            _isSubscribed = true;
+        }
     }
 
     private void OnDestroy()
     {
-        foreach (ObjectPool<Projectile2D> pool in _pools.Values)
+        if (_isSubscribed && _director != null) _director.OnStateChanged -= HandleStageStateChanged;
+
+        foreach (PrefabPool<Projectile2D> pool in _pools.Values)
         {
             pool.Dispose();
         }
 
         _pools.Clear();
-        if (_root != null) Destroy(_root.gameObject);
     }
 
     public Projectile2D Get(Projectile2D prefab)
     {
         if (prefab == null) return null;
 
-        if (!_pools.TryGetValue(prefab, out ObjectPool<Projectile2D> pool))
+        if (!_pools.TryGetValue(prefab, out PrefabPool<Projectile2D> pool))
         {
-            pool = CreatePool(prefab);
+            pool = new PrefabPool<Projectile2D>(prefab, $"{prefab.name}Pool", _defaultCapacity, _maxSize);
             _pools.Add(prefab, pool);
         }
 
         return pool.Get();
     }
 
-    private ObjectPool<Projectile2D> CreatePool(Projectile2D prefab)
+    [Button, LabelText("투사체 전부 회수")]
+    public void ReleaseAll()
     {
-        // 반납 델리게이트가 자기 풀을 참조해야 하므로 지역 변수를 캡처해 나중에 채운다.
-        // 프리팹당 한 번만 만들어지므로 발사마다 할당이 생기지는 않는다.
-        ObjectPool<Projectile2D> pool = null;
-        Action<Projectile2D> release = projectile => pool.Release(projectile);
+        if (!Application.isPlaying) return;
 
-        pool = new ObjectPool<Projectile2D>(
-            createFunc: () =>
-            {
-                Projectile2D projectile = Instantiate(prefab, _root);
-                projectile.SetReleaseCallback(release);
-                return projectile;
-            },
-            actionOnGet: projectile => projectile.gameObject.SetActive(true),
-            actionOnRelease: projectile => projectile.gameObject.SetActive(false),
-            actionOnDestroy: projectile =>
-            {
-                if (projectile != null) Destroy(projectile.gameObject);
-            },
-            collectionCheck: true,
-            defaultCapacity: _defaultCapacity,
-            maxSize: _maxSize);
+        foreach (PrefabPool<Projectile2D> pool in _pools.Values)
+        {
+            pool.ReleaseAll();
+        }
+    }
 
-        return pool;
+    private void HandleStageStateChanged(StageState state)
+    {
+        if (state is StageState.Cleared or StageState.Failed) ReleaseAll();
     }
 }

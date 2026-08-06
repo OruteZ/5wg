@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using Alchemy.Inspector;
 using UnityEngine;
-using UnityEngine.Pool;
 
 /// <summary>
 /// 경험치 오브의 소유자. 드랍 요청을 받아 풀에서 꺼내 놓고, 스테이지가 끝나면 전부 회수한다.
@@ -25,32 +22,20 @@ public sealed class ExpOrbPool : MonoBehaviour
     [SerializeField, LabelText("최대 크기")] private int _maxSize = 512;
 
     [ShowInInspector, ReadOnly, LabelText("떠 있는 오브 수")]
-    private int ActiveCount => _activeOrbs.Count;
+    private int ActiveCount => _pool?.ActiveCount ?? 0;
 
-    private readonly List<ExpOrb> _activeOrbs = new();
-    private ObjectPool<ExpOrb> _pool;
-    private Action<ExpOrb> _releaseCallback;
-    private Transform _root;
+    private PrefabPool<ExpOrb> _pool;
     private bool _isSubscribed;
 
     private void Awake()
     {
-        _root = new GameObject("ExpOrbPool").transform;
+        if (_orbPrefab == null)
+        {
+            Debug.LogError($"[{nameof(ExpOrbPool)}] 오브 프리팹이 비어 있다. 경험치가 드랍되지 않는다.", this);
+            return;
+        }
 
-        // 델리게이트를 한 번만 만들어 재사용한다(드랍마다 GC 할당 방지).
-        _releaseCallback = ReleaseOrb;
-
-        _pool = new ObjectPool<ExpOrb>(
-            createFunc: CreateOrb,
-            actionOnGet: orb => orb.gameObject.SetActive(true),
-            actionOnRelease: orb => orb.gameObject.SetActive(false),
-            actionOnDestroy: orb =>
-            {
-                if (orb != null) Destroy(orb.gameObject);
-            },
-            collectionCheck: true,
-            defaultCapacity: _defaultCapacity,
-            maxSize: _maxSize);
+        _pool = new PrefabPool<ExpOrb>(_orbPrefab, "ExpOrbPool", _defaultCapacity, _maxSize);
     }
 
     private void Start()
@@ -76,16 +61,14 @@ public sealed class ExpOrbPool : MonoBehaviour
         if (_isSubscribed && _director != null) _director.OnStateChanged -= HandleStageStateChanged;
 
         _pool?.Dispose();
-        if (_root != null) Destroy(_root.gameObject);
     }
 
     /// <summary>지정 위치에 경험치 오브를 떨어뜨린다.</summary>
     public void Drop(Vector2 position, float value)
     {
-        if (value <= 0f || _orbPrefab == null || _collector == null) return;
+        if (value <= 0f || _pool == null || _collector == null) return;
 
         ExpOrb orb = _pool.Get();
-        _activeOrbs.Add(orb);
         orb.Spawn(position, value, _collector.transform, _collector);
     }
 
@@ -93,31 +76,12 @@ public sealed class ExpOrbPool : MonoBehaviour
     public void ReleaseAll()
     {
         if (!Application.isPlaying) return;
-
-        // 반납이 리스트를 수정하므로 뒤에서부터 훑는다.
-        for (int i = _activeOrbs.Count - 1; i >= 0; i--)
-        {
-            ReleaseOrb(_activeOrbs[i]);
-        }
+        _pool?.ReleaseAll();
     }
 
     private void HandleStageStateChanged(StageState state)
     {
         // 종료 후에도 남은 오브가 끌려와 경험치가 더 들어가는 걸 막는다.
         if (state is StageState.Cleared or StageState.Failed) ReleaseAll();
-    }
-
-    private ExpOrb CreateOrb()
-    {
-        ExpOrb orb = Instantiate(_orbPrefab, _root);
-        orb.SetReleaseCallback(_releaseCallback);
-        return orb;
-    }
-
-    private void ReleaseOrb(ExpOrb orb)
-    {
-        // 수집과 일괄 회수가 겹쳐도 같은 개체를 두 번 반납하지 않게 막는다.
-        if (!_activeOrbs.Remove(orb)) return;
-        _pool.Release(orb);
     }
 }

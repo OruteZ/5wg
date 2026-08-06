@@ -18,7 +18,7 @@ public sealed class WeaponHandler : MonoBehaviour
 
     [Title("서비스 (비우면 자동 생성)")]
     [SerializeField, LabelText("투사체 풀")] private ProjectilePool _projectilePool;
-    [SerializeField, LabelText("타겟 탐색")] private PhysicsTargetProvider _targetProvider;
+    [SerializeField, LabelText("타겟 탐색")] private RegistryTargetProvider _targetProvider;
     [SerializeField, LabelText("발사구 (비우면 자기 자신)")] private Transform _muzzle;
 
     [Title("시작 무기")]
@@ -103,7 +103,7 @@ public sealed class WeaponHandler : MonoBehaviour
 
         if (_targetProvider == null)
         {
-            _targetProvider = GetComponent<PhysicsTargetProvider>() ?? gameObject.AddComponent<PhysicsTargetProvider>();
+            _targetProvider = GetComponent<RegistryTargetProvider>() ?? gameObject.AddComponent<RegistryTargetProvider>();
         }
     }
 

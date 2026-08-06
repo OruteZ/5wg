@@ -159,6 +159,53 @@ Enemy2D.Die()
 - 종료 후 남은 오브가 끌려와 경험치가 더 들어가지 않도록 **풀이 디렉터 상태를 구독**해 회수한다.
   의존 방향은 Progression → Stage 한 방향이고, 디렉터는 경험치를 모른다.
 
+## 풀링
+
+`Scripts/Runtime/Core/PrefabPool.cs`
+
+프리팹 하나를 재사용하는 풀. 세 곳(적·경험치 오브·투사체)이 각자 들고 있던 보일러플레이트를 합쳤다.
+
+```csharp
+_pool = new PrefabPool<Enemy2D>(_enemyPrefab, "EnemyPool", capacity, maxSize,
+    onCreate: enemy => enemy.OnDiedWithReward += HandleEnemyDied);
+```
+
+| 담당 | 위치 |
+| --- | --- |
+| 인스턴스 수명, 활성 목록, 중복 반납 차단 | `PrefabPool<T>` |
+| 언제 꺼내고 언제 반납하는가 | 소유자 (스포너·오브 풀·투사체 풀) |
+
+### 결정 사항
+
+- **상속이 아니라 합성.** `EnemySpawner2D`는 풀이 아니라 풀을 *가진* 스포너다. is-a로 묶으면 깨진다.
+  `ProjectilePool`도 프리팹별로 풀을 여러 개 들기 때문에 상속으로는 표현되지 않는다.
+- MonoBehaviour가 아니라 순수 C# 클래스다. 무기 런타임을 순수 클래스로 둔 결정과 같은 이유.
+- 유틸은 **"프리팹 하나 → 인스턴스 목록"만** 담당한다. 스폰 주기·회수 정책을 파라미터로 빨아들이면
+  세 곳의 차이가 유틸로 새어나와 원래대로 돌아간다.
+- 개체당 한 번만 할 일(이벤트 구독)은 `onCreate` 훅으로 넘긴다.
+- 중복 반납 차단이 세 곳에서 제각각이던 걸 `Release`의 `_active.Remove` 반환값 검사 한 곳으로 모았다.
+
+### 이 통합으로 같이 고쳐진 것
+
+`ProjectilePool`만 활성 목록이 없어 `ReleaseAll`을 만들 수 없었다. 스테이지가 끝나면 적과 오브는
+회수되는데 **날아가던 탄만 계속 날아갔다.** 이제 투사체 풀도 디렉터 상태를 구독해 회수한다.
+
+## 조준 대상 탐색
+
+`Scripts/Runtime/Core/DamageableRegistry.cs`, `Weapons/Services/RegistryTargetProvider.cs`
+
+살아 있는 피격 대상을 정적 목록으로 들고, 조준은 그 목록을 훑어 고른다.
+기존 `PhysicsTargetProvider`(발사마다 `Physics2D.OverlapCircle`)를 대체한다.
+
+바꾼 이유는 쿼리 횟수다. 자동공격이라 발사가 서브비트마다 일어나고 무기가 6개까지 늘어나므로,
+발사 한 번에 오버랩 한 번이면 **(무기 수 × 서브비트)**로 불어난다. 대상이 수십 규모인 지금은
+목록을 직접 도는 쪽이 싸고 예측 가능하다.
+
+- 등록·해제는 `OnEnable`/`OnDisable`에서 한다. **풀이 개체를 껐다 켜는 것만으로 목록이 맞춰진다.**
+- 등록하는 쪽은 반드시 `IDamageable`이어야 한다. 조회 측이 그렇게 가정한다.
+  새로운 피격 대상(파괴 가능한 오브젝트 등)을 만들면 등록 두 줄을 잊지 말아야 한다.
+- 정적 목록이라 도메인 리로드를 끈 경우 플레이 모드를 나가도 남는다. `RuntimeInitializeOnLoadMethod`로 비운다.
+
 ## 카메라
 
 `Stage01`의 Main Camera는 `CinemachineBrain`만 들고, 실제 프레이밍은 `CM Player Camera`

@@ -3,7 +3,7 @@ using Alchemy.Inspector;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
-public sealed class Projectile2D : MonoBehaviour
+public sealed class Projectile2D : MonoBehaviour, IPooledObject<Projectile2D>
 {
     [Title("탄 설정")]
     [SerializeField, LabelText("속도 (units/sec)")] private float _speed = 14f;

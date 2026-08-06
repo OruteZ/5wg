@@ -3,7 +3,7 @@ using Alchemy.Inspector;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
-public sealed class Enemy2D : MonoBehaviour, IDamageable
+public sealed class Enemy2D : MonoBehaviour, IDamageable, IPooledObject<Enemy2D>
 {
     [Title("스탯")]
     [SerializeField, LabelText("최대 체력")] private float _maxHealth = 30f;
@@ -51,6 +51,11 @@ public sealed class Enemy2D : MonoBehaviour, IDamageable
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         if (_spriteRenderer != null) _baseColor = _spriteRenderer.color;
     }
+
+    // 풀이 개체를 껐다 켜는 것만으로 조준 대상 목록이 맞춰진다. 반납 시점을 따로 챙기지 않아도 된다.
+    private void OnEnable() => DamageableRegistry.Register(this);
+
+    private void OnDisable() => DamageableRegistry.Unregister(this);
 
     /// <summary>풀 생성 시 1회만 호출한다.</summary>
     public void SetReleaseCallback(Action<Enemy2D> release) => _release = release;
