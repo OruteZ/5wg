@@ -1,5 +1,6 @@
 using Alchemy.Inspector;
 using BeatTemplate;
+using FiveWG.Weapons;
 using FiveWG.Enemies;
 using FiveWG.Player;
 using FiveWG.Progression;
@@ -30,6 +31,7 @@ namespace FiveWG.Core
         [SerializeField, LabelText("적 스포너")] private EnemySpawner2D _spawner;
         [SerializeField, LabelText("경험치 오브 풀")] private ExpOrbPool _expOrbs;
         [SerializeField, LabelText("스테이지 디렉터")] private StageDirector _director;
+    [SerializeField, LabelText("투사체 풀")] private ProjectilePool _projectiles;
 
         private static SceneServices _instance;
 
@@ -57,6 +59,28 @@ namespace FiveWG.Core
         public EnemySpawner2D Spawner => Resolve(ref _spawner);
         public ExpOrbPool ExpOrbs => Resolve(ref _expOrbs);
         public StageDirector Director => Resolve(ref _director);
+
+    /// <summary>
+    /// 투사체 풀은 쏘는 주체가 아니라 씬이 소유한다. 여러 주체가 같은 탄 프리팹을 공유하고,
+    /// 주체가 죽어 사라져도 날아가던 탄은 회수돼야 하기 때문.
+    /// </summary>
+    public ProjectilePool Projectiles
+    {
+        get
+        {
+            if (_projectiles != null) return _projectiles;
+
+            _projectiles = FindFirstObjectByType<ProjectilePool>();
+            if (_projectiles == null)
+            {
+                Debug.LogWarning(
+                    $"[{nameof(SceneServices)}] 씬에 {nameof(ProjectilePool)}이 없어 임시로 만들었다. 씬에 두는 게 좋다.", this);
+                _projectiles = new GameObject(nameof(ProjectilePool)).AddComponent<ProjectilePool>();
+            }
+
+            return _projectiles;
+        }
+    }
 
         private void Awake()
         {

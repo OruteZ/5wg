@@ -102,15 +102,22 @@ namespace FiveWG.Player
 
         private void EnsureServices()
         {
-            // 프로토타입 단계에서 인스펙터 연결을 잊어도 동작하도록 같은 오브젝트에 붙여 만든다.
-            if (_projectilePool == null)
+            // 투사체 풀은 씬 소유다. 예전에는 여기서 플레이어에 AddComponent 했는데,
+            // 그러면 풀이 플레이어와 함께 사라지고 씬만 봐서는 구성이 보이지 않았다.
+            if (_projectilePool == null) _projectilePool = SceneServices.Instance.Projectiles;
+
+            // 반면 타겟 탐색은 소유자별 설정이다(겨눌 편이 주체마다 다르다). 그래서 여기 남는다.
+            if (_targetProvider == null)
             {
-                _projectilePool = GetComponent<ProjectilePool>() ?? gameObject.AddComponent<ProjectilePool>();
+                _targetProvider = GetComponent<RegistryTargetProvider>();
             }
 
             if (_targetProvider == null)
             {
-                _targetProvider = GetComponent<RegistryTargetProvider>() ?? gameObject.AddComponent<RegistryTargetProvider>();
+                Debug.LogWarning(
+                    $"[{nameof(WeaponHandler)}] {nameof(RegistryTargetProvider)}가 없어 자동으로 붙였다. 겨눌 편을 정하려면 씬에 명시하는 게 좋다.",
+                    this);
+                _targetProvider = gameObject.AddComponent<RegistryTargetProvider>();
             }
         }
 
