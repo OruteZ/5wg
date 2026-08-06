@@ -1,5 +1,22 @@
 # Architecture
 
+## 네임스페이스와 씬 서비스
+
+모든 런타임 코드는 폴더와 같은 이름의 `FiveWG.*` 네임스페이스에 있다
+(`FiveWG.Core` `Combat` `Enemies` `Player` `Progression` `Stage` `UI` `Weapons`).
+`Beat/`만 외부 템플릿 유래라 기존 `BeatTemplate`을 유지한다.
+
+asmdef는 두지 않았다. 의존 방향은 문서와 리뷰로 지킨다(→ 각 절의 "아는 것/모르는 것" 표).
+
+**씬에 하나뿐인 것은 `SceneServices`가 찾는다.** 예전에는 컴포넌트마다
+"인스펙터가 비어 있으면 `FindFirstObjectByType`"을 각자 들고 있었고 9개 파일 14곳까지 늘었다.
+문제는 배선 실수가 조용히 성공한다는 것이었다 — 실제로 리네임으로 참조가 끊겼는데 폴백이
+받아내 검증 중에야 발견했다. 이제 탐색은 `SceneServices` 한 곳에서만 일어나고,
+각 참조는 처음 요청될 때 채워지므로 컴포넌트끼리의 `Awake` 순서에 기대지 않는다.
+
+씬에 `SceneServices` 오브젝트를 두면 인스펙터로 명시 배선할 수 있다(Stage01은 6개 전부 연결됨).
+없으면 요청 시점에 임시 창구를 만들어 자동 탐색한다.
+
 이 문서는 **스테이지 플레이 루프**(시작 → 진행 → 종료 → 다음 씬)의 구조를 다룬다.
 무기·박자 시스템의 내부 구조는 `progress.md`에 있고, 여기서는 스테이지가 그것들을 어떻게 켜고 끄는지만 다룬다.
 
@@ -192,9 +209,9 @@ _pool = new PrefabPool<Enemy2D>(_enemyPrefab, "EnemyPool", capacity, maxSize,
 
 ## 조준 대상 탐색
 
-`Scripts/Runtime/Core/DamageableRegistry.cs`, `Weapons/Services/RegistryTargetProvider.cs`
+`Scripts/Runtime/Core/TargetRegistry.cs`, `Core/Faction.cs`, `Weapons/Services/RegistryTargetProvider.cs`
 
-살아 있는 피격 대상을 정적 목록으로 들고, 조준은 그 목록을 훑어 고른다.
+살아 있는 피격 대상을 **편(`Faction`)별 정적 목록**으로 들고, 조준은 그 목록을 훑어 고른다.
 기존 `PhysicsTargetProvider`(발사마다 `Physics2D.OverlapCircle`)를 대체한다.
 
 바꾼 이유는 쿼리 횟수다. 자동공격이라 발사가 서브비트마다 일어나고 무기가 6개까지 늘어나므로,
@@ -205,6 +222,18 @@ _pool = new PrefabPool<Enemy2D>(_enemyPrefab, "EnemyPool", capacity, maxSize,
 - 등록하는 쪽은 반드시 `IDamageable`이어야 한다. 조회 측이 그렇게 가정한다.
   새로운 피격 대상(파괴 가능한 오브젝트 등)을 만들면 등록 두 줄을 잊지 말아야 한다.
 - 정적 목록이라 도메인 리로드를 끈 경우 플레이 모드를 나가도 남는다. `RuntimeInitializeOnLoadMethod`로 비운다.
+
+### 편(Faction)
+
+아군 배제를 **계층(`transform.root`) 비교가 아니라 `Faction`으로** 한다. 계층 비교는 소환수·아군
+NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너진다.
+
+- `IDamageable.Faction` — 모든 피격 대상이 편을 밝힌다. `Enemy2D`는 Enemy, `PlayerController`는 Player.
+- `RegistryTargetProvider._targetFaction` — 겨눌 편을 인스펙터에서 정한다(기본 Enemy).
+  적이 무기를 들면 이 값만 Player로 바꾸면 된다.
+- `WeaponContext.Faction` — 쏘는 쪽의 편. `Projectile2D`가 같은 편을 그냥 통과시킨다.
+  발사구 자해 방지(owner 계층 통과)는 편 설정과 무관하게 별개로 남겨둔다.
+- 플레이어도 레지스트리에 등록된다. 이름이 "적 목록"이 아니라 대상 목록인 이유다.
 
 ## 물리 레이어
 
