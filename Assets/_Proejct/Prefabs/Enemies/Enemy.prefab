@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8548960350942275044}
   - component: {fileID: 3829199289749732103}
   - component: {fileID: 1825767638987215925}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,5 +171,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Prototype.Enemy2D
   _maxHealth: 30
   _moveSpeed: 2
+  _expReward: 1
+  _contactDamage: 10
+  _contactInterval: 0.8
   _hitColor: {r: 1, g: 1, b: 1, a: 1}
   _hitFlashDuration: 0.08

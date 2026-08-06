@@ -120,7 +120,14 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
 - 조준 대상 탐색을 물리 오버랩에서 `DamageableRegistry` 기반으로 바꿨다.
   발사마다 쿼리를 돌던 걸 목록 순회로 대체 — 무기가 6개로 늘면 차이가 커진다.
 
-구조와 결정 사항은 `architecture.md`의 "풀링", "조준 대상 탐색" 절에 있다.
+- 적 200마리로 부하를 걸고 프로파일링한 결과 **병목은 물리였다.** 적이 전부 Default 레이어라
+  서로 밀며 접촉점 680개를 유지하고 있었다. Enemy/Projectile 레이어를 나누고 같은 레이어끼리
+  충돌을 껐다 — 접촉 680 → 0, 메인스레드 2.32ms → 1.0~1.5ms.
+- 같은 조건에서 적 200개의 `Update`/`FixedUpdate` 콜백을 전부 꺼봤지만 차이가 노이즈 수준이었다.
+  **매니저 루프로 합치는 리팩터링은 지금 이득이 없다.**
+- HUD가 매 프레임 만들던 문자열 2개를 값이 바뀔 때만 만들도록 고쳤다.
+
+구조와 결정 사항은 `architecture.md`의 "풀링", "조준 대상 탐색", "물리 레이어" 절에 있다.
 
 ## 해결한 문제
 
@@ -142,7 +149,6 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
 - **무기별 비트 패턴(기획서 필요)** — 확정되면 `IFireTiming` 구현체와 `WeaponLevelData` 필드를 채운다.
   `WeaponDefinition`의 `_intervalBeats`/`_offsetBeats`는 그때 제거될 임시 필드.
 - 무기가 아직 `ProjectileWeapon` 1종뿐. 나머지 5종의 형태(장판·오라·근접 등)가 정해져야 한다.
-- 레이어 마스크는 아직 `~0` 기본값. 코드로 막아뒀지만 성능을 위해 적 레이어는 지정하는 게 좋다.
 - `Camera.main`을 `WeaponHandler.Awake`에서 한 번만 잡는다. 런타임에 카메라를 바꾸면 참조가 낡는다.
 - `Prototype_PlayerMovement.unity`는 `BpmClock`·시작 무기가 비어 있어 발사되지 않는다.
 - **스테이지 종료 조건이 임시**(`BeatTimelineEndSource`, 8마디). 기획이 정해지면 실제 곡을 소유하는

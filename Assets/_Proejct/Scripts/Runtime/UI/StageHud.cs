@@ -21,6 +21,10 @@ public sealed class StageHud : MonoBehaviour
     private PlayerController _player;
     private PlayerExp _exp;
 
+    // 마지막으로 화면에 쓴 값. 같으면 문자열을 다시 만들지 않는다.
+    private int _shownHealth = int.MinValue;
+    private int _shownLevel = int.MinValue;
+
     private void Awake()
     {
         if (_director == null) _director = FindFirstObjectByType<StageDirector>();
@@ -44,9 +48,16 @@ public sealed class StageHud : MonoBehaviour
             _healthBar.value = _player.HealthNormalized;
         }
 
+        // 텍스트는 값이 실제로 바뀔 때만 다시 만든다. 매 프레임 문자열을 만들면
+        // 눈에 보이는 변화 없이 GC만 쌓인다. 슬라이더는 값 대입뿐이라 그냥 매 프레임 넣는다.
         if (_healthLabel != null && _player != null)
         {
-            _healthLabel.text = $"HP {Mathf.CeilToInt(_player.Health)} / {Mathf.CeilToInt(_player.MaxHealth)}";
+            int health = Mathf.CeilToInt(_player.Health);
+            if (health != _shownHealth)
+            {
+                _shownHealth = health;
+                _healthLabel.text = $"HP {health} / {Mathf.CeilToInt(_player.MaxHealth)}";
+            }
         }
 
         if (_progressBar != null)
@@ -59,9 +70,10 @@ public sealed class StageHud : MonoBehaviour
             _expBar.value = _exp.Progress;
         }
 
-        if (_levelLabel != null && _exp != null)
+        if (_levelLabel != null && _exp != null && _exp.Level != _shownLevel)
         {
-            _levelLabel.text = $"Lv {_exp.Level}";
+            _shownLevel = _exp.Level;
+            _levelLabel.text = $"Lv {_shownLevel}";
         }
     }
 }
