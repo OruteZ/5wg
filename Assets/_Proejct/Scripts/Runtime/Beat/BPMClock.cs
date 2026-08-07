@@ -16,7 +16,9 @@ namespace BeatTemplate
     public class BpmClock : MonoBehaviour
     {
         [Header("Data")]
-        [SerializeField] private int bpm = 120;
+        // 실수다. 곡이 정확히 정수 BPM인 경우가 드물고, 128.4를 128로 돌리면 0.3% 어긋나
+        // 3분짜리 곡에서 0.6초가 밀린다 — 16분음표 하나가 117ms이니 곡 후반이 무너진다.
+        [SerializeField] private double bpm = 120.0;
         [SerializeField, Min(1)] private int subPerBeat = 4;
 
         // 끄면 Play() 버튼이나 외부 호출 전까지 Idle로 남는다.
@@ -48,7 +50,7 @@ namespace BeatTemplate
         }
 
         // 외부에서 박 그리드를 재구성하려면 bpm/subPerBeat가 필요하다(예: WeaponHandler의 BeatTick).
-        public int Bpm => bpm;
+        public double Bpm => bpm;
         public int SubPerBeat => subPerBeat;
 
         public int CurrentBeat
@@ -104,6 +106,23 @@ namespace BeatTemplate
                 default:
                     return;
             }
+        }
+
+        /// <summary>
+        /// 비트 0을 지정한 DSP 시각에 앵커하고 새로 시작한다. 그 시각은 <b>미래여도 된다.</b>
+        ///
+        /// 곡과 클록을 붙이려면 이게 필요하다. <c>AudioSource.PlayScheduled</c>는 예약 시각을
+        /// 받는데, <see cref="Play"/>는 호출 순간을 비트 0으로 잡아버려서 둘을 같은 시각에
+        /// 출발시킬 방법이 없다. 오디오를 지금 당장 틀면 스케줄링이 샘플 정확도를 잃는다.
+        ///
+        /// 앵커 이전에는 <see cref="ElapsedSec"/>가 0으로 눌려 비트 0에 머문다.
+        /// </summary>
+        public void PlayAt(double dspBeat0)
+        {
+            _dspBeat0 = dspBeat0;
+            _pausedAccumSec = 0.0;
+            _pauseDspStart = 0.0;
+            _beatState = BeatState.Playing;
         }
 
         [Button]
