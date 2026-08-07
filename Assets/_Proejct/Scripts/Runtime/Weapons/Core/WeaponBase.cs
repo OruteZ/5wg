@@ -59,22 +59,22 @@ namespace FiveWG.Weapons
         /// </summary>
         protected virtual Vector2 ResolveAimDirection(in FireContext context)
         {
-            if (AimHelper.TryAimAtNearestTarget(Context.Targets, context.Origin, Stats.Range, out Vector2 toTarget))
+            if (AimHelper.TryAimAtNearestTarget(Context.targets, context.origin, Stats.Range, out Vector2 toTarget))
             {
                 return toTarget;
             }
 
-            if (AimHelper.TryAimAtMouse(Context.Camera, context.Origin, out Vector2 toMouse))
+            if (AimHelper.TryAimAtMouse(Context.camera, context.origin, out Vector2 toMouse))
             {
                 return toMouse;
             }
 
-            if (AimHelper.TryAimAtStick(context.AimInput, out Vector2 toStick))
+            if (AimHelper.TryAimAtStick(context.aimInput, out Vector2 toStick))
             {
                 return toStick;
             }
 
-            return context.FacingDirection;
+            return context.facingDirection;
         }
 
         public void Fire(in FireContext context) => OnFire(context);

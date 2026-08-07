@@ -12,11 +12,6 @@ namespace FiveWG.Core
     /// <summary>
     /// 씬에 하나뿐인 것들을 찾는 창구.
     ///
-    /// 예전에는 컴포넌트마다 "인스펙터가 비어 있으면 <c>FindFirstObjectByType</c>"을 각자 들고 있었다.
-    /// 9개 파일 14곳으로 늘어나면서 두 가지가 문제가 됐다.
-    /// - 배선 실수가 조용히 성공한다. 실제로 리네임으로 참조가 끊겼는데 폴백이 받아내 눈치채기 어려웠다.
-    /// - 각 컴포넌트가 "Awake냐 Start냐"를 알아서 지켜야 했다.
-    ///
     /// 이제 탐색은 여기 한 곳에서만 일어난다. 각 참조는 처음 요청될 때 채워지므로
     /// 컴포넌트끼리의 Awake 순서에 기대지 않는다.
     ///
@@ -28,10 +23,10 @@ namespace FiveWG.Core
         [SerializeField, LabelText("박자 클록")] private BpmClock _clock;
         [SerializeField, LabelText("플레이어")] private PlayerController _player;
         [SerializeField, LabelText("플레이어 경험치")] private PlayerExp _playerExp;
-        [SerializeField, LabelText("적 스포너")] private EnemySpawner2D _spawner;
+        [SerializeField, LabelText("적 스포너")] private EnemySpawner _spawner;
         [SerializeField, LabelText("경험치 오브 풀")] private ExpOrbPool _expOrbs;
         [SerializeField, LabelText("스테이지 디렉터")] private StageDirector _director;
-    [SerializeField, LabelText("투사체 풀")] private ProjectilePool _projectiles;
+        [SerializeField, LabelText("투사체 풀")] private ProjectilePool _projectiles;
 
         private static SceneServices _instance;
 
@@ -56,7 +51,7 @@ namespace FiveWG.Core
         public BpmClock Clock => Resolve(ref _clock);
         public PlayerController Player => Resolve(ref _player);
         public PlayerExp PlayerExp => Resolve(ref _playerExp);
-        public EnemySpawner2D Spawner => Resolve(ref _spawner);
+        public EnemySpawner Spawner => Resolve(ref _spawner);
         public ExpOrbPool ExpOrbs => Resolve(ref _expOrbs);
         public StageDirector Director => Resolve(ref _director);
 

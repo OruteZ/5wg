@@ -8,10 +8,10 @@ using UnityEngine;
 
 namespace FiveWG.Enemies
 {
-    public sealed class EnemySpawner2D : MonoBehaviour
+    public sealed class EnemySpawner : MonoBehaviour
     {
         [Title("대상")]
-        [SerializeField, Required("적 프리팹")] private Enemy2D _enemyPrefab;
+        [SerializeField, Required("적 프리팹")] private Enemy _enemyPrefab;
         [SerializeField, LabelText("추적 대상 (비우면 자동 탐색)")] private Transform _target;
 
         [Title("보상")]
@@ -33,19 +33,19 @@ namespace FiveWG.Enemies
         [ShowInInspector, ReadOnly, LabelText("현재 살아있는 수")]
         private int AliveCount => _pool?.ActiveCount ?? 0;
 
-        private PrefabPool<Enemy2D> _pool;
+        private PrefabPool<Enemy> _pool;
         private CancellationTokenSource _cts;
 
         private void Awake()
         {
             if (_enemyPrefab == null)
             {
-                Debug.LogError($"[{nameof(EnemySpawner2D)}] 적 프리팹이 비어 있다. 스폰이 일어나지 않는다.", this);
+                Debug.LogError($"[{nameof(EnemySpawner)}] 적 프리팹이 비어 있다. 스폰이 일어나지 않는다.", this);
                 return;
             }
 
             // 적을 만드는 곳이 여기뿐이라 사망 구독도 생성 시 한 번만 건다. 개체는 풀과 함께 파괴된다.
-            _pool = new PrefabPool<Enemy2D>(
+            _pool = new PrefabPool<Enemy>(
                 _enemyPrefab, "EnemyPool", _poolDefaultCapacity, _poolMaxSize,
                 onCreate: enemy => enemy.OnDiedWithReward += HandleEnemyDied);
         }
@@ -116,7 +116,7 @@ namespace FiveWG.Enemies
             float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
             Vector2 offset = new(Mathf.Cos(angle) * _spawnRadius, Mathf.Sin(angle) * _spawnRadius);
 
-            Enemy2D enemy = _pool.Get();
+            Enemy enemy = _pool.Get();
             enemy.Spawn((Vector2)_target.position + offset, _target);
         }
 

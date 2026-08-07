@@ -6,7 +6,7 @@ using UnityEngine;
 namespace FiveWG.Enemies
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
-    public sealed class Enemy2D : MonoBehaviour, IDamageable, IPooledObject<Enemy2D>
+    public sealed class Enemy : MonoBehaviour, IDamageable, IPooledObject<Enemy>
     {
         [Title("스탯")]
         [SerializeField, LabelText("최대 체력")] private float _maxHealth = 30f;
@@ -31,7 +31,7 @@ namespace FiveWG.Enemies
 
         private Rigidbody2D _rigidbody;
         private SpriteRenderer _spriteRenderer;
-        private Action<Enemy2D> _release;
+        private Action<Enemy> _release;
         private Transform _target;
         private Color _baseColor;
         private float _health;
@@ -63,7 +63,7 @@ namespace FiveWG.Enemies
         private void OnDisable() => TargetRegistry.Unregister(this, Faction);
 
         /// <summary>풀 생성 시 1회만 호출한다.</summary>
-        public void SetReleaseCallback(Action<Enemy2D> release) => _release = release;
+        public void SetReleaseCallback(Action<Enemy> release) => _release = release;
 
         /// <summary>풀에서 꺼낼 때마다 호출한다. 재사용되므로 상태를 전부 되돌린다.</summary>
         public void Spawn(Vector2 position, Transform target)

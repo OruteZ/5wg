@@ -27,10 +27,17 @@ namespace FiveWG.Weapons
 
         public WeaponLevelData GetLevelData(int level)
         {
-            if (_levels is not { Length: > 0 }) return WeaponLevelData.Default;
-
-            return _levels[Mathf.Clamp(level, 1, _levels.Length) - 1].Sanitized();
+            return _levels[Mathf.Clamp(level, 1, _levels.Length) - 1];
         }
+
+#if UNITY_EDITOR
+        // 표를 저장할 때 한 번만 보정한다. 예전엔 발사마다 돌았다.
+        private void OnValidate()
+        {
+            if (_levels == null) return;
+            for (int i = 0; i < _levels.Length; i++) _levels[i] = _levels[i].Sanitized();
+        }
+#endif
 
         /// <summary>런타임 무기 인스턴스를 만든다. 무기 종류마다 구현한다.</summary>
         public abstract IWeapon CreateRuntime();

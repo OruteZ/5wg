@@ -22,7 +22,7 @@ namespace FiveWG.Core
     /// 스폰 주기·회수 정책 같은 걸 여기로 끌어오면 세 곳의 차이가 파라미터로 새어나와 원래대로 돌아간다.
     ///
     /// MonoBehaviour가 아니라 소유자가 필드로 갖는다(상속이 아닌 합성).
-    /// EnemySpawner2D처럼 "풀이 아닌데 풀을 가진" 쪽이 있어서 is-a로 묶으면 안 되기 때문이다.
+    /// EnemySpawner처럼 "풀이 아닌데 풀을 가진" 쪽이 있어서 is-a로 묶으면 안 되기 때문이다.
     /// </summary>
     public sealed class PrefabPool<T> : IDisposable where T : Component, IPooledObject<T>
     {

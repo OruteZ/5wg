@@ -12,10 +12,10 @@ namespace FiveWG.Weapons
     public sealed class ProjectileWeaponDefinition : WeaponDefinition
     {
         [Title("투사체")]
-        [SerializeField, Required("투사체 프리팹")] private Projectile2D _projectilePrefab;
+        [SerializeField, Required("투사체 프리팹")] private Projectile _projectilePrefab;
         [SerializeField, LabelText("탄퍼짐 각 (도, 전체 폭)")] private float _spreadDegrees;
 
-        public Projectile2D ProjectilePrefab => _projectilePrefab;
+        public Projectile ProjectilePrefab => _projectilePrefab;
         public float SpreadDegrees => _spreadDegrees;
 
         public override IWeapon CreateRuntime() => new ProjectileWeapon(this, CreateTiming());

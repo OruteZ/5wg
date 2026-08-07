@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Alchemy.Inspector;
 using BeatTemplate;
 using FiveWG.Core;
@@ -102,8 +103,6 @@ namespace FiveWG.Player
 
         private void EnsureServices()
         {
-            // 투사체 풀은 씬 소유다. 예전에는 여기서 플레이어에 AddComponent 했는데,
-            // 그러면 풀이 플레이어와 함께 사라지고 씬만 봐서는 구성이 보이지 않았다.
             if (_projectilePool == null) _projectilePool = SceneServices.Instance.Projectiles;
 
             // 반면 타겟 탐색은 소유자별 설정이다(겨눌 편이 주체마다 다르다). 그래서 여기 남는다.
@@ -234,6 +233,13 @@ namespace FiveWG.Player
             {
                 Inventory.TryUpgradeAt(slot);
             }
+
+            // 인스펙터의 ShowInInspector 값은 UI를 만들 때 한 번만 읽혀서 눌러도 화면이 그대로다.
+            // 콘솔은 항상 갱신되므로 결과를 여기로 뱉는다.
+            Debug.Log(string.Join("\n", Enumerable.Range(0, WeaponInventory.Capacity).Select(i =>
+                Inventory.GetAt(i) is { } w
+                    ? $"{i}: {w.Definition.DisplayName} Lv {w.Level}/{w.Definition.MaxLevel}"
+                    : $"{i}: -")), this);
         }
     }
 }
