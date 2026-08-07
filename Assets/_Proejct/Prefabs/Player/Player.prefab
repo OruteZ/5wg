@@ -208,7 +208,12 @@ MonoBehaviour:
   _targetProvider: {fileID: 7253805546903344817}
   _muzzle: {fileID: 0}
   _startingWeapons:
-  - {fileID: 11400000, guid: 7bdddf565aab86b4d9ada8e8ddc9e128, type: 2}
+  - {fileID: 11400000, guid: 5e64ea2b0ecdc884eba9e45aa0ff346b, type: 2}
+  - {fileID: 11400000, guid: d1741da2f02ed3c40bd829828810568b, type: 2}
+  - {fileID: 11400000, guid: 0a25cf07af3349b46892847ca8892fd9, type: 2}
+  - {fileID: 11400000, guid: 0416ca9687b96f44b883204412321e40, type: 2}
+  - {fileID: 11400000, guid: 000669c129f14d345abb6f85b628c8b6, type: 2}
+  - {fileID: 11400000, guid: 673a58f023beaa940854b522e4a6f065, type: 2}
 --- !u!114 &1718601790611919452
 MonoBehaviour:
   m_ObjectHideFlags: 0

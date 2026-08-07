@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06cb7583c8ae5234b832d66d124249df, type: 3}
+  m_Name: Bass
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.AreaWeaponDefinition
+  _displayName: "\uBCA0\uC774\uC2A4"
+  _icon: {fileID: 0}
+  _levels:
+  - Damage: 3
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 0
+    AreaRadius: 2
+    ProjectileScale: 1
+    Duration: 0.5
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 0
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  - Damage: 4
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 0
+    AreaRadius: 2.2
+    ProjectileScale: 1
+    Duration: 0.5
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 0
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  - Damage: 5
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 0
+    AreaRadius: 2.4
+    ProjectileScale: 1
+    Duration: 0.5
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 0
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  - Damage: 6
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 0
+    AreaRadius: 2.6
+    ProjectileScale: 1
+    Duration: 0.5
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 0
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  - Damage: 8
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 0
+    AreaRadius: 3
+    ProjectileScale: 1
+    Duration: 0.5
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 0
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  _intervalBeats: 1
+  _offsetBeats: 0
+  _burstCount: 1
+  _burstSubStep: 1
+  _fieldPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
+  _placement: 0
+  _followOwner: 1
+  _tickInterval: 0.25

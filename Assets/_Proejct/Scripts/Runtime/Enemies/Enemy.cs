@@ -26,6 +26,9 @@ namespace FiveWG.Enemies
         [SerializeField, LabelText("피격 시 색")] private Color _hitColor = Color.white;
         [SerializeField, LabelText("피격 색 지속 (sec)")] private float _hitFlashDuration = 0.08f;
 
+        // 넉백 세기는 무기 스탯이 정한다. 여기 있는 건 "얼마나 오래 밀려나는가"뿐이다.
+        [SerializeField, LabelText("넉백 지속 (sec)")] private float _knockbackDuration = 0.15f;
+
         [ShowInInspector, ReadOnly, LabelText("현재 체력")]
         private float CurrentHealth => _health;
 
@@ -37,6 +40,8 @@ namespace FiveWG.Enemies
         private float _health;
         private float _hitFlashRemaining;
         private float _contactCooldown;
+        private Vector2 _knockbackVelocity;
+        private float _knockbackRemaining;
         private bool _isDead;
 
         /// <summary>
@@ -74,6 +79,8 @@ namespace FiveWG.Enemies
             _isDead = false;
             _hitFlashRemaining = 0f;
             _contactCooldown = 0f;
+            _knockbackRemaining = 0f;
+            _knockbackVelocity = Vector2.zero;
 
             if (_spriteRenderer != null) _spriteRenderer.color = _baseColor;
         }
@@ -87,6 +94,18 @@ namespace FiveWG.Enemies
             if (_spriteRenderer != null) _spriteRenderer.color = _hitColor;
 
             if (_health <= 0f) Die();
+        }
+
+        /// <summary>
+        /// FixedUpdate가 추격 속도를 매 프레임 통째로 덮어쓰므로 AddForce로는 한 프레임도 밀리지 않는다.
+        /// 그래서 힘이 아니라 "추격을 잠깐 밀어내기로 갈아끼우는" 방식으로 넣는다.
+        /// </summary>
+        public void ApplyKnockback(Vector2 impulse)
+        {
+            if (_isDead || impulse.sqrMagnitude <= 0.0001f || _knockbackDuration <= 0f) return;
+
+            _knockbackVelocity = impulse;
+            _knockbackRemaining = _knockbackDuration;
         }
 
         private void OnTriggerEnter2D(Collider2D other) => TryContactDamage(other);
@@ -122,6 +141,13 @@ namespace FiveWG.Enemies
 
         private void FixedUpdate()
         {
+            if (_knockbackRemaining > 0f)
+            {
+                _knockbackRemaining -= Time.fixedDeltaTime;
+                _rigidbody.linearVelocity = _knockbackVelocity;
+                return;
+            }
+
             if (_isDead || _target == null)
             {
                 _rigidbody.linearVelocity = Vector2.zero;
