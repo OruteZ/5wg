@@ -24,6 +24,11 @@ asmdef는 두지 않았다. 의존 방향은 문서와 리뷰로 지킨다(→ �
 | `ProjectilePool` | 씬 (`SceneServices` 오브젝트) | 여러 주체가 같은 탄을 공유하고, 주체가 죽어도 날아가던 탄은 회수돼야 한다 |
 | `RegistryTargetProvider` | 쏘는 주체 (플레이어) | 겨눌 편이 주체마다 다르다 |
 
+`ProjectilePool`은 이름과 달리 **투사체와 영역(장판·충격파) 두 부류를 함께 소유한다.**
+부류가 늘 때마다 씬에 풀 컴포넌트를 하나씩 늘리지 않으려고 한 곳에 모았다. 프리팹별 풀을
+고르는 로직은 `PrefabPoolSet<T>`(순수 C#)로 빠져 있어 부류마다 같은 코드를 다시 쓰지 않는다.
+이름은 투사체만 담당하던 시절 그대로다 — 씬·프리팹이 GUID로 참조하고 있어 리네임은 따로 한다.
+
 예전에는 `WeaponHandler`가 둘 다 플레이어에 `AddComponent` 했다. 그러면 투사체 풀이 플레이어와
 함께 사라지고, 씬만 봐서는 구성이 보이지 않았다.
 
@@ -35,15 +40,25 @@ asmdef는 두지 않았다. 의존 방향은 문서와 리뷰로 지킨다(→ �
 씬 참조가 필요한 값(`_clock` 등)은 프리팹 에셋에서 비어 있고, 런타임에 `SceneServices`가 채운다.
 씬별로 다르게 하고 싶으면 인스턴스 오버라이드로 덮는다.
 
-이 문서는 **스테이지 플레이 루프**(시작 → 진행 → 종료 → 다음 씬)의 구조를 다룬다.
-무기·박자 시스템의 내부 구조는 `progress.md`에 있고, 여기서는 스테이지가 그것들을 어떻게 켜고 끄는지만 다룬다.
+---
 
-## 한 줄 요약
+여기부터는 축별 구조다. 아래 순서로 읽으면 된다.
+
+| 절 | 다루는 것 |
+| --- | --- |
+| 스테이지 플레이 루프 | 시작 → 진행 → 종료 → 다음 씬. 무엇이 무엇을 켜고 끄는가 |
+| 사망 판정 | 접촉 데미지가 오가는 경로 |
+| 성장 | 경험치 오브 → 레벨업 → 카드 선택 |
+| 풀링 / 조준 대상 탐색 / 물리 레이어 | 개체 수명과 탐색. 측정 결과 포함 |
+| 무기 스탯 | 15축의 계약, 무엇이 실제로 소비되는가 |
+| 카메라 | Cinemachine 구성 |
+
+## 스테이지 플레이 루프
 
 `StageDirector`는 **상태만** 소유한다. "언제 끝나는가"는 `StageEndSource`가, "무엇을 보여주는가"는 UI가,
 "어디로 가는가"는 `GameFlow`가 안다. 넷은 서로의 내부를 모른다.
 
-## 레이어
+### 레이어
 
 | 레이어 | 타입 | 아는 것 | 모르는 것 |
 | --- | --- | --- | --- |
@@ -54,9 +69,9 @@ asmdef는 두지 않았다. 의존 방향은 문서와 리뷰로 지킨다(→ �
 
 의존은 한 방향으로만 흐른다. **전투 코드(무기·적·플레이어)는 스테이지의 존재를 모른다.**
 디렉터가 기존에 뚫려 있던 스위치(`WeaponHandler.AttackEnabled`, `PlayerController.ControlEnabled`,
-`EnemySpawner2D.SetSpawning`)를 누를 뿐이다.
+`EnemySpawner.SetSpawning`)를 누를 뿐이다.
 
-## 파일
+### 파일
 
 ```
 Scripts/Runtime/
@@ -73,7 +88,7 @@ Scripts/Runtime/
     MainMenuView.cs          START / QUIT
 ```
 
-## 시작 시퀀스
+### 시작 시퀀스
 
 ```
 StageDirector.Awake
@@ -91,7 +106,7 @@ StageDirector.Start
 `Awake`가 아니라 `Start`에서 소스를 묶는 이유는, 다른 컴포넌트의 `Awake` 초기화가 끝난 뒤여야
 `PlayerController.OnDied` 같은 이벤트 구독이 안전하기 때문이다.
 
-## 종료 시퀀스
+### 종료 시퀀스
 
 ```
 어떤 소스든 RequestClear() / RequestFail()
@@ -107,7 +122,7 @@ StageDirector.Start
 **`Time.timeScale`을 쓰지 않는다.** 클록이 `AudioSettings.dspTime` 기준이라 timeScale을 건드려도
 박은 계속 가고, 오히려 비트 그리드와 화면이 어긋난다. 그래서 축별로 개별 차단한다.
 
-## 씬 흐름
+### 씬 흐름
 
 ```
 MainMenu ──START──> Stage01 ──클리어/사망──> 결과 오버레이 ──RETRY──> Stage01 (씬 재로드)
@@ -119,9 +134,9 @@ MainMenu ──START──> Stage01 ──클리어/사망──> 결과 오버�
 리셋 경로를 만들지 않기 위해서다. 씬 이름 문자열은 `GameFlow`만 안다. Build Settings 등록이
 곧 계약이므로, 씬 이름을 바꾸면 `GameFlow`의 상수와 Build Settings를 함께 고쳐야 한다.
 
-## 확장 지점
+### 확장 지점
 
-### 종료 조건을 바꾸려면
+#### 종료 조건을 바꾸려면
 
 `StageEndSource`를 상속해 씬의 컴포넌트만 갈아끼운다. 디렉터·UI·스포너는 건드리지 않는다.
 
@@ -138,19 +153,19 @@ public sealed class MusicOrchestrator : StageEndSource
 여러 개를 동시에 두면 **먼저 끝을 알린 쪽이 이긴다**(OR 조건). AND 조건이 필요해지면
 소스를 합성하는 소스를 하나 만드는 쪽이 디렉터를 고치는 것보다 싸다.
 
-### 진행도의 의미
+#### 진행도의 의미
 
 `StageDirector.Progress`는 소스들이 보고한 값 중 **최댓값**이다. 진행도 개념이 없는 소스
 (`PlayerDeathEndSource`)는 0을 반환해 계산에 영향을 주지 않는다.
 
-### 전투를 잠깐 멈추려면
+#### 전투를 잠깐 멈추려면
 
 상점·컷신처럼 스테이지를 끝내지 않고 전투만 멈추는 경우는 `WeaponHandler.AttackEnabled`나
 `IFireGate` 등록으로 처리한다. 디렉터의 상태를 건드리지 않는다.
 
 ## 사망 판정
 
-`Enemy2D`가 트리거 접촉으로 `IDamageable.TakeDamage`를 호출한다. 상대의 구체 타입은 보지 않는다.
+`Enemy`가 트리거 접촉으로 `IDamageable.TakeDamage`를 호출한다. 상대의 구체 타입은 보지 않는다.
 
 - 플레이어 콜라이더는 **트리거**, 적 콜라이더는 아니다 → 둘이 겹칠 때만 `OnTrigger*2D`가 온다.
 - 적끼리는 둘 다 트리거가 아니라 이 경로로 오지 않는다.
@@ -162,8 +177,7 @@ public sealed class MusicOrchestrator : StageEndSource
 `Scripts/Runtime/Progression/`
 
 적이 죽은 자리에 경험치 오브가 떨어지고, 플레이어가 가까이 가면 끌려와 수집된다.
-누적이 요구량을 넘으면 레벨이 오른다. **레벨업 시 무엇을 강화할지는 아직 아무도 모른다** —
-`PlayerExp`는 이벤트만 쏘고 끝난다(업그레이드 UI는 다음 브랜치).
+누적이 요구량을 넘으면 레벨이 오르고, 레벨업마다 카드 3장 중 하나를 고른다.
 
 | 타입 | 역할 |
 | --- | --- |
@@ -171,13 +185,27 @@ public sealed class MusicOrchestrator : StageEndSource
 | `PlayerExp` | 누적·레벨 계산. `OnLeveledUp` / `OnExpChanged`만 발행 |
 | `ExpOrb` | 픽업. 자석 반경에 들어오면 가속하며 끌려온다 |
 | `ExpOrbPool` | 오브 소유자. 드랍 요청을 받고, 스테이지 종료 시 전부 회수 |
+| `LevelUpDraft` | 카드 후보를 뽑는 규칙. 순수 static |
+| `LevelUpOption` | 카드 한 장. 무기와 오르기 전 레벨. **적용까지 자기가 안다** |
+| `LevelUpCardView` | 큐와 화면. 후보가 비었을 때의 보상도 여기 규칙이다 |
+
+`PlayerExp`는 여전히 레벨업 이벤트만 쏜다. 무엇을 강화할지는 `LevelUpDraft`가 정하고
+적용은 `LevelUpOption.Apply`가 한다.
+
+**소모성 보상(힐)은 카드가 아니다.** 고를 것이 없는 회차는 카드를 아예 띄우지 않으므로
+"카드 한 장"으로 만들 이유가 없다. 예전에는 `LevelUpOption`에 `Heal` 종류를 두고 뷰가
+"힐이면 안 띄우고 바로 적용" 분기를 들었는데, 화면에 도달하지 못하는 선택지가 타입에만
+존재하는 꼴이었다. 지금은 `Build`가 빈 목록을 돌려주고 뷰가 회복을 준다.
+
+덕분에 `LevelUpOption.Apply`는 `WeaponInventory` 하나만 받는다 — Progression이 Player를
+알 필요가 없어졌다.
 
 ### 드랍 경로
 
 ```
-Enemy2D.Die()
+Enemy.Die()
   → OnDiedWithReward(위치, 보상)      ← 사망일 때만. 일괄 회수는 여기로 오지 않는다
-      → EnemySpawner2D.HandleEnemyDied  ← 적을 만드는 곳이 스포너라 구독도 여기서 한 번만
+      → EnemySpawner.HandleEnemyDied  ← 적을 만드는 곳이 스포너라 구독도 여기서 한 번만
           → ExpOrbPool.Drop(위치, 값)
 ```
 
@@ -189,10 +217,32 @@ Enemy2D.Die()
 - 오브는 **콜라이더를 쓰지 않는다.** 수십 개가 동시에 떠 있는데 그만큼 트리거를 물리 엔진에 얹을
   이유가 없다. 거리 계산으로 자석·수집을 판정한다.
 - 한 번 끌리기 시작하면 반경을 벗어나도 계속 따라온다. 경계에서 붙었다 떨어졌다 하지 않게.
-- 레벨 곡선은 `기본요구량 × 배수^(레벨-1)` 한 줄. 곡선이 복잡해지면 그때 SO로 뺀다.
+- 레벨 곡선은 `5 + 3 × (레벨-1)` **선형**이다. 지수(VS식)를 쓰지 않는 이유는 선택이
+  실시간이기 때문 — 초반 1~2분에 카드가 10번 넘게 뜨면 화면 아래를 계속 가린다.
 - 한 번의 획득으로 여러 레벨이 오를 수 있다(while 루프). 후반 오브 폭식·보스 보상 대비.
 - 종료 후 남은 오브가 끌려와 경험치가 더 들어가지 않도록 **풀이 디렉터 상태를 구독**해 회수한다.
   의존 방향은 Progression → Stage 한 방향이고, 디렉터는 경험치를 모른다.
+
+### 카드는 아무것도 멈추지 않는다
+
+카드가 떠 있어도 음악·적·발사가 계속 돈다. `Time.timeScale`은 애초에 쓸 수 없다 —
+클록이 dspTime 기준이라 timeScale로는 박이 멈추지 않고 화면과 어긋나기만 한다.
+고르지 않으면 무한히 기다리고, 그동안 또 레벨업하면 큐에 쌓아 순서대로 소진한다.
+
+**카드를 띄울 때마다 `EventSystem`의 선택을 비운다.** `EventSystem`이 카드 하나를 자동
+선택해 두면 Submit(Enter·Space·패드 A) 한 번에 **고르지도 않은 카드가 조용히 먹힌다** —
+검증 중에 실제로 이걸로 카드 한 장이 저절로 소진됐다.
+
+선택을 비우는 것만으로는 완전히 막히지 않는다. 기본 UI Navigate에 WASD가 물려 있어서
+이동하는 것만으로 선택이 다시 카드로 옮겨간다. 완전히 막으려면 카드 버튼의
+`Navigation.Mode`를 `None`으로 둬야 한다. 의도한 입력은 마우스 클릭과 숫자키 1·2·3뿐이다.
+
+### 후보 규칙은 뷰 밖에 있다
+
+`LevelUpDraft`는 MonoBehaviour가 아닌 static이다. 신규 무기의 가중치가 **빈 슬롯 수**라
+슬롯이 찰수록 자연히 강화로 기우는데, 이런 규칙은 씬 없이 검증할 수 있어야 한다.
+가중 추첨은 범위를 한 칸 흘리면 마지막 후보가 영영 안 뜨는 식으로 조용히 틀어지므로
+`SelfCheck`이 에디터 로드마다 확인한다.
 
 ## 풀링
 
@@ -201,7 +251,7 @@ Enemy2D.Die()
 프리팹 하나를 재사용하는 풀. 세 곳(적·경험치 오브·투사체)이 각자 들고 있던 보일러플레이트를 합쳤다.
 
 ```csharp
-_pool = new PrefabPool<Enemy2D>(_enemyPrefab, "EnemyPool", capacity, maxSize,
+_pool = new PrefabPool<Enemy>(_enemyPrefab, "EnemyPool", capacity, maxSize,
     onCreate: enemy => enemy.OnDiedWithReward += HandleEnemyDied);
 ```
 
@@ -212,7 +262,7 @@ _pool = new PrefabPool<Enemy2D>(_enemyPrefab, "EnemyPool", capacity, maxSize,
 
 ### 결정 사항
 
-- **상속이 아니라 합성.** `EnemySpawner2D`는 풀이 아니라 풀을 *가진* 스포너다. is-a로 묶으면 깨진다.
+- **상속이 아니라 합성.** `EnemySpawner`는 풀이 아니라 풀을 *가진* 스포너다. is-a로 묶으면 깨진다.
   `ProjectilePool`도 프리팹별로 풀을 여러 개 들기 때문에 상속으로는 표현되지 않는다.
 - MonoBehaviour가 아니라 순수 C# 클래스다. 무기 런타임을 순수 클래스로 둔 결정과 같은 이유.
 - 유틸은 **"프리팹 하나 → 인스턴스 목록"만** 담당한다. 스폰 주기·회수 정책을 파라미터로 빨아들이면
@@ -230,7 +280,7 @@ _pool = new PrefabPool<Enemy2D>(_enemyPrefab, "EnemyPool", capacity, maxSize,
 `Scripts/Runtime/Core/TargetRegistry.cs`, `Core/Faction.cs`, `Weapons/Services/RegistryTargetProvider.cs`
 
 살아 있는 피격 대상을 **편(`Faction`)별 정적 목록**으로 들고, 조준은 그 목록을 훑어 고른다.
-기존 `PhysicsTargetProvider`(발사마다 `Physics2D.OverlapCircle`)를 대체한다.
+발사마다 `Physics2D.OverlapCircle`을 돌던 예전 방식(`PhysicsTargetProvider`)은 지웠다.
 
 바꾼 이유는 쿼리 횟수다. 자동공격이라 발사가 서브비트마다 일어나고 무기가 6개까지 늘어나므로,
 발사 한 번에 오버랩 한 번이면 **(무기 수 × 서브비트)**로 불어난다. 대상이 수십 규모인 지금은
@@ -241,15 +291,19 @@ _pool = new PrefabPool<Enemy2D>(_enemyPrefab, "EnemyPool", capacity, maxSize,
   새로운 피격 대상(파괴 가능한 오브젝트 등)을 만들면 등록 두 줄을 잊지 말아야 한다.
 - 정적 목록이라 도메인 리로드를 끈 경우 플레이 모드를 나가도 남는다. `RuntimeInitializeOnLoadMethod`로 비운다.
 
+**`DamageField`는 예외로 오버랩 쿼리를 쓴다.** 조준과 달리 발사마다가 아니라 영역이 타격할 때만
+돌고, 동시에 떠 있는 영역이 한 자릿수라 횟수가 불어나지 않는다. 화면에 수십 개가 깔리면
+이 목록 순회로 바꾼다.
+
 ### 편(Faction)
 
 아군 배제를 **계층(`transform.root`) 비교가 아니라 `Faction`으로** 한다. 계층 비교는 소환수·아군
 NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너진다.
 
-- `IDamageable.Faction` — 모든 피격 대상이 편을 밝힌다. `Enemy2D`는 Enemy, `PlayerController`는 Player.
+- `IDamageable.Faction` — 모든 피격 대상이 편을 밝힌다. `Enemy`는 Enemy, `PlayerController`는 Player.
 - `RegistryTargetProvider._targetFaction` — 겨눌 편을 인스펙터에서 정한다(기본 Enemy).
   적이 무기를 들면 이 값만 Player로 바꾸면 된다.
-- `WeaponContext.Faction` — 쏘는 쪽의 편. `Projectile2D`가 같은 편을 그냥 통과시킨다.
+- `WeaponContext.Faction` — 쏘는 쪽의 편. `Projectile`가 같은 편을 그냥 통과시킨다.
   발사구 자해 방지(owner 계층 통과)는 편 설정과 무관하게 별개로 남겨둔다.
 - 플레이어도 레지스트리에 등록된다. 이름이 "적 목록"이 아니라 대상 목록인 이유다.
 
@@ -266,17 +320,35 @@ NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너�
   호출할 때마다 15번 클램프했다 — 발사마다. 런타임 조회 경로에는 이제 없다.
 - 필드를 늘리면 `operator +`도 같이 늘려야 한다. 빠뜨리면 에디터 진입 시 셀프체크가 에러를 뱉는다
   (`WeaponLevelData.SelfCheck`, 리플렉션으로 전 필드 대조).
-- **투사체 수치의 출처는 레벨 표 하나다.** `Projectile2D`의 `_speed`/`_damage` 필드는 제거했다.
+- **투사체 수치의 출처는 레벨 표 하나다.** `Projectile`의 `_speed`/`_damage` 필드는 제거했다.
   프리팹과 표 두 곳에 같은 값이 있으면 어느 쪽이 이기는지 알 수 없다.
 
-### 소비처 없는 필드가 12개다
+### 소비처 없는 필드가 5개다
 
-15축 중 실제로 코드가 읽는 것은 **데미지 / 발사 수 / 사거리 / 투사체 속도** 넷뿐이다.
-나머지(치명타·관통·효과 반경·크기·지속시간·연주 밀도·쿨다운 감소·유도·넉백·반사)는
-**선언만 돼 있고 아무도 읽지 않는다.** 인스펙터에서 값을 넣어도 아무 일도 일어나지 않는다.
+발사 형태를 만들면서 그 형태가 쓰는 축을 연결했다. 지금 실제로 코드가 읽는 것은 10축이다.
 
-기획 문서의 축을 미리 박아둔 것이고, 발사 형태를 만들 때 그 형태가 쓰는 필드를 그때 연결한다.
-"관통을 5로 넣었는데 안 뚫린다"는 버그가 아니다.
+| 축 | 읽는 곳 |
+| --- | --- |
+| 데미지 | 전부 |
+| 발사 수 / 투사체 속도 / 관통 수 / 투사체 크기 / 유도 강도 | `ProjectileWeapon` → `Projectile` |
+| 효과 반경 / 지속시간 | `AreaWeapon` → `DamageField` |
+| 넉백 | 둘 다 → `IDamageable.ApplyKnockback` |
+| 사거리 | 조준 대상 탐색(`WeaponBase.ResolveAimDirection`), 영역의 낙하 지점 |
+
+**아직 선언만 된 것은 5개다** — 치명타 확률, 치명타 배수, 연주 밀도 배수, 쿨다운 감소, 반사 횟수.
+인스펙터에서 값을 넣어도 아무 일도 일어나지 않는다. "치명타를 50%로 넣었는데 안 터진다"는 버그가 아니다.
+
+앞의 셋은 발사 형태가 아니라 **성장·채보 쪽에서 소비될 축**이라 여기서 연결하지 않았다.
+반사는 그 형태를 쓰는 악기가 아직 없다.
+
+### 넉백은 IDamageable의 기본 구현이다
+
+`ApplyKnockback`은 인터페이스에 기본 구현(빈 메서드)으로 있다. 넉백을 받을 이유가 없는 대상
+(플레이어)이 빈 메서드를 억지로 채우지 않게 하려는 것이고, 별도 인터페이스로 쪼개면 때리는 쪽이
+`is IKnockbackable` 분기를 들게 되어 "대상의 구체 타입을 모른다"는 전제가 깨진다.
+
+`Enemy`의 구현은 힘이 아니라 **추격을 잠깐 밀어내기로 갈아끼우는** 방식이다. `FixedUpdate`가
+추격 속도를 매 프레임 통째로 덮어쓰기 때문에 `AddForce`로는 한 프레임도 밀리지 않는다.
 
 ## 물리 레이어
 
@@ -325,5 +397,7 @@ NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너�
 - **박은 프레임과 무관하게 간다.** 클록이 dspTime 기준이라 창이 비활성이거나 긴 히치가 나면
   프레임이 멈춘 동안에도 박이 흐르고, 복귀 순간 진행도가 뛴다.
 - `BeatTimelineEndSource`는 임시다. 마디 수는 기획 확정 시 사라질 값.
-- 카운트다운·일시정지·성장 UI 없음.
+- 카운트다운·일시정지 UI 없음. 레벨업 카드는 있다(→ "성장").
 - HUD는 매 프레임 폴링한다. 위젯이 늘면 이벤트 기반으로 바꾸는 게 낫다.
+- `LevelUpCardView`는 카드 버튼의 `Navigation.Mode`를 건드리지 않는다. 그래서 이동 입력으로
+  선택이 카드에 걸리고 Submit이 들어오면 고르지 않은 카드가 먹힐 수 있다(→ "카드는 아무것도 멈추지 않는다").
