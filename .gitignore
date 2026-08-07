@@ -85,3 +85,10 @@ crashlytics-build.properties
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+## 채보용 stem 음원 ##
+# 곡당 수십 MB에 악기별로 나뉘어서, 세트리스트가 늘면 저장소가 통째로 무거워진다.
+# 커밋하는 것은 stem이 아니라 거기서 뽑아낸 채보(ChartAsset)다. → .claude/docs/charting.md
+# 팀 공유가 필요해지면 그때 Git LFS를 붙인다.
+Assets/_Proejct/Sounds/Stems/
+Assets/_Proejct/Sounds/Stems.meta
