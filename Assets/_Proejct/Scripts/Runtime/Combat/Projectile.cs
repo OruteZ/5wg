@@ -6,18 +6,16 @@ using UnityEngine;
 namespace FiveWG.Combat
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
-    public sealed class Projectile2D : MonoBehaviour, IPooledObject<Projectile2D>
+    public sealed class Projectile : MonoBehaviour, IPooledObject<Projectile>
     {
         [Title("탄 설정")]
-        [SerializeField, LabelText("속도 (units/sec)")] private float _speed = 14f;
         [SerializeField, LabelText("수명 (sec)")] private float _lifetime = 2f;
-        [SerializeField, LabelText("기본 데미지 (무기가 덮어쓸 수 있음)")] private float _damage = 10f;
 
         private Rigidbody2D _rigidbody;
         private float _currentDamage;
         private Faction _ownerFaction;
         private Transform _ownerRoot;
-        private Action<Projectile2D> _release;
+        private Action<Projectile> _release;
         private float _remainingLifetime;
         private bool _isSpent;
 
@@ -29,10 +27,7 @@ namespace FiveWG.Combat
         }
 
         /// <summary>풀 생성 시 1회만 호출한다.</summary>
-        public void SetReleaseCallback(Action<Projectile2D> release) => _release = release;
-
-        /// <summary>프리팹에 설정된 기본 데미지로 발사한다.</summary>
-        public void Launch(Vector2 position, Vector2 direction) => Launch(position, direction, _damage, null);
+        public void SetReleaseCallback(Action<Projectile> release) => _release = release;
 
         /// <summary>
         /// 데미지와 발사 주체를 지정해 발사한다.
@@ -42,7 +37,7 @@ namespace FiveWG.Combat
         /// 스폰 직후 자기 자신을 때리는 사고를 편 설정과 무관하게 막기 위함이다.
         /// </summary>
         public void Launch(
-            Vector2 position, Vector2 direction, float damage,
+            Vector2 position, Vector2 direction, float damage, float speed,
             Transform owner = null, Faction ownerFaction = Faction.Player)
         {
             _currentDamage = damage;
@@ -55,7 +50,7 @@ namespace FiveWG.Combat
                 position,
                 Quaternion.Euler(0f, 0f, Mathf.Atan2(normalized.y, normalized.x) * Mathf.Rad2Deg));
 
-            _rigidbody.linearVelocity = normalized * _speed;
+            _rigidbody.linearVelocity = normalized * speed;
             _remainingLifetime = _lifetime;
             _isSpent = false;
         }

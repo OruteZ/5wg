@@ -16,8 +16,80 @@ MonoBehaviour:
   _icon: {fileID: 0}
   _levels:
   - Damage: 10
-    ProjectileCount: 1
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
     Range: 8
+    AreaRadius: 0
+    ProjectileScale: 1
+    Duration: 0
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 14
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  - Damage: 14
+    CritChance: 0.05
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 9
+    AreaRadius: 0
+    ProjectileScale: 1.15
+    Duration: 0
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 15
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  - Damage: 19
+    CritChance: 0.1
+    CritMultiplier: 2
+    Pierce: 1
+    Range: 10
+    AreaRadius: 0
+    ProjectileScale: 1.3
+    Duration: 0
+    ProjectileCount: 2
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 16
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  - Damage: 25
+    CritChance: 0.15
+    CritMultiplier: 2
+    Pierce: 1
+    Range: 11
+    AreaRadius: 0
+    ProjectileScale: 1.45
+    Duration: 0
+    ProjectileCount: 2
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 17
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  - Damage: 32
+    CritChance: 0.25
+    CritMultiplier: 2
+    Pierce: 2
+    Range: 12
+    AreaRadius: 0
+    ProjectileScale: 1.6
+    Duration: 0
+    ProjectileCount: 3
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 18
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
   _intervalBeats: 1
   _offsetBeats: 0
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}

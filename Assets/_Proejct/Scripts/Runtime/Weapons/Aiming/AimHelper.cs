@@ -4,14 +4,13 @@ using UnityEngine;
 namespace FiveWG.Weapons
 {
     /// <summary>
-    /// 조준 방향을 구하는 순수 질의 모음. 어느 단서를 어떤 순서로 쓸지는 각 무기가 정하고,
-    /// 여기서는 "그 단서로 방향이 나오는가"만 답한다.
-    /// 모든 Try 계열은 유효한 방향을 만들지 못하면 false를 돌려주므로 폴백을 이어 붙이기 쉽다.
+    /// 조준 방향을 구하는 static methods 모음
+    /// 모든 Try 계열은 유효한 방향을 만들지 못하면 false를 돌려준다
     /// </summary>
     public static class AimHelper
     {
         // 이 아래 길이는 방향으로 쓰기엔 너무 짧아 정규화 시 값이 튄다.
-        private const float MinSqrMagnitude = 0.0001f;
+        private const float MIN_SQR_MAGNITUDE = 0.0001f;
 
         /// <summary>사거리 안의 가장 가까운 대상을 향하는 방향.</summary>
         public static bool TryAimAtNearestTarget(
@@ -54,7 +53,7 @@ namespace FiveWG.Weapons
         /// <summary>길이가 유의미할 때만 정규화해 돌려준다.</summary>
         public static bool TryGetDirection(Vector2 raw, out Vector2 direction)
         {
-            if (raw.sqrMagnitude <= MinSqrMagnitude)
+            if (raw.sqrMagnitude <= MIN_SQR_MAGNITUDE)
             {
                 direction = default;
                 return false;

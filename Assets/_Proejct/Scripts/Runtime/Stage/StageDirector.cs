@@ -19,7 +19,7 @@ namespace FiveWG.Stage
     {
         [Title("참조 (비우면 씬에서 자동 탐색)")]
         [SerializeField, LabelText("박자 클록")] private BpmClock _clock;
-        [SerializeField, LabelText("적 스포너")] private EnemySpawner2D _spawner;
+        [SerializeField, LabelText("적 스포너")] private EnemySpawner _spawner;
         [SerializeField, LabelText("플레이어")] private PlayerController _player;
 
         [Title("종료 소스")]

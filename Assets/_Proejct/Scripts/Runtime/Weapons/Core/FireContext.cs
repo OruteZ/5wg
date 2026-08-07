@@ -9,25 +9,22 @@ namespace FiveWG.Weapons
     /// </summary>
     public readonly struct FireContext
     {
-        public readonly Vector2 Origin;
+        public readonly Vector2 origin;
 
         /// <summary>게임패드 Look 스틱 원본 입력. 정규화되어 있지 않고 데드존 안일 수도 있다.</summary>
-        public readonly Vector2 AimInput;
+        public readonly Vector2 aimInput;
 
         /// <summary>플레이어가 마지막으로 향한 방향. 조준 단서가 하나도 없을 때의 최종 폴백.</summary>
-        public readonly Vector2 FacingDirection;
+        public readonly Vector2 facingDirection;
 
-        public readonly BeatTick Tick;
+        public readonly BeatTick tick;
 
         public FireContext(Vector2 origin, Vector2 aimInput, Vector2 facingDirection, in BeatTick tick)
         {
-            Origin = origin;
-            AimInput = aimInput;
-            FacingDirection = facingDirection;
-            Tick = tick;
+            this.origin = origin;
+            this.aimInput = aimInput;
+            this.facingDirection = facingDirection;
+            this.tick = tick;
         }
-
-        public override string ToString() =>
-            $"Origin: {Origin}, AimInput: {AimInput}, Facing: {FacingDirection}, Tick: {Tick}";
     }
 }

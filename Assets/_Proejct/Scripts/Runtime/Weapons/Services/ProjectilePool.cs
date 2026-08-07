@@ -32,12 +32,12 @@ namespace FiveWG.Weapons
             get
             {
                 int total = 0;
-                foreach (PrefabPool<Projectile2D> pool in _pools.Values) total += pool.ActiveCount;
+                foreach (PrefabPool<Projectile> pool in _pools.Values) total += pool.ActiveCount;
                 return total;
             }
         }
 
-        private readonly Dictionary<Projectile2D, PrefabPool<Projectile2D>> _pools = new();
+        private readonly Dictionary<Projectile, PrefabPool<Projectile>> _pools = new();
         private bool _isSubscribed;
 
         private void Start()
@@ -56,7 +56,7 @@ namespace FiveWG.Weapons
         {
             if (_isSubscribed && _director != null) _director.OnStateChanged -= HandleStageStateChanged;
 
-            foreach (PrefabPool<Projectile2D> pool in _pools.Values)
+            foreach (PrefabPool<Projectile> pool in _pools.Values)
             {
                 pool.Dispose();
             }
@@ -64,13 +64,13 @@ namespace FiveWG.Weapons
             _pools.Clear();
         }
 
-        public Projectile2D Get(Projectile2D prefab)
+        public Projectile Get(Projectile prefab)
         {
             if (prefab == null) return null;
 
-            if (!_pools.TryGetValue(prefab, out PrefabPool<Projectile2D> pool))
+            if (!_pools.TryGetValue(prefab, out PrefabPool<Projectile> pool))
             {
-                pool = new PrefabPool<Projectile2D>(prefab, $"{prefab.name}Pool", _defaultCapacity, _maxSize);
+                pool = new PrefabPool<Projectile>(prefab, $"{prefab.name}Pool", _defaultCapacity, _maxSize);
                 _pools.Add(prefab, pool);
             }
 
@@ -82,7 +82,7 @@ namespace FiveWG.Weapons
         {
             if (!Application.isPlaying) return;
 
-            foreach (PrefabPool<Projectile2D> pool in _pools.Values)
+            foreach (PrefabPool<Projectile> pool in _pools.Values)
             {
                 pool.ReleaseAll();
             }

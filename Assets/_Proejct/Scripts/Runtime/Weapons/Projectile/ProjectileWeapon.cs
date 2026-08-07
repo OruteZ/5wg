@@ -19,7 +19,7 @@ namespace FiveWG.Weapons
 
         protected override void OnFire(in FireContext context)
         {
-            if (_definition.ProjectilePrefab == null || Context.Projectiles == null) return;
+            if (_definition.ProjectilePrefab == null || Context.projectiles == null) return;
 
             WeaponLevelData stats = Stats;
             Vector2 direction = ResolveAimDirection(context);
@@ -27,14 +27,15 @@ namespace FiveWG.Weapons
 
             for (int i = 0; i < count; i++)
             {
-                Projectile2D projectile = Context.Projectiles.Get(_definition.ProjectilePrefab);
+                Projectile projectile = Context.projectiles.Get(_definition.ProjectilePrefab);
                 if (projectile == null) return;
 
                 projectile.Launch(
-                    context.Origin,
+                    context.origin,
                     AimHelper.Spread(direction, i, count, _definition.SpreadDegrees),
                     stats.Damage,
-                    Context.Owner,
+                    stats.ProjectileSpeed,
+                    Context.owner,
                     Context.Faction);
             }
         }

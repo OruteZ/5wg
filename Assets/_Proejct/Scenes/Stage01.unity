@@ -2113,7 +2113,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BeatTimelineEndSource
   _clock: {fileID: 1189532218}
   _beatsPerBar: 4
-  _barsToClear: 8
+  _barsToClear: 64
 --- !u!4 &1293250288
 Transform:
   m_ObjectHideFlags: 0
@@ -2266,9 +2266,9 @@ RectTransform:
   - {fileID: 676303520}
   - {fileID: 600718648}
   - {fileID: 1745619479}
-  - {fileID: 1029510604}
   - {fileID: 914077840}
   - {fileID: 1190620291}
+  - {fileID: 1029510604}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
