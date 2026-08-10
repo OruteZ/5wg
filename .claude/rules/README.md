@@ -1,3 +1,17 @@
 # Rules
 
-Project-specific rules Claude must follow in this repo, split into one file per topic (e.g. `naming.md`, `git.md`). Empty for now — add files as conventions emerge.
+Project-specific rules Claude must follow in this repo, split into one file per topic.
+`CLAUDE.md`가 이 폴더를 매 세션 읽으므로, 여기 있는 줄은 전부 상시 비용이다.
+
+| 파일 | 내용 |
+| --- | --- |
+| `unity-csharp.md` | 런타임 C# 규약. 2D 차원, 입력, dspTime, 네이밍, 메모리, 인스펙터, 주석 |
+| `git.md` | 커밋 태그 |
+
+## 여기에 무언가를 적기 전에
+
+- **규칙만 적는다.** 구조 설명과 그 이유는 `.claude/docs/`에 있다. 여기에 복사하면 두 곳이 따로 낡는다.
+- **탈출구를 같이 쓰지 않는다.** "다만 이런 경우에는 예외" 같은 문장은 규칙을 협상 여지로 만든다.
+  예외가 정말 필요하면 규칙 자체를 다시 쓴다.
+- **지킬 수단이 있는 것만 적는다.** 확인할 도구가 없는데 확인하라고 시키면 지키는 척하는 줄만 남는다.
+- 지금 쓰지 않는 기술의 규칙을 미리 넣지 않는다. 그때 가서 추가한다.
