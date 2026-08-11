@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 103123385457303397}
   - component: {fileID: 1718601790611919452}
   - component: {fileID: 7253805546903344817}
+  - component: {fileID: 1406571455820232970}
+  - component: {fileID: 7797189805579224423}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -227,7 +229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerExperience
   _baseRequirement: 5
-  _growth: 1.25
+  _requirementStep: 3
   _maxLevel: 0
 --- !u!114 &7253805546903344817
 MonoBehaviour:
@@ -243,3 +245,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RegistryTargetProvider
   _targetFaction: 1
   _maxResults: 64
+--- !u!114 &1406571455820232970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815365983800706895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb074889d1f888f43bbaf3a266838aec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Pickup.PlayerInventory
+  _maxRerolls: 5
+--- !u!114 &7797189805579224423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815365983800706895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7599c864303ec814d9414c7d987d0c23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Pickup.PickupCollector
+  _player: {fileID: 0}
+  _inventory: {fileID: 0}
+  _expOrbs: {fileID: 0}

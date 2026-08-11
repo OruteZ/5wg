@@ -187,6 +187,7 @@ MonoBehaviour:
   _enemyPrefab: {fileID: 1825767638987215925, guid: 5f84069730b712246b2b184280df83f4, type: 3}
   _target: {fileID: 1865809633}
   _expPool: {fileID: 822901126}
+  _dropper: {fileID: 1121407001}
   _spawnInterval: 0.8
   _spawnRadius: 12
   _maxAlive: 40
@@ -593,6 +594,8 @@ MonoBehaviour:
   _playerExp: {fileID: 1865809641}
   _spawner: {fileID: 56706867}
   _expOrbs: {fileID: 822901126}
+  _pickups: {fileID: 1121407002}
+  _dropper: {fileID: 1121407001}
   _director: {fileID: 1293250285}
   _projectiles: {fileID: 243433333}
 --- !u!4 &243433332
@@ -2017,6 +2020,70 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1029510603}
   m_CullTransparentMesh: 1
+--- !u!1 &1121407000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1121407003}
+  - component: {fileID: 1121407002}
+  - component: {fileID: 1121407001}
+  m_Layer: 0
+  m_Name: Pickups
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1121407001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1121407000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85c8e302d8d4e724ea0a8af9c69e032f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Pickup.PickupDropper
+  _table: {fileID: 11400000, guid: fcd9eb1ac46e7a44ea91397bd0a2ca48, type: 2}
+  _pool: {fileID: 1121407002}
+--- !u!114 &1121407002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1121407000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50048c002b0700240b06e10ef16c1771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Pickup.PickupPool
+  _collector: {fileID: 0}
+  _director: {fileID: 1293250285}
+  _defaultCapacity: 16
+  _maxSize: 128
+  _maxAlive: 200
+--- !u!4 &1121407003
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1121407000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1133758440
 GameObject:
   m_ObjectHideFlags: 0
@@ -4116,3 +4183,4 @@ SceneRoots:
   - {fileID: 822901127}
   - {fileID: 541343400}
   - {fileID: 243433332}
+  - {fileID: 1121407003}
