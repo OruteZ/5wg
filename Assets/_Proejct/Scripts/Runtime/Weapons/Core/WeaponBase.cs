@@ -20,8 +20,6 @@ namespace FiveWG.Weapons
         public IFireTiming Timing { get; }
         public int Level { get; private set; }
 
-        public virtual bool IsReady => true;
-
         protected WeaponContext Context { get; private set; }
 
         /// <summary>현재 레벨의 수치. 레벨이 바뀌면 자동으로 따라간다.</summary>

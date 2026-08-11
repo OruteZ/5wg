@@ -14,9 +14,6 @@ namespace FiveWG.Weapons
 
         IFireTiming Timing { get; }
 
-        /// <summary>재장전·차지처럼 무기 내부 사정으로 발사가 막혀 있는지. 외부 조건은 게이트가 본다.</summary>
-        bool IsReady { get; }
-
         void Equip(in WeaponContext context);
         void Unequip();
         void SetLevel(int level);

@@ -31,7 +31,7 @@ namespace FiveWG.Pickup
 
         private Action<Pickup> _release;
         private Transform _target;
-        private IPickupReceiver _receiver;
+        private PickupCollector _receiver;
         private PickupDefinition _definition;
         private bool _isDespawned;
 
@@ -42,7 +42,7 @@ namespace FiveWG.Pickup
         public void SetReleaseCallback(Action<Pickup> release) => _release = release;
 
         /// <summary>풀에서 꺼낼 때마다 호출한다. 재사용되므로 상태를 전부 되돌린다.</summary>
-        public void Spawn(Vector2 position, PickupDefinition definition, Transform target, IPickupReceiver receiver)
+        public void Spawn(Vector2 position, PickupDefinition definition, Transform target, PickupCollector receiver)
         {
             // 한자리에서 여럿이 죽어도 픽업이 한 점에 겹치지 않게 조금씩 흩는다.
             transform.position = position + UnityEngine.Random.insideUnitCircle * _scatter;

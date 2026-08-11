@@ -34,7 +34,7 @@ namespace FiveWG.Weapons
         }
 
         /// <summary>마우스 커서의 월드 좌표. 2D 직교/원근 카메라 모두 카메라 평면 기준으로 환산한다.</summary>
-        public static bool TryGetMouseWorldPoint(Camera camera, out Vector2 world)
+        private static bool TryGetMouseWorldPoint(Camera camera, out Vector2 world)
         {
             world = default;
             if (camera == null || Mouse.current is null) return false;
@@ -63,7 +63,7 @@ namespace FiveWG.Weapons
             return true;
         }
 
-        public static Vector2 Rotate(Vector2 direction, float degrees)
+        private static Vector2 Rotate(Vector2 direction, float degrees)
         {
             if (Mathf.Approximately(degrees, 0f)) return direction;
 

@@ -9,7 +9,7 @@ namespace FiveWG.Progression
     /// 레벨업 시 무엇을 보여주고 무엇을 강화할지는 이 컴포넌트가 모른다 — 이벤트만 쏜다.
     /// (레벨업 UI·업그레이드 선택은 다음 브랜치)
     /// </summary>
-    public sealed class PlayerExp : MonoBehaviour, IExpReceiver
+    public sealed class PlayerExp : MonoBehaviour
     {
         [Title("레벨 곡선")]
         [SerializeField, LabelText("1→2레벨 요구 경험치"), Min(1f)] private float _baseRequirement = 5f;
