@@ -2,12 +2,18 @@
 
 Current work, milestones, and decisions. Keep this updated as the project moves forward.
 
-## 현재 상태 (2026-08-02)
+## 현재 상태 (2026-08-08)
 
-리듬 기반 자동공격 프로토타입. 플레이어가 6개 무기를 보유하고 박자에 맞춰 자동 발사한다.
-무기 시스템의 뼈대는 세워졌고, **무기별 발사 타이밍만 기획서 대기 중**이다.
+리듬 기반 자동공격 프로토타입. 플레이어가 6개 무기를 보유하고 박자에 맞춰 자동 발사하며,
+레벨업마다 카드 3장 중 하나를 골라 무기를 얻거나 강화한다.
 
-작업 씬은 `Assets/_Proejct/Scenes/Prototype.unity`.
+악기 10종과 4개 발사 형태가 전부 있고 **채보(곡별 악기 트랙)만 기다리고 있다.** 그게 들어오면
+지금의 임시 타이밍(`EveryBeatTiming`·`BurstTiming`)이 통째로 교체된다.
+
+작업 씬은 `Assets/_Proejct/Scenes/Stage01.unity`. 씬 목록은 `overview.md`에 있다.
+
+아래는 브랜치 순서대로 쌓인다. **"지금 하는 일" 아래가 현재고 그 위는 전부 지나온 것**이다.
+구조 설명은 여기 두지 않는다 — `architecture.md`에 있고, 여기는 그때 왜 그렇게 정했는지만 남긴다.
 
 ## 플레이어 구성
 
@@ -31,7 +37,7 @@ Current work, milestones, and decisions. Keep this updated as the project moves 
 
 | 축 | 담당 | 비고 |
 | --- | --- | --- |
-| 언제 쏘는가 | `IFireTiming` | **기획서 대기 중**. 현재 `EveryBeatTiming`(N정박마다) 하나뿐 |
+| 언제 쏘는가 | `IFireTiming` | **채보 대기 중.** 임시로 `EveryBeatTiming`(N정박마다), `BurstTiming`(연타) |
 | 쏴도 되는가 | `IFireGate` | 등록된 게이트를 전부 AND. 사망 게이트는 `PlayerController`가 등록 |
 | 무엇을 갖고 있는가 | `WeaponInventory` | 6슬롯 고정. 중복 획득은 레벨업으로 흡수 |
 | 어떻게 쏘는가 | `IWeapon` / `WeaponBase` | 순수 C# 클래스. `WeaponDefinition`(SO)이 팩토리 |
@@ -42,14 +48,17 @@ Current work, milestones, and decisions. Keep this updated as the project moves 
 ```
 Weapons/
   Core/       IWeapon  WeaponBase  WeaponContext(장착 시 1회)  FireContext(틱마다)
-  Timing/     IFireTiming  BeatTick  EveryBeatTiming(임시)
+  Timing/     IFireTiming  BeatTick  EveryBeatTiming(임시)  BurstTiming(임시)
   Gates/      IFireGate  DelegateFireGate
   Aiming/     AimHelper
   Data/       WeaponDefinition  WeaponLevelData
-  Services/   ProjectilePool  ITargetProvider  PhysicsTargetProvider
+  Services/   ProjectilePool  ITargetProvider  RegistryTargetProvider
   Projectile/ ProjectileWeapon  ProjectileWeaponDefinition
+  Area/       AreaWeapon  AreaWeaponDefinition
   WeaponInventory.cs
 ```
+
+무기가 씬에 뿌리는 개체는 `Combat/`에 있다 — `Projectile`, `DamageField`.
 
 ### 결정 사항
 
@@ -59,7 +68,7 @@ Weapons/
 - 자동공격 전환으로 Attack 입력 경로를 제거했다. Look 입력은 스틱 조준 단서로만 남아 있다.
 - 조준 방향은 핸들러가 정하지 않는다. `FireContext`에는 원본 단서(스틱 입력·이동 방향)만 싣고
   최종 방향은 무기가 `ResolveAimDirection`에서 뽑는다. 기본 순서는 최근접 적 → 마우스 → 스틱 → 이동 방향.
-- 투사체 풀은 무기가 아닌 `ProjectilePool`이 프리팹별로 소유한다. 6개 무기가 서로 다른 탄을 쓰기 때문.
+- 탄·장판 풀은 무기가 아닌 `ProjectilePool`이 프리팹별로 소유한다. 무기마다 다른 개체를 쓰기 때문.
 - `WeaponHandler`는 `BpmClock`을 폴링해 서브비트 경계를 감지하고, 프레임이 밀리면 최대 N틱까지 보정 발사한다.
 
 ## 스테이지 흐름 (버티컬 슬라이스)
@@ -67,47 +76,22 @@ Weapons/
 `Assets/_Proejct/Scripts/Runtime/Stage/`, `.../UI/`
 
 시작·종료 규칙을 갖춘 최소 플레이 루프. 수치는 전부 임시다.
-
-### 축 분리
-
-| 축 | 담당 | 비고 |
-| --- | --- | --- |
-| 상태를 소유 | `StageDirector` | Ready→Playing→Cleared/Failed. 종료 조건은 모른다 |
-| 언제 끝나는가 | `StageEndSource` | `RequestClear`/`RequestFail`로 디렉터에 알린다 |
-| 화면에 뭘 띄우나 | `StageHud` / `StageResultView` | 디렉터 상태만 구독 |
-| 씬 사이 이동 | `GameFlow` | 씬 이름 문자열을 여기만 안다 |
-
-종료 소스는 현재 둘. `BeatTimelineEndSource`(N마디 버티면 클리어, **임시**)와
-`PlayerDeathEndSource`(사망→실패). 나중에 음악 오케스트레이터가 들어오면
-`StageEndSource`를 상속해 씬에서 컴포넌트만 갈아끼운다. 디렉터·UI·스포너는 그대로 둔다.
-
-### 결정 사항
+레이어 분리와 시퀀스는 `architecture.md`가 전부 갖고 있다 — 여기는 그때 내린 결정만 남긴다.
 
 - 종료 판정을 초가 아니라 **박 기준**으로 잰다. 실제 곡을 물릴 때 "몇 마디"가 그대로 이식된다.
-- 종료 시 `Time.timeScale`을 건드리지 않는다. 클록이 dspTime 기준이라 비트 그리드와 어긋난다.
-  대신 스폰·발사·입력을 개별로 끈다.
-- 재도전은 상태 되돌리기가 아니라 씬 재로드. 풀·인벤토리 리셋 경로를 따로 만들지 않으려고.
 - 버튼 배선은 인스펙터 UnityEvent가 아니라 코드(`onClick.AddListener`). 씬 파일에 로직이 숨지 않게.
 - `Stage01`의 `BpmClock`은 `playOnStart`를 껐다. 시작 시점은 디렉터가 소유한다(`Stop()`→`Play()`로 재앵커).
-- 적 접촉 데미지는 트리거 1회 타격 + 재타격 간격(기본 0.8초). 플레이어 콜라이더가 트리거라
-  겹친 채 머무르면 Enter가 다시 오지 않기 때문. 대상 판정은 `IDamageable`로만 한다.
-
-### 씬
-
-| 씬 | 역할 |
-| --- | --- |
-| `Scenes/MainMenu.unity` | START / QUIT. Build Settings 0번 |
-| `Scenes/Stage01.unity` | 스테이지 본편. Prototype 복제본에서 출발. Build Settings 1번 |
-| `Scenes/Prototype.unity` | 무기 검증용으로 그대로 보존 |
+- 적 접촉 데미지는 트리거 1회 타격 + 재타격 간격(기본 0.8초).
 
 UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜을 안 받아도 되게.
+씬 목록은 `overview.md`에 있다.
 
 ## 성장·카메라 (빌드 피드백 폴리싱)
 
 `Assets/_Proejct/Scripts/Runtime/Progression/`
 
 - 적이 죽으면 경험치 오브를 떨어뜨리고, 플레이어가 가까이 가면 끌려와 수집된다.
-  누적이 요구량을 넘으면 레벨업. **레벨업 UI·업그레이드 선택은 다음 브랜치.**
+  누적이 요구량을 넘으면 레벨업한다. (레벨업 카드는 아래 `feat/weapon-first-type` 절에서 붙었다.)
 - `Stage01` 카메라를 Cinemachine으로 교체. Main Camera는 `CinemachineBrain`만 들고,
   `CM Player Camera`가 플레이어를 따라간다(데드존 0.12 / 감쇠 0.35).
 
@@ -117,28 +101,44 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
 
 - 세 곳에 흩어져 있던 오브젝트 풀 보일러플레이트를 `PrefabPool<T>`(합성)로 합쳤다.
   이 과정에서 `ProjectilePool`만 없던 일괄 회수가 생겨, 스테이지 종료 후에도 날아가던 탄이 정리된다.
-- 조준 대상 탐색을 물리 오버랩에서 `DamageableRegistry` 기반으로 바꿨다.
+- 조준 대상 탐색을 물리 오버랩에서 `TargetRegistry` 기반으로 바꿨다.
   발사마다 쿼리를 돌던 걸 목록 순회로 대체 — 무기가 6개로 늘면 차이가 커진다.
 
-- 적 200마리로 부하를 걸고 프로파일링했다. **뚜렷한 병목이 없었다.** 적끼리의 물리 충돌은
-  `Physics2D.Simulate` 0.09~0.17ms로 메인스레드(1.1~1.4ms)의 10% 남짓이고 측정 편차 수준이다.
-  적 200개의 `Update`/`FixedUpdate`를 통째로 꺼도 차이가 노이즈였다.
-  **매니저 루프 합치기·적끼리 충돌 끄기 둘 다 지금은 이득이 없어 하지 않는다.**
-- 콜라이더를 줄여 접촉을 줄이려는 시도는 **역효과**였다(0.40 → 0.25로 줄이자 접촉 792 → 920).
-  원이 빽빽이 쌓이면 개당 접촉 수가 크기와 무관하게 수렴하고, 작을수록 더 촘촘히 packing된다.
-- Enemy/Projectile 레이어는 나눠뒀다. 적끼리 충돌은 켠 채로 두고, 탄끼리만 무시한다
-  (둘 다 트리거라 겹칠 때마다 콜백이 헛돌던 것).
 - HUD가 매 프레임 만들던 문자열 2개를 값이 바뀔 때만 만들도록 고쳤다.
+- 적 200마리로 프로파일링했고 **뚜렷한 병목이 없었다.** 그래서 **매니저 루프 합치기와
+  적끼리 충돌 끄기를 둘 다 하지 않았다** — 재검토할 사람이 같은 측정을 다시 하지 않도록 적어둔다.
+  수치와 콜라이더 크기 실험은 `architecture.md`의 "물리 레이어" 절에 표로 있다.
 
-구조와 결정 사항은 `architecture.md`의 "풀링", "조준 대상 탐색", "물리 레이어" 절에 있다.
+구조는 `architecture.md`의 "풀링", "조준 대상 탐색", "물리 레이어" 절에 있다.
 
-## 지금 하는 일 (브랜치 `weapon-stat`)
+## 무기 스탯 축 (브랜치 `weapon-stat`)
 
 무기 스탯 축을 기획 문서(15축)에 맞춰 넓혔다. 계약은 `architecture.md`의 "무기 스탯" 절.
 
 - `WeaponLevelData` 3축 → 15축, `operator +`(합연산), 보정을 `OnValidate`로 이동
-- `Projectile2D._speed`/`_damage` 제거 — 수치 출처를 레벨 표 하나로
-- **15축 중 12축은 소비처가 없다.** 선언만 된 상태다
+- `Projectile._speed`/`_damage` 제거 — 수치 출처를 레벨 표 하나로
+
+## 지금 하는 일 (브랜치 `feat/weapon-first-type`)
+
+악기 10종의 **1차 버전**. 4축을 전부 만들고 정의 에셋 10개를 붙였다.
+
+만든 것은 클래스 셋과 타이밍 하나뿐이다. 형태가 같은 것을 클래스로 나누지 않았다.
+
+| | 담당 | 악기 |
+| --- | --- | --- |
+| `DamageField` | 반경 안을 주기적으로 때리는 영역 | 킥·크래시·베이스·신스 |
+| `AreaWeapon` / `AreaWeaponDefinition` | 그 영역을 배치 | 〃 |
+| `BurstTiming` | 정박에서 시작해 서브비트 N개 연타 | 탐·건반 |
+| `PrefabPoolSet<T>` | 프리팹별 풀 고르기 (기존 `ProjectilePool`에서 추출) | — |
+
+기존 `Projectile`에 관통·유도·크기·넉백을 붙였다. 인자가 아홉 개가 되어 `ProjectileSpawnData`로 묶었다.
+
+- **즉발 범위와 지속 영역은 한 클래스다.** 충격파 = 지속시간 0인 장판, 오라 = 추종하는 장판.
+- **순차 다단은 무기가 아니라 타이밍이다.** 그래서 탐은 투사체, 건반은 영역이면서 둘 다 연타다.
+- 대상 탐색에 트리거 콜라이더를 쓰지 않는다 — 풀에서 꺼낸 순간 이미 겹쳐 있던 적에게는 `Enter`가
+  다음 물리 스텝에나 와서, 지속 0인 충격파가 **아무도 못 때린다.** 타격마다 오버랩 쿼리를 돈다.
+- 넉백은 `IDamageable`의 기본 구현으로 뚫었다. `Enemy`는 힘이 아니라 추격 속도를 잠깐
+  갈아끼우는 방식이다 — `FixedUpdate`가 속도를 매 프레임 덮어써서 `AddForce`가 먹지 않는다.
 
 ### 테스트용으로 바꾼 임시 값
 
@@ -146,14 +146,51 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
 
 | 대상 | 값 | 이유 |
 | --- | --- | --- |
-| `ProjectileWeapon.asset` | 5레벨 표(데미지 10→32, 발사 수 1→3, 관통 0→2) | 레벨업 효과를 눈으로 보려고 |
+| 악기 10종 에셋 | 5레벨 표 전부 | 형태가 눈에 구분되는 정도로만 잡았다 |
+| `Player.prefab`의 시작 무기 | 스네어·기타·킥·베이스·신스·탐 | 6슬롯으로 4축을 전부 덮으려고 |
 | `Stage01`의 `_barsToClear` | 8 → 64마디(약 2분) | 16초마다 끝나면 테스트가 안 됨 |
+
+레벨 표는 **TSV 왕복**으로도 편집한다. `WeaponDefinition`의 버튼 두 개가 표를 클립보드로
+복사하고 되받는다. 스프레드시트에서 10종을 한 화면에 놓고 밸런싱하는 흐름이다.
+
+### 레벨업 카드
+
+레벨이 오르면 화면 중앙 하단에 카드 3장이 뜨고 하나를 고른다. 규칙은 `progression.md`의
+"카드 선택" 절 그대로다. 구조는 `architecture.md`의 "성장" 절.
+
+- `LevelUpDraft` (static) — 후보를 모아 중복 없이 3장. 신규 무기 가중치 = 빈 슬롯 수, 강화 = 1
+- `LevelUpOption` — 카드 한 장. 적용까지 자기가 안다
+- `LevelUpCardView` — 큐와 화면. 마우스 클릭 + 숫자키 1·2·3
+- 고를 강화가 하나도 없으면 `Build`가 **빈 목록**을 주고, 뷰가 힐을 바로 적용한다(기본 25).
+  힐은 카드 종류가 아니다 — 화면에 도달하지 않는 선택지를 타입에 두지 않으려고 (→ `architecture.md`)
+- 경험치 곡선을 기획서대로 `5 + 3 × (레벨-1)` **선형**으로 바꿨다 (지수 1.25배였음)
+
+`PlayerExp`의 `_growth`(배수) 필드가 `_requirementStep`(증가량)으로 바뀌었다.
+씬·프리팹에 남은 옛 값은 무시된다.
+
+### 확인한 것
+
+무기 축 — `Stage01` 플레이 40초에서 47킬. 6무기 전부 발사되고, 관통(남은 타격 2),
+유도(대상 잡힘), 추종 오라와 고정 장판이 동시에 살아 있는 것을 런타임에서 확인했다.
+
+카드 축 — 레벨업 3연발로 큐가 쌓이고 순서대로 소진되는 것, 고른 카드가 실제로 무기 레벨을
+올리는 것(스네어 Lv1→Lv3), 슬롯을 비우면 신규 무기 카드가 뜨는 것, 전부 만렙이면 카드 없이
+HP가 40→65로 회복되는 것까지 확인. 콘솔 에러 없음.
+
+### 검증 중에 잡은 것
+
+**카드가 저절로 소진됐다.** `EventSystem`이 `Card2`를 자동 선택해 둔 상태라 Submit 한 번에
+고르지도 않은 카드가 먹혔다(신스가 혼자 Lv2가 돼 있었다). 카드를 띄울 때마다 선택을 비우도록
+했다. **다만 이것만으로는 완전히 막히지 않는다** — 자세한 건 아래 "미해결"에.
+
+**적이 하나도 안 나와서 한참 헤맸는데 코드 문제가 아니었다.** 에디터가 포커스 밖이면 시간이
+아예 안 흐른다. 검증 절차로 `overview.md`의 "Working in this repo"에 옮겨 적었다.
 
 ### 다음 작업
 
-발사 형태 **구현 축 4가지** — 투사체 / 즉발 범위(충격파·폭발) / 지속 영역(오라·장판) / 순차 다단.
-이 4개면 악기 10종이 전부 얹힌다(`weapons.md`). 지금은 `ProjectileWeapon` 하나뿐이다.
-형태를 만들면서 그 형태가 쓰는 스탯 필드를 연결하면 위의 "소비처 없는 12축"이 줄어든다.
+- 소비처 없는 5축(치명타 확률·배수, 연주 밀도, 쿨다운 감소, 반사) 중 성장 쪽에서 쓸 것 연결
+- 채보 기반 타이밍. `EveryBeatTiming`·`BurstTiming` 둘 다 그때 교체된다
+- 카드의 소모성 보상이 힐뿐이다. 상점 화폐는 상점이 없어서 아직 없다
 
 ## 해결한 문제
 
@@ -181,8 +218,8 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
 `IDamageable`이 붙은 뒤로 스폰 즉시 자해하고 회수됐다. 화면상 발사가 안 되는 것처럼 보이고 5초 뒤
 플레이어가 죽어 생존 게이트가 잠겼다. 레이어 설정에 기대지 않도록 코드로 막았다.
 
-- `Projectile2D.Launch(..., Transform owner)` — owner 계층에 속한 대상은 통과시킨다.
-- `PhysicsTargetProvider` — 자기 계층 제외 + `IDamageable`인 대상만 타겟으로 인정(아군 투사체 조준 방지).
+- `Projectile.Launch`는 발사 주체를 받아 그 계층에 속한 대상을 통과시킨다.
+- 조준도 `IDamageable`인 대상만 인정한다(아군 투사체를 겨누지 않게). 지금은 편(`Faction`)으로 거른다.
 
 **조용한 실패** — 위 두 건 모두 로그 없이 아무 일도 안 일어나 원인 추적이 오래 걸렸다. `WeaponHandler`가
 시작 시 클록 미연결·무기 미지급을 로그로 알리고, 인스펙터에 클록 상태와 마지막 서브비트 인덱스를 띄운다.
@@ -190,15 +227,22 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
 ## 미해결
 
 - **무기별 비트 패턴(기획서 필요)** — 확정되면 `IFireTiming` 구현체와 `WeaponLevelData` 필드를 채운다.
-  `WeaponDefinition`의 `_intervalBeats`/`_offsetBeats`는 그때 제거될 임시 필드.
-- 무기가 아직 `ProjectileWeapon` 1종뿐. 나머지 5종의 형태(장판·오라·근접 등)가 정해져야 한다.
+  `WeaponDefinition`의 `_intervalBeats`/`_offsetBeats`/`_burstCount`/`_burstSubStep`은 그때 제거될 임시 필드.
+- **발사 형태는 초안이다.** 10종의 그림이 악기 소리와 맞는지는 곡이 나와야 정해진다(`weapons.md`).
+- 10종이 전부 같은 프리팹을 쓴다(탄 하나, 영역 하나). 화면에서 무기끼리 구분되는 건 크기·수·유도뿐이다.
+- 카드 UI는 uGUI 그레이박스다. 연출·아이콘 없음. 등장 방식을 곡의 마디와 맞출지는 미정(`progression.md`).
+- **카드가 의도치 않게 선택될 수 있다.** 띄울 때 `EventSystem` 선택을 비우지만, 기본 UI Navigate에
+  WASD가 물려 있어 이동만 해도 선택이 다시 카드로 옮겨간다. 그 상태에서 Submit(Enter·Space·패드 A)이
+  들어오면 고르지 않은 카드가 먹힌다. 막으려면 카드 버튼의 `Navigation.Mode`를 `None`으로 둬야 한다.
+- **오브 흡수의 박자 동기화가 아직 없다.** `progression.md`는 오브가 다음 정박에 도착하도록
+  속도를 맞추라고 하는데, 지금은 그냥 가속해서 끌려온다.
 - `Camera.main`을 `WeaponHandler.Awake`에서 한 번만 잡는다. 런타임에 카메라를 바꾸면 참조가 낡는다.
 - `Prototype_PlayerMovement.unity`는 `BpmClock`·시작 무기가 비어 있어 발사되지 않는다.
   플레이어를 프리팹으로 올렸으니(→ `architecture.md`), 이 씬도 프리팹 인스턴스로 교체하면 해소된다.
-- **스테이지 종료 조건이 임시**(`BeatTimelineEndSource`, 8마디). 기획이 정해지면 실제 곡을 소유하는
+- **스테이지 종료 조건이 임시**(`BeatTimelineEndSource`). 기획이 정해지면 실제 곡을 소유하는
   오케스트레이터로 교체한다. `_barsToClear`/`_beatsPerBar`는 그때 사라질 값.
 - 클록이 dspTime 기준이라 프레임이 멈춰도(창 비활성·긴 히치) 박은 계속 간다. 복귀 순간 진행도가
   한 번에 뛴다. `runInBackground`가 꺼져 있으면 빌드에서 알트탭 시 드러난다.
-- 카운트다운·일시정지·성장(무기 획득/레벨업) UI는 이번 슬라이스 범위 밖.
-- 스테이지 밸런스 미조정. 스폰 간격 0.8초 / 접촉 데미지 10 / 체력 100 / 클리어 8마디(120BPM에서 16초)로,
-  가만히 서 있으면 클리어 전에 죽는다. 이동으로 카이팅하는 걸 전제한 값.
+- 카운트다운·일시정지 UI 없음.
+- 스테이지 밸런스 미조정. 스폰 간격 0.8초 / 접촉 데미지 10 / 체력 100 / 클리어 64마디(120BPM에서 약 2분).
+  이동으로 카이팅하는 걸 전제한 값이다.
