@@ -11,7 +11,7 @@ namespace FiveWG.Pickup
     /// 효과가 늘어도 여기 switch 하나만 늘어난다.
     /// </summary>
     [RequireComponent(typeof(PlayerInventory))]
-    public sealed class PickupCollector : MonoBehaviour, IPickupReceiver
+    public sealed class PickupCollector : MonoBehaviour
     {
         [Title("참조 (비우면 자동으로 찾는다)")]
         [SerializeField, LabelText("플레이어")] private PlayerController _player;
@@ -32,6 +32,7 @@ namespace FiveWG.Pickup
             if (_expOrbs == null) _expOrbs = SceneServices.Instance.ExpOrbs;
         }
 
+        /// <summary>주운 픽업 하나를 효과로 바꾼다. 필드의 <see cref="Pickup"/>이 닿는 순간 부른다.</summary>
         public void Receive(PickupDefinition definition)
         {
             if (definition == null) return;

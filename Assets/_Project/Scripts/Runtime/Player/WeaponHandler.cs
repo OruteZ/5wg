@@ -206,7 +206,7 @@ namespace FiveWG.Player
             for (int slot = 0; slot < WeaponInventory.Capacity; slot++)
             {
                 IWeapon weapon = Inventory.GetAt(slot);
-                if (weapon is null || !weapon.IsReady) continue;
+                if (weapon is null) continue;
                 if (!AllGatesAllow(weapon)) continue;
                 if (!weapon.Timing.ShouldFire(tick)) continue;
 

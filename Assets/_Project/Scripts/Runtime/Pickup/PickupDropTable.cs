@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Alchemy.Inspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace FiveWG.Pickup
 {
@@ -56,7 +55,6 @@ namespace FiveWG.Pickup
                      "다 빗나가면 아무것도 안 나온다. 티켓이 이 경우다 (고액 0.5% / 일반 8% / 나머지 91.5%는 꽝).\n\n" +
                      "끄면 항목마다 따로 뽑는다. 서로 상관이 없어서 여러 개가 같이 나올 수 있다. " +
                      "아이템이 이 경우다 (물병과 자석이 한 마리에서 같이 나올 수 있음).")]
-            [FormerlySerializedAs("_exclusive")]
             private bool _onlyOne = true;
 
             // 티켓은 12분(보스 회차)부터 안 나와야 한다. 지금은 스테이지 경과 시간을 알 방법이
@@ -65,7 +63,6 @@ namespace FiveWG.Pickup
             [Tooltip("이 시각을 넘기면 더 나오지 않는다. 0이면 판이 끝날 때까지 계속 나온다.\n\n" +
                      "아직 동작하지 않는다. 스테이지가 몇 분째인지 알려주는 것이 없어서, " +
                      "회차 시스템이 생길 때까지 값만 받아 둔다.")]
-            [FormerlySerializedAs("_stopsAfterMinutes")]
             private float _dropUntilMinutes;
 
             [SerializeField, LabelText("목록")] private DropEntry[] _entries = Array.Empty<DropEntry>();

@@ -27,7 +27,7 @@ namespace FiveWG.Progression
 
         private Action<ExpOrb> _release;
         private Transform _target;
-        private IExpReceiver _receiver;
+        private PlayerExp _receiver;
         private float _value;
         private float _speed;
         private bool _isMagnetized;
@@ -37,7 +37,7 @@ namespace FiveWG.Progression
         public void SetReleaseCallback(Action<ExpOrb> release) => _release = release;
 
         /// <summary>풀에서 꺼낼 때마다 호출한다. 재사용되므로 상태를 전부 되돌린다.</summary>
-        public void Spawn(Vector2 position, float value, Transform target, IExpReceiver receiver)
+        public void Spawn(Vector2 position, float value, Transform target, PlayerExp receiver)
         {
             // 같은 자리에서 여러 마리가 죽어도 오브가 한 점에 겹치지 않게 흩뿌린다.
             transform.position = position + UnityEngine.Random.insideUnitCircle * _scatter;
