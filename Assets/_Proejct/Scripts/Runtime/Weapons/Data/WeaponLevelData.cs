@@ -33,8 +33,8 @@ namespace FiveWG.Weapons
 
         [Title("거동")]
         [LabelText("투사체 속도")] public float ProjectileSpeed;
-        [LabelText("유도 강도")] public float Homing;
-        [LabelText("넉백")] public float Knockback;
+        [LabelText("유도 강도 (초당 회전 각, 0이면 직선)")] public float Homing;
+        [LabelText("넉백 (밀려나는 속도)")] public float Knockback;
         [LabelText("반사 횟수")] public int Bounce;
 
         public static WeaponLevelData Default => new()
@@ -103,6 +103,106 @@ namespace FiveWG.Weapons
         };
 
 #if UNITY_EDITOR
+        /// <summary>
+        /// 레벨 표를 스프레드시트에 붙여넣을 수 있는 TSV로. 첫 줄은 필드 이름 헤더다.
+        ///
+        /// 필드를 여기 나열하지 않고 리플렉션으로 훑는다. 축이 15개에서 늘어도 이 코드가 낡지 않게.
+        /// </summary>
+        public static string ToTsv(WeaponLevelData[] levels)
+        {
+            var fields = typeof(WeaponLevelData).GetFields();
+            var text = new System.Text.StringBuilder();
+
+            text.Append("Level");
+            foreach (var f in fields) text.Append('\t').Append(f.Name);
+
+            for (int i = 0; i < (levels?.Length ?? 0); i++)
+            {
+                text.AppendLine().Append(i + 1);
+                foreach (var f in fields)
+                {
+                    text.Append('\t').Append(Convert.ToString(
+                        f.GetValue(levels[i]), System.Globalization.CultureInfo.InvariantCulture));
+                }
+            }
+
+            return text.ToString();
+        }
+
+        /// <summary>
+        /// TSV를 레벨 표로. 헤더가 있으면 <b>이름으로</b> 열을 맞춘다 — 스프레드시트에서 열 순서를
+        /// 바꿨을 때 값이 엉뚱한 축에 조용히 들어가는 게 제일 위험하기 때문이다.
+        /// 헤더가 없으면 선언 순서로 읽는다. 파싱에 실패하면 error를 남기고 null을 돌려준다.
+        /// </summary>
+        public static WeaponLevelData[] FromTsv(string tsv)
+        {
+            if (string.IsNullOrWhiteSpace(tsv))
+            {
+                Debug.LogError($"[{nameof(WeaponLevelData)}] 붙여넣을 내용이 비어 있다.");
+                return null;
+            }
+
+            string[] lines = tsv.Trim().Split('\n');
+            var fields = typeof(WeaponLevelData).GetFields();
+
+            // 헤더가 있으면 열 순서를 헤더에서 읽는다. 없으면 선언 순서 그대로.
+            var order = new System.Collections.Generic.List<System.Reflection.FieldInfo>(fields);
+            int firstRow = 0;
+
+            string[] head = lines[0].Trim().Split('\t');
+            if (!float.TryParse(head[0].Trim(), System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out _))
+            {
+                order.Clear();
+                for (int c = 1; c < head.Length; c++)
+                {
+                    string name = head[c].Trim();
+                    var match = Array.Find(fields, f => f.Name == name);
+                    if (match == null)
+                    {
+                        Debug.LogError($"[{nameof(WeaponLevelData)}] 모르는 열 '{name}'. 헤더를 확인해라.");
+                        return null;
+                    }
+
+                    order.Add(match);
+                }
+
+                firstRow = 1;
+            }
+
+            var result = new WeaponLevelData[lines.Length - firstRow];
+
+            for (int r = firstRow; r < lines.Length; r++)
+            {
+                // 첫 열은 레벨 번호다. 표에서 눈으로 확인하는 용도라 읽지 않고 건너뛴다.
+                string[] cells = lines[r].Trim().Split('\t');
+                if (cells.Length < order.Count + 1)
+                {
+                    Debug.LogError(
+                        $"[{nameof(WeaponLevelData)}] {r + 1}번째 줄의 칸이 {cells.Length}개다. {order.Count + 1}개여야 한다.");
+                    return null;
+                }
+
+                object row = default(WeaponLevelData);
+                for (int c = 0; c < order.Count; c++)
+                {
+                    if (!float.TryParse(cells[c + 1].Trim(), System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out float value))
+                    {
+                        Debug.LogError(
+                            $"[{nameof(WeaponLevelData)}] {r + 1}번째 줄 '{order[c].Name}'의 값 '{cells[c + 1]}'을 숫자로 읽지 못했다.");
+                        return null;
+                    }
+
+                    order[c].SetValue(row, Convert.ChangeType(value, order[c].FieldType));
+                }
+
+                result[r - firstRow] = (WeaponLevelData)row;
+            }
+
+            return result;
+        }
+
         /// <summary>필드를 늘리고 operator+ 에 빠뜨리는 걸 잡는다. 리플렉션으로 전 필드를 대조한다.</summary>
         [UnityEditor.InitializeOnLoadMethod]
         private static void SelfCheck()
@@ -125,6 +225,22 @@ namespace FiveWG.Weapons
                 {
                     Debug.LogError($"[{nameof(WeaponLevelData)}] operator+ 가 '{f.Name}'을 빠뜨렸다.");
                 }
+            }
+
+            // 왕복이 깨지면 밸런싱 표를 붙여넣는 순간 값이 조용히 엉뚱한 축으로 들어간다.
+            var roundTrip = FromTsv(ToTsv(new[] { (WeaponLevelData)a, (WeaponLevelData)b }));
+            if (roundTrip is not { Length: 2 })
+            {
+                Debug.LogError($"[{nameof(WeaponLevelData)}] TSV 왕복이 표를 되돌리지 못했다.");
+                return;
+            }
+
+            foreach (var f in fields)
+            {
+                if (Mathf.Approximately(Convert.ToSingle(f.GetValue(a)),
+                        Convert.ToSingle(f.GetValue((object)roundTrip[0])))) continue;
+
+                Debug.LogError($"[{nameof(WeaponLevelData)}] TSV 왕복에서 '{f.Name}'이 바뀌었다.");
             }
         }
 #endif

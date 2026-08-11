@@ -14,8 +14,8 @@ namespace FiveWG.Progression
         [Title("레벨 곡선")]
         [SerializeField, LabelText("1→2레벨 요구 경험치"), Min(1f)] private float _baseRequirement = 5f;
 
-        // 레벨당 요구량 배수. 1.0이면 모든 레벨이 같은 양을 요구한다.
-        [SerializeField, LabelText("레벨당 증가 배수"), Min(1f)] private float _growth = 1.25f;
+        // 레벨당 요구량 증가분. 선형이다.
+        [SerializeField, LabelText("레벨당 증가량"), Min(0f)] private float _requirementStep = 3f;
 
         [SerializeField, LabelText("최대 레벨 (0이면 무제한)"), Min(0)] private int _maxLevel = 0;
 
@@ -49,8 +49,13 @@ namespace FiveWG.Progression
 
         private void Awake() => RequiredExp = RequirementFor(Level);
 
-        /// <summary>레벨 L에서 L+1로 가는 데 필요한 양.</summary>
-        private float RequirementFor(int level) => _baseRequirement * Mathf.Pow(_growth, level - 1);
+        /// <summary>
+        /// 레벨 L에서 L+1로 가는 데 필요한 양. `5 + 3 × (레벨 - 1)` 선형이다(`progression.md`).
+        ///
+        /// 지수 곡선(VS식)을 쓰지 않는 이유는 **선택이 실시간이기 때문**이다 — 초반 1~2분에
+        /// 카드가 10번 넘게 뜨면 화면 아래를 계속 가린다. 40회 기준 누적은 2,540이다.
+        /// </summary>
+        private float RequirementFor(int level) => _baseRequirement + _requirementStep * (level - 1);
 
         public void AddExp(float amount)
         {

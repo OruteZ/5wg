@@ -1,3 +1,8 @@
 # Rules
 
-Project-specific rules Claude must follow in this repo, split into one file per topic (e.g. `naming.md`, `git.md`). Empty for now — add files as conventions emerge.
+이 저장소에서 지켜야 하는 규칙. 주제 하나에 파일 하나다.
+
+| 파일 | 내용 |
+| --- | --- |
+| `git.md` | 커밋 메시지 접두사 |
+| `code.md` | 런타임 C# 코드 컨벤션 |

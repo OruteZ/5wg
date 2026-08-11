@@ -122,6 +122,14 @@ namespace FiveWG.Player
             if (_health <= 0f) Die();
         }
 
+        /// <summary>레벨업 카드의 소모성 보상. 죽은 뒤에는 살아나지 않는다.</summary>
+        public void Heal(float amount)
+        {
+            if (!IsAlive || amount <= 0f) return;
+
+            _health = Mathf.Min(_maxHealth, _health + amount);
+        }
+
         private void Die()
         {
             // 발사 차단은 Awake에서 등록한 생존 게이트가 처리한다.

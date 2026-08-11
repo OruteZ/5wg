@@ -6,6 +6,7 @@ Project-specific skills live here as `.claude/skills/<name>/SKILL.md`, following
 | --- | --- |
 | `unity-build` | 스크립트를 고친 뒤 컴파일 확인 |
 | `unity-scene-check` | 런타임 문제의 원인이 코드가 아니라 씬 배선일 때 |
+| `docs-audit` | `.claude/docs`가 코드와 어긋났는지 대조하고 고칠 때 |
 | `split-commits` | 섞인 변경을 종류별 커밋으로 나눌 때 |
 | `git-commit-push` | 그냥 커밋하고 푸시할 때 |
 
