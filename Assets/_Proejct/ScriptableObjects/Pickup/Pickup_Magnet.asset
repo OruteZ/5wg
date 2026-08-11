@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97a8660f5fa08684788eadf6712e1059, type: 3}
+  m_Name: Pickup_Magnet
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Pickup.PickupDefinition
+  _displayName: 
+  _icon: {fileID: 0}
+  _effect: 2
+  _amount: 0
+  _prefab: {fileID: 4126791319734525149, guid: 6a82e2e44ff003245a89ba0c3e881b9b, type: 3}
