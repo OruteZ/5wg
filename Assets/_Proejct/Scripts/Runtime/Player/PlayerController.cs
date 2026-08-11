@@ -122,7 +122,7 @@ namespace FiveWG.Player
             if (_health <= 0f) Die();
         }
 
-        /// <summary>레벨업 카드의 소모성 보상. 죽은 뒤에는 살아나지 않는다.</summary>
+        /// <summary>회복 아이템이 부른다. 죽은 뒤에는 회복되지 않는다.</summary>
         public void Heal(float amount)
         {
             if (!IsAlive || amount <= 0f) return;

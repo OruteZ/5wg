@@ -2,6 +2,7 @@ using System.Threading;
 using System;
 using Alchemy.Inspector;
 using FiveWG.Core;
+using FiveWG.Pickup;
 using FiveWG.Player;
 using FiveWG.Progression;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace FiveWG.Enemies
 
         [Title("보상")]
         [SerializeField, LabelText("경험치 오브 풀 (비우면 자동 탐색)")] private ExpOrbPool _expPool;
+        [SerializeField, LabelText("픽업 드랍 (비우면 자동 탐색)")] private PickupDropper _dropper;
 
         [Title("스폰")]
         [SerializeField, LabelText("스폰 간격 (sec)")] private float _spawnInterval = 0.8f;
@@ -59,6 +61,7 @@ namespace FiveWG.Enemies
             }
 
             if (_expPool == null) _expPool = SceneServices.Instance.ExpOrbs;
+            if (_dropper == null) _dropper = SceneServices.Instance.Dropper;
 
             _cts = new CancellationTokenSource();
             _ = SpawnLoopAsync(_cts.Token);
@@ -120,10 +123,14 @@ namespace FiveWG.Enemies
             enemy.Spawn((Vector2)_target.position + offset, _target);
         }
 
-        /// <summary>적이 죽은 자리에 경험치를 떨어뜨린다. 스포너는 오브의 동작을 모른다.</summary>
+        /// <summary>
+        /// 적이 죽은 자리에 보상을 떨어뜨린다. 무엇이 얼마나 떨어지는지는 스포너가 모른다 —
+        /// 경험치는 오브 풀이, 티켓·아이템은 드랍 표가 정한다.
+        /// </summary>
         private void HandleEnemyDied(Vector2 position, float reward)
         {
             if (_expPool != null) _expPool.Drop(position, reward);
+            if (_dropper != null) _dropper.RollDrops(position);
         }
     }
 }

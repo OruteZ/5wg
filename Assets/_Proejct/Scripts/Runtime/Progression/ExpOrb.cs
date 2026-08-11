@@ -50,6 +50,9 @@ namespace FiveWG.Progression
             _isCollected = false;
         }
 
+        /// <summary>거리와 상관없이 끌림을 켠다. 자석 아이템이 부른다.</summary>
+        public void ForceMagnetize() => _isMagnetized = true;
+
         private void Update()
         {
             if (_isCollected || _target == null) return;

@@ -76,6 +76,18 @@ namespace FiveWG.Progression
             orb.Spawn(position, value, _collector.transform, _collector);
         }
 
+        /// <summary>필드에 떠 있는 오브를 전부 끌어온다. 자석 아이템이 여기로 들어온다.</summary>
+        [Button, LabelText("오브 전부 끌어오기")]
+        public void MagnetizeAll()
+        {
+            if (_pool == null) return;
+
+            foreach (ExpOrb orb in _pool.Active)
+            {
+                orb.ForceMagnetize();
+            }
+        }
+
         [Button, LabelText("오브 전부 회수")]
         public void ReleaseAll()
         {
