@@ -122,6 +122,14 @@ namespace FiveWG.Player
             if (_health <= 0f) Die();
         }
 
+        /// <summary>회복 아이템이 부른다. 죽은 뒤에는 회복되지 않는다.</summary>
+        public void Heal(float amount)
+        {
+            if (!IsAlive || amount <= 0f) return;
+
+            _health = Mathf.Min(_maxHealth, _health + amount);
+        }
+
         private void Die()
         {
             // 발사 차단은 Awake에서 등록한 생존 게이트가 처리한다.

@@ -2,6 +2,7 @@ using Alchemy.Inspector;
 using BeatTemplate;
 using FiveWG.Weapons;
 using FiveWG.Enemies;
+using FiveWG.Pickup;
 using FiveWG.Player;
 using FiveWG.Progression;
 using FiveWG.Stage;
@@ -25,6 +26,8 @@ namespace FiveWG.Core
         [SerializeField, LabelText("플레이어 경험치")] private PlayerExp _playerExp;
         [SerializeField, LabelText("적 스포너")] private EnemySpawner _spawner;
         [SerializeField, LabelText("경험치 오브 풀")] private ExpOrbPool _expOrbs;
+        [SerializeField, LabelText("픽업 풀")] private PickupPool _pickups;
+        [SerializeField, LabelText("픽업 드랍")] private PickupDropper _dropper;
         [SerializeField, LabelText("스테이지 디렉터")] private StageDirector _director;
         [SerializeField, LabelText("투사체 풀")] private ProjectilePool _projectiles;
 
@@ -53,7 +56,11 @@ namespace FiveWG.Core
         public PlayerExp PlayerExp => Resolve(ref _playerExp);
         public EnemySpawner Spawner => Resolve(ref _spawner);
         public ExpOrbPool ExpOrbs => Resolve(ref _expOrbs);
+        public PickupPool Pickups => Resolve(ref _pickups);
         public StageDirector Director => Resolve(ref _director);
+
+        /// <summary>적이 죽었을 때 드랍 표를 뽑는 창구. 스포너가 아는 픽업 쪽 타입은 이것뿐이다.</summary>
+        public PickupDropper Dropper => Resolve(ref _dropper);
 
     /// <summary>
     /// 투사체 풀은 쏘는 주체가 아니라 씬이 소유한다. 여러 주체가 같은 탄 프리팹을 공유하고,
