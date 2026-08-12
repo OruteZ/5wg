@@ -27,7 +27,7 @@ $msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere
 등록되지 않아 빌드에서 빠진다. 임시로 직접 넣어 검증한다.
 
 ```xml
-<Compile Include="Assets\_Proejct\Scripts\Runtime\경로\새파일.cs" />
+<Compile Include="Assets\_Project\Scripts\Runtime\경로\새파일.cs" />
 ```
 
 **Unity가 다시 csproj를 만들면 중복 등록으로 `CS2002` 경고가 뜬다. 그때 직접 넣은 줄을 지운다.**

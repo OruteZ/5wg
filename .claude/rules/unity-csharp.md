@@ -48,10 +48,11 @@
 - 클래스·메서드·프로퍼티·이벤트 `PascalCase`. private 필드 `_camelCase`. 지역·매개변수 `camelCase`.
 - `[SerializeField] private Type _fieldName;`. **public 필드는 쓰지 않고** 프로퍼티로 노출한다.
 - 파일 하나에 public 클래스 하나. 파일명 == 클래스명.
-- 네임스페이스는 폴더명과 같은 `FiveWG.*`. `Beat/`만 `BeatTemplate`을 유지한다.
-- 차원에 묶인 클래스만 `2D` 접미사(`Projectile2D` `Enemy2D`).
-  풀·상태 머신·데이터 컨테이너는 붙이지 않는다.
-- **`Assets/_Proejct/`는 오타지만 고치지 않는다.** 폴더를 옮기면 메타 파일 경로가 전부 흔들린다.
+- 네임스페이스는 `code.md`에 있다 — 폴더명과 같은 `FiveWG.*`, `Beat/`만 예외.
+- **`2D` 접미사를 붙이지 않는다.** `Projectile2D` `Enemy2D`는 `1aff432`에서 전부 떼어냈다.
+  게임플레이가 통째로 2D라 접미사가 아무것도 구분해주지 못했다. 지금 `2D`로 끝나는 클래스는 없다.
+- 프로젝트 코드는 `Assets/_Project/`에 있다. 오타(`_Proejct`)였던 것을 `243edc1`에서 `git mv`로
+  고쳤고, `.meta`가 따라가서 씬 참조는 끊기지 않았다.
 
 ## 5. 메모리와 수명
 
@@ -80,15 +81,13 @@
 
 ## 7. 인스펙터
 
-이 프로젝트는 **Alchemy**(`com.annulusgames.alchemy`)를 쓴다. 전 코드가 이미 쓰고 있다.
+**Alchemy**(`com.annulusgames.alchemy`)를 쓴다. 어떤 어트리뷰트를 어떻게 다는지는 `code.md`에.
+여기에는 API 쪽 함정만 둔다.
 
-- `[BoxGroup]` `[FoldoutGroup]` `[Button]` `[ShowInInspector]`를 UX가 실제로 나아지는 곳에만 쓴다.
 - **Alchemy의 `[Button]`은 라벨 인자를 받지 않는다.** 라벨이 필요하면 `[LabelText]`를 따로 단다.
 - 런타임 내부 상태가 밖에서 안 보이면 `[Button]`이나 `[ShowInInspector]` 읽기 전용 프로퍼티로
   노출한다(풀 점유율, 현재 박 인덱스, 활성 적 수). 핫패스에 `Debug.Log`를 뿌리지 않는다.
 
 ## 8. 주석
 
-- public 클래스와 자명하지 않은 public 메서드에 XML `/// <summary>`.
-- **주석은 자명하지 않은 의도만 설명한다.** 코드가 이미 말하는 것을 다시 쓰지 않는다.
-  자기 정당화 주석, 구획 배너를 쓰지 않는다. 설명이 필요 없는 줄에는 주석을 달지 않는다.
+`code.md`의 "주석"에 있다. **왜 그렇게 했는지만 적고, 코드가 이미 말하는 것을 다시 쓰지 않는다.**
