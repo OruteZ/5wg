@@ -7,9 +7,9 @@ Unity project built on the URP Empty Template. `Assets/TutorialInfo/` is stock t
 - **Input:** New Input System package. `Assets/InputSystem_Actions.inputactions` defines the input action map/bindings; regenerate the C# wrapper class from this asset (via its importer) rather than hand-editing generated code.
 - **Notable packages** (full list in `Packages/manifest.json`): Alchemy (`com.annulusgames.alchemy`, git dependency — 인스펙터 어트리뷰트를 전 코드가 쓴다), Cinemachine 3.1.7, 2D Feature, AI Navigation, Timeline, Visual Scripting, Multiplayer Center, Test Framework (`com.unity.test-framework` — 테스트 어셈블리 없음. Test Runner가 인식하려면 `.asmdef`부터 필요).
 
-## 프로젝트 코드 (`Assets/_Proejct/`)
+## 프로젝트 코드 (`Assets/_Project/`)
 
-스크립트 53개. **asmdef는 없다** — 전부 `Assembly-CSharp`에 들어가므로 스크립트 하나를 고치면
+스크립트 60개. **asmdef는 없다** — 전부 `Assembly-CSharp`에 들어가므로 스크립트 하나를 고치면
 전체가 재컴파일된다(3초 + 도메인 리로드). 대신 네임스페이스로 나눠뒀다.
 
 | 폴더 | 네임스페이스 | 내용 |
@@ -20,6 +20,7 @@ Unity project built on the URP Empty Template. `Assets/TutorialInfo/` is stock t
 | `Scripts/Runtime/Combat/` | `FiveWG.Combat` | 무기가 씬에 뿌리는 개체 — `Projectile` `DamageField` |
 | `Scripts/Runtime/Player/` | `FiveWG.Player` | `PlayerController` `PlayerMovement` `WeaponHandler` |
 | `Scripts/Runtime/Progression/` | `FiveWG.Progression` | 경험치 오브 + 레벨업 카드 규칙 |
+| `Scripts/Runtime/Pickup/` | `FiveWG.Pickup` | 티켓·아이템 드랍표·풀·수집 |
 | `Scripts/Runtime/Enemies/` `Stage/` `UI/` | 각 폴더명 | 적·스테이지·HUD·카드 화면 |
 
 | 씬 | 용도 |
@@ -30,11 +31,14 @@ Unity project built on the URP Empty Template. `Assets/TutorialInfo/` is stock t
 | `Scenes/Prototype/Prototype_PlayerMovement.unity` | 이동만. 클록·무기 미연결이라 발사 안 됨 |
 | `Scenes/SampleScene.unity` | URP 템플릿 잔재. 안 씀 |
 
-프리팹 `Prefabs/`: `Player` `Enemies/Enemy` `Combat/Projectile` `Combat/DamageField` `Progression/ExpOrb`.
-무기 데이터 `ScriptableObjects/Weapon/`에 악기 10종뿐(`Kick` `Snare` `HiHat` `Crash` `Tom`
-`Bass` `ElectricGuitar` `AcousticGuitar` `Keys` `Synth`).
+프리팹 `Prefabs/`: `Player` `Enemies/Enemy` `Combat/Projectile` `Combat/DamageField`
+`Progression/ExpOrb` `Pickup/`(티켓 2종 + 아이템 3종).
+ScriptableObjects: `Weapon/`에 악기 10종(`Kick` `Snare` `HiHat` `Crash` `Tom` `Bass`
+`ElectricGuitar` `AcousticGuitar` `Keys` `Synth`), `Pickup/`에 픽업 정의 5종 + 드랍표.
 
 - **레이어**: `Enemy`(3)와 `Projectile`(8)을 쓴다. 탄↔탄 충돌은 꺼져 있다(적↔적은 켜 둠).
+- **렌더·물리 설정은 빌드에서만 티가 난다** — VSync, Rigidbody2D 보간, Cinemachine 갱신 시점.
+  셋의 관계는 `architecture.md`의 "빌드에서만 드러나는 설정"에.
 - **빌드**: `Builds/Windows/5wg.exe`로 뽑는다. `.gitignore`에 걸려 커밋되지 않는다.
 
 ## Working in this repo

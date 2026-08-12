@@ -2,17 +2,20 @@
 
 Current work, milestones, and decisions. Keep this updated as the project moves forward.
 
-## 현재 상태 (2026-08-08)
+## 현재 상태 (2026-08-12)
 
 리듬 기반 자동공격 프로토타입. 플레이어가 6개 무기를 보유하고 박자에 맞춰 자동 발사하며,
-레벨업마다 카드 3장 중 하나를 골라 무기를 얻거나 강화한다.
+레벨업마다 카드 3장 중 하나를 골라 무기를 얻거나 강화한다. 적을 잡으면 경험치 외에
+티켓·아이템도 떨어진다.
 
 악기 10종과 4개 발사 형태가 전부 있고 **채보(곡별 악기 트랙)만 기다리고 있다.** 그게 들어오면
 지금의 임시 타이밍(`EveryBeatTiming`·`BurstTiming`)이 통째로 교체된다.
 
-작업 씬은 `Assets/_Proejct/Scenes/Stage01.unity`. 씬 목록은 `overview.md`에 있다.
+작업 씬은 `Assets/_Project/Scenes/Stage01.unity`. 씬 목록은 `overview.md`에 있다.
 
-아래는 브랜치 순서대로 쌓인다. **"지금 하는 일" 아래가 현재고 그 위는 전부 지나온 것**이다.
+아래는 **브랜치 순서대로 쌓인다. 위가 오래된 것, 아래가 최근**이고 "다음 작업"에서 끝난다.
+그 뒤에 "해결한 문제"와 "미해결"이 붙는다.
+
 구조 설명은 여기 두지 않는다 — `architecture.md`에 있고, 여기는 그때 왜 그렇게 정했는지만 남긴다.
 
 ## 플레이어 구성
@@ -29,7 +32,7 @@ Current work, milestones, and decisions. Keep this updated as the project moves 
 
 ## 무기 시스템
 
-`Assets/_Proejct/Scripts/Runtime/Weapons/`
+`Assets/_Project/Scripts/Runtime/Weapons/`
 
 ### 축 분리
 
@@ -73,7 +76,7 @@ Weapons/
 
 ## 스테이지 흐름 (버티컬 슬라이스)
 
-`Assets/_Proejct/Scripts/Runtime/Stage/`, `.../UI/`
+`Assets/_Project/Scripts/Runtime/Stage/`, `.../UI/`
 
 시작·종료 규칙을 갖춘 최소 플레이 루프. 수치는 전부 임시다.
 레이어 분리와 시퀀스는 `architecture.md`가 전부 갖고 있다 — 여기는 그때 내린 결정만 남긴다.
@@ -88,7 +91,7 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
 
 ## 성장·카메라 (빌드 피드백 폴리싱)
 
-`Assets/_Proejct/Scripts/Runtime/Progression/`
+`Assets/_Project/Scripts/Runtime/Progression/`
 
 - 적이 죽으면 경험치 오브를 떨어뜨리고, 플레이어가 가까이 가면 끌려와 수집된다.
   누적이 요구량을 넘으면 레벨업한다. (레벨업 카드는 아래 `feat/weapon-first-type` 절에서 붙었다.)
@@ -118,7 +121,7 @@ UI는 uGUI 레거시 `Text`/`Slider`/`Button` 그레이박스다. TMP 에센셜�
 - `WeaponLevelData` 3축 → 15축, `operator +`(합연산), 보정을 `OnValidate`로 이동
 - `Projectile._speed`/`_damage` 제거 — 수치 출처를 레벨 표 하나로
 
-## 지금 하는 일 (브랜치 `feat/weapon-first-type`)
+## 악기 10종 1차 (브랜치 `feat/weapon-first-type`, PR #10)
 
 악기 10종의 **1차 버전**. 4축을 전부 만들고 정의 에셋 10개를 붙였다.
 
@@ -186,11 +189,66 @@ HP가 40→65로 회복되는 것까지 확인. 콘솔 에러 없음.
 **적이 하나도 안 나와서 한참 헤맸는데 코드 문제가 아니었다.** 에디터가 포커스 밖이면 시간이
 아예 안 흐른다. 검증 절차로 `overview.md`의 "Working in this repo"에 옮겨 적었다.
 
-### 다음 작업
+## 픽업 시스템 (브랜치 `feat/pickup-system`, PR #11)
+
+경험치를 뺀 나머지 드랍 — 티켓 2종, 아이템 3종(회복·자석·리롤). 기획은 `pickup.md`,
+구조는 `architecture.md`의 "픽업" 절.
+
+- **뽑기(`PickupDropper`)와 풀(`PickupPool`)을 나눴다.** 스포너가 아는 픽업 타입이 드로퍼
+  하나뿐이라, 확률 규칙이 늘어도 스포너와 풀은 그대로다.
+- 확률은 전부 `PickupDropTable`(SO)에 있고 코드에 없다. 티켓은 "묶음에서 하나만",
+  아이템은 "항목마다 따로" — 뽑는 방식이 달라서 묶음 단위로 갈랐다.
+- **픽업은 저절로 사라지지 않는다.** 시간 소멸을 넣지 않은 대신 동시 상한(200)을 유일한
+  정리 수단으로 뒀다. 안 주운 것이 필드에 남아 있는 게 이 게임의 의도다.
+- `_dropUntilMinutes`(티켓 드랍 종료)는 **값만 받아 두고 아무도 안 읽는다.** 스테이지 경과
+  시간을 알려주는 것이 없어서, 회차 시스템이 생길 때까지 미룬다.
+
+## 픽업을 본편 씬으로 이관 (브랜치 `feat/pause-and-optimization`)
+
+픽업 배선이 검증용 씬(`Stage01_Pickup`)에만 있어서 본편에서는 아무것도 안 떨어졌다.
+
+- `PlayerInventory`·`PickupCollector`를 씬 오버라이드가 아니라 **Player 프리팹에** 넣었다.
+  새 스테이지 씬마다 다시 붙이지 않으려는 것. 씬에는 `Pickups` 오브젝트 하나만 두면 된다.
+- 검증용 씬은 역할이 겹쳐 삭제했다.
+
+## 죽은 추상 정리 (브랜치 `build_refactor`)
+
+구현체가 하나뿐인 인터페이스를 걷어냈다. 두 번째 구현이 생기면 그때 다시 만든다.
+
+- `IExpReceiver` → `PlayerExp` 직접 참조, `IPickupReceiver` → `PickupCollector` 직접 참조.
+  둘 다 풀이 이미 구체 타입을 들고 있어 인터페이스가 한 곳에서만 살아 있었다.
+- `IWeapon.IsReady` 제거 — `WeaponBase`가 항상 `true`를 돌려주고 override가 없었다.
+  재장전·차지 무기가 생기면 되살린다.
+- 이관이 끝난 `[FormerlySerializedAs]` 두 개 제거, `AimHelper`의 외부 미사용 public 둘을 private로.
+
+**남겨둔 것**: `IFireGate`/`DelegateFireGate`(게이트가 `() => IsAlive` 하나뿐이라 후보였으나,
+컷신·상점용 확장 지점으로 유지), `IWeapon`(사용처 21곳이라 교체 비용이 이득보다 컸다).
+
+## 폴더명 오타 수정 (`243edc1`)
+
+`Assets/_Proejct` → `Assets/_Project`. `git mv`로 처리해 `.meta`가 따라갔고 씬 참조는
+하나도 안 끊겼다. **"고치면 메타가 흔들린다"던 기존 판단이 틀렸다** — 규칙에서 지웠다.
+
+## 빌드 떨림·테어링 (브랜치 `build_refactor`, PR #12)
+
+빌드로 실행해 한쪽으로 계속 이동하면 플레이어가 떨리고 화면이 갈라졌다. **에디터에서는
+재현되지 않는 종류**라 원인 특정에 시간이 걸린다. 셋을 고쳤다.
+
+- `Rigidbody2D.interpolation`을 Player·Enemy·Projectile 셋 다 `Interpolate`로
+- `CinemachineBrain.UpdateMethod`를 `SmartUpdate` → `LateUpdate`로
+- PC 품질 레벨의 `vSyncCount`를 0 → 1로
+
+**앞의 둘은 세트로 가야 한다** — 보간만 켜면 카메라가 대신 떤다. 이유와 수치는
+`architecture.md`의 "빌드에서만 드러나는 설정"에 표로 있다.
+
+덤으로 `EditorBuildSettings`가 폴더 리네임 뒤에도 옛 경로를 들고 있던 것을 바로잡았다.
+
+## 다음 작업
 
 - 소비처 없는 5축(치명타 확률·배수, 연주 밀도, 쿨다운 감소, 반사) 중 성장 쪽에서 쓸 것 연결
 - 채보 기반 타이밍. `EveryBeatTiming`·`BurstTiming` 둘 다 그때 교체된다
-- 카드의 소모성 보상이 힐뿐이다. 상점 화폐는 상점이 없어서 아직 없다
+- 티켓을 쓸 곳이 없다. 상점이 생겨야 한다
+- 리롤을 얻기만 하고 쓰는 경로가 없다. 레벨업 카드와 상점 양쪽에 붙어야 한다
 
 ## 해결한 문제
 
@@ -234,11 +292,14 @@ HP가 40→65로 회복되는 것까지 확인. 콘솔 에러 없음.
 - **발사 형태는 초안이다.** 10종의 그림이 악기 소리와 맞는지는 곡이 나와야 정해진다(`weapons.md`).
 - 10종이 전부 같은 프리팹을 쓴다(탄 하나, 영역 하나). 화면에서 무기끼리 구분되는 건 크기·수·유도뿐이다.
 - 카드 UI는 uGUI 그레이박스다. 연출·아이콘 없음. 등장 방식을 곡의 마디와 맞출지는 미정(`progression.md`).
-- **카드가 의도치 않게 선택될 수 있다.** 띄울 때 `EventSystem` 선택을 비우지만, 기본 UI Navigate에
-  WASD가 물려 있어 이동만 해도 선택이 다시 카드로 옮겨간다. 그 상태에서 Submit(Enter·Space·패드 A)이
-  들어오면 고르지 않은 카드가 먹힌다. 막으려면 카드 버튼의 `Navigation.Mode`를 `None`으로 둬야 한다.
+- **카드가 의도치 않게 선택될 수 있다.** 카드 버튼의 `Navigation.Mode`를 `None`으로 두면 막힌다.
+  전말은 `architecture.md`의 "카드는 아무것도 멈추지 않는다"에.
 - **오브 흡수의 박자 동기화가 아직 없다.** `progression.md`는 오브가 다음 정박에 도착하도록
   속도를 맞추라고 하는데, 지금은 그냥 가속해서 끌려온다.
+- **티켓·리롤에 쓰는 곳이 없다.** 벌어서 들고 있는 데까지만 됐다. 티켓은 상점이, 리롤은
+  레벨업 카드와 상점이 생겨야 소비된다(`pickup.md`).
+- **픽업 드랍표의 `_dropUntilMinutes`가 동작하지 않는다.** 스테이지 경과 시간을 알려주는 것이
+  없어서 값만 받아 둔다. 회차 시스템이 생길 때 연결한다.
 - `Camera.main`을 `WeaponHandler.Awake`에서 한 번만 잡는다. 런타임에 카메라를 바꾸면 참조가 낡는다.
 - `Prototype_PlayerMovement.unity`는 `BpmClock`·시작 무기가 비어 있어 발사되지 않는다.
   플레이어를 프리팹으로 올렸으니(→ `architecture.md`), 이 씬도 프리팹 인스턴스로 교체하면 해소된다.
