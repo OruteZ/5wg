@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e464252e20abe24199d6681886e4677, type: 3}
+  m_Name: StageEnemyPlan_Stage01
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Enemies.StageEnemyPlan
+  _pacing: {fileID: 11400000, guid: 0e3ea1d394111d64386cd84cfb2eb770, type: 2}
+  _rounds:
+  - _label: "1\uACE1 (0-120\uB9C8\uB514)"
+    _startBar: 0
+    _weights:
+    - _definition: {fileID: 11400000, guid: f4edb4ce45197ec4b81dd5a7f85cdcb0, type: 2}
+      _weight: 45
+    - _definition: {fileID: 11400000, guid: 30fae52a66671814399e70b37975ebd3, type: 2}
+      _weight: 30
+    - _definition: {fileID: 11400000, guid: bc1522cb3da050942ac6dcc9c190d619, type: 2}
+      _weight: 25
+  - _label: "2\uACE1 (120-240\uB9C8\uB514)"
+    _startBar: 120
+    _weights:
+    - _definition: {fileID: 11400000, guid: f4edb4ce45197ec4b81dd5a7f85cdcb0, type: 2}
+      _weight: 25
+    - _definition: {fileID: 11400000, guid: 30fae52a66671814399e70b37975ebd3, type: 2}
+      _weight: 22
+    - _definition: {fileID: 11400000, guid: bc1522cb3da050942ac6dcc9c190d619, type: 2}
+      _weight: 22
+    - _definition: {fileID: 11400000, guid: b6851ff1e8e6ded478f4878659a11746, type: 2}
+      _weight: 28
+    - _definition: {fileID: 11400000, guid: 060bccde500249648807c97741eb8821, type: 2}
+      _weight: 3
+  - _label: "3\uACE1 (240-360\uB9C8\uB514)"
+    _startBar: 240
+    _weights:
+    - _definition: {fileID: 11400000, guid: f4edb4ce45197ec4b81dd5a7f85cdcb0, type: 2}
+      _weight: 15
+    - _definition: {fileID: 11400000, guid: 30fae52a66671814399e70b37975ebd3, type: 2}
+      _weight: 15
+    - _definition: {fileID: 11400000, guid: bc1522cb3da050942ac6dcc9c190d619, type: 2}
+      _weight: 15
+    - _definition: {fileID: 11400000, guid: b6851ff1e8e6ded478f4878659a11746, type: 2}
+      _weight: 22
+    - _definition: {fileID: 11400000, guid: 060bccde500249648807c97741eb8821, type: 2}
+      _weight: 3
+    - _definition: {fileID: 11400000, guid: 511acaab58c86b24a8f957e83f305452, type: 2}
+      _weight: 30
+  - _label: "4\uACE1 (360\uB9C8\uB514~, \uBCF4\uC2A4)"
+    _startBar: 360
+    _weights:
+    - _definition: {fileID: 11400000, guid: f4edb4ce45197ec4b81dd5a7f85cdcb0, type: 2}
+      _weight: 10
+    - _definition: {fileID: 11400000, guid: 30fae52a66671814399e70b37975ebd3, type: 2}
+      _weight: 10
+    - _definition: {fileID: 11400000, guid: bc1522cb3da050942ac6dcc9c190d619, type: 2}
+      _weight: 10
+    - _definition: {fileID: 11400000, guid: b6851ff1e8e6ded478f4878659a11746, type: 2}
+      _weight: 15
+    - _definition: {fileID: 11400000, guid: 060bccde500249648807c97741eb8821, type: 2}
+      _weight: 5
+    - _definition: {fileID: 11400000, guid: 511acaab58c86b24a8f957e83f305452, type: 2}
+      _weight: 22
+    - _definition: {fileID: 11400000, guid: 2d44dd29578ab364e80147d60d3d7d9a, type: 2}
+      _weight: 28
+  _waves:
+  - _label: "1\uACE1 \uC911\uBC18 \uBB3C\uB7C9"
+    _bar: 60
+    _formation: 1
+    _entries:
+    - _definition: {fileID: 11400000, guid: f4edb4ce45197ec4b81dd5a7f85cdcb0, type: 2}
+      _count: 40
+  - _label: "1\uACE1 \uB05D \uAC00\uB460"
+    _bar: 105
+    _formation: 2
+    _entries:
+    - _definition: {fileID: 11400000, guid: bc1522cb3da050942ac6dcc9c190d619, type: 2}
+      _count: 30
+  - _label: "2\uACE1 \uC911\uBC18 \uCCB4\uAE09 \uBCBD"
+    _bar: 180
+    _formation: 1
+    _entries:
+    - _definition: {fileID: 11400000, guid: 060bccde500249648807c97741eb8821, type: 2}
+      _count: 35
+  - _label: "2\uACE1 \uB05D \uC555\uBC15 \uC815\uC810"
+    _bar: 225
+    _formation: 0
+    _entries:
+    - _definition: {fileID: 11400000, guid: 060bccde500249648807c97741eb8821, type: 2}
+      _count: 25
+    - _definition: {fileID: 11400000, guid: b6851ff1e8e6ded478f4878659a11746, type: 2}
+      _count: 40
+  - _label: "3\uACE1 \uC911\uBC18 \uBB3C\uB7C9"
+    _bar: 300
+    _formation: 2
+    _entries:
+    - _definition: {fileID: 11400000, guid: 511acaab58c86b24a8f957e83f305452, type: 2}
+      _count: 60
+  - _label: "3\uACE1 \uB05D \uB9C8\uC9C0\uB9C9 \uBCBD"
+    _bar: 345
+    _formation: 0
+    _entries:
+    - _definition: {fileID: 11400000, guid: 060bccde500249648807c97741eb8821, type: 2}
+      _count: 40
+    - _definition: {fileID: 11400000, guid: 2d44dd29578ab364e80147d60d3d7d9a, type: 2}
+      _count: 40
+  _boss:
+    _enabled: 1
+    _definition: {fileID: 11400000, guid: ba18b49e02cd7674cb96f90daf37320d, type: 2}
+    _spawnBar: 360

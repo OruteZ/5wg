@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9a7b0f8f4a4bb347b8861974b528e23, type: 3}
+  m_Name: RunPacing_Default
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Enemies.RunPacingPlan
+  _baseHealth:
+  - _timeSec: 0
+    _value: 10
+  - _timeSec: 120
+    _value: 14
+  - _timeSec: 240
+    _value: 20
+  - _timeSec: 360
+    _value: 42
+  - _timeSec: 480
+    _value: 110
+  - _timeSec: 600
+    _value: 127
+  - _timeSec: 720
+    _value: 188
+  - _timeSec: 810
+    _value: 185
+  _spawnRate:
+  - _timeSec: 0
+    _value: 1.2
+  - _timeSec: 120
+    _value: 2.1
+  - _timeSec: 240
+    _value: 3.6
+  - _timeSec: 360
+    _value: 4.6
+  - _timeSec: 480
+    _value: 4.1
+  - _timeSec: 600
+    _value: 9.9
+  - _timeSec: 720
+    _value: 22.3
+  - _timeSec: 810
+    _value: 5
+  _targetAlive:
+  - _timeSec: 0
+    _value: 15
+  - _timeSec: 120
+    _value: 40
+  - _timeSec: 240
+    _value: 70
+  - _timeSec: 360
+    _value: 120
+  - _timeSec: 480
+    _value: 180
+  - _timeSec: 600
+    _value: 250
+  - _timeSec: 720
+    _value: 250
+  - _timeSec: 810
+    _value: 100
+  _beatsPerBar: 4
+  _baseMoveSpeed: 2
+  _spawnRadius: 14
+  _despawnRadiusMultiplier: 2
+  _spawnRadiusJitter: 1
+  _oneDirectionArcDegrees: 60
+  _softCap: 250
+  _hardCap: 300
+  _elite:
+    _enabled: 1
+    _startBar: 180
+    _intervalBars: 45
+    _count: 5
+    _healthMultiplier: 1
+    _sizeMultiplier: 1
+    _moveSpeedMultiplier: 1

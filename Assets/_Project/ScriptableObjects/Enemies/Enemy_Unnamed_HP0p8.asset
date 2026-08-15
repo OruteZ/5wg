@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 136762102aeb8a24c932d487359ff56b, type: 3}
+  m_Name: Enemy_Unnamed_HP0p8
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Enemies.EnemyDefinition
+  _displayName: "[\uC774\uB984 \uBBF8\uC815]"
+  _prefab: {fileID: 1825767638987215925, guid: 5f84069730b712246b2b184280df83f4, type: 3}
+  _note: "\uAE30\uD68D\uC11C\uC5D0 \uC131\uACA9 \uBBF8\uAE30\uC7AC"
+  _color: {r: 0.5, g: 0.78, b: 0.95, a: 1}
+  _healthMode: 0
+  _healthMultiplier: 0.8
+  _absoluteHealth: 0
+  _moveSpeedMultiplier: 1.2
+  _contactDamage: 8
+  _noteReward: 1
+  _sizeMultiplier: 1
+  _immuneToKnockback: 0
+  _immuneToDespawn: 0
+  _unlockTimeSec: 0
