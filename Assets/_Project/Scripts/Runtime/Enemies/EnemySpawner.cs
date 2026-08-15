@@ -9,7 +9,11 @@ using UnityEngine;
 
 namespace FiveWG.Enemies
 {
-    public sealed class EnemySpawner : MonoBehaviour
+    /// <summary>
+    /// 프리팹 하나를 고정 간격으로 뿌리는 초기 스포너. 기획 표가 없던 시절의 것이다.
+    /// 표 기반 스폰은 <see cref="EnemySpawnDirector"/>가 한다.
+    /// </summary>
+    public sealed class EnemySpawner : EnemySpawnerBase
     {
         [Title("대상")]
         [SerializeField, Required("적 프리팹")] private Enemy _enemyPrefab;
@@ -98,8 +102,7 @@ namespace FiveWG.Enemies
             }
         }
 
-        /// <summary>스폰 on/off. StageDirector가 스테이지 시작·종료에 맞춰 호출한다.</summary>
-        public void SetSpawning(bool enabled) => _autoSpawnEnabled = enabled;
+        public override void SetSpawning(bool enabled) => _autoSpawnEnabled = enabled;
 
         [Button, LabelText("자동 스폰 켜기 / 끄기")]
         private void ToggleAutoSpawn()
@@ -108,7 +111,7 @@ namespace FiveWG.Enemies
         }
 
         [Button, LabelText("적 전부 제거")]
-        public void ClearAll()
+        public override void ClearAll()
         {
             if (!Application.isPlaying) return;
             _pool?.ReleaseAll();
