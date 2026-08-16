@@ -24,11 +24,15 @@ namespace FiveWG.Enemies
         [Title("지정 웨이브")]
         [SerializeField, LabelText("웨이브")] private Wave[] _waves = Array.Empty<Wave>();
 
+        [Title("엘리트")]
+        [SerializeField, LabelText("엘리트")] private EliteEntry _elite = new();
+
         [Title("보스")]
         [SerializeField, LabelText("보스")] private BossEntry _boss = new();
 
         public RunPacingPlan Pacing => _pacing;
         public Wave[] Waves => _waves;
+        public EliteEntry Elite => _elite;
         public BossEntry Boss => _boss;
 
         /// <summary>시작 마디가 지난 회차 중 가장 늦은 것.</summary>
@@ -72,6 +76,30 @@ namespace FiveWG.Enemies
 
             public EnemyDefinition Definition => _definition;
             public float Value => _weight;
+        }
+
+        /// <summary>
+        /// 엘리트 등장 일정. 수치는 일반 적과 똑같이 <see cref="EnemyDefinition"/> 에셋에 있고
+        /// 여기에는 "언제 몇 마리"만 둔다.
+        /// </summary>
+        [Serializable]
+        public sealed class EliteEntry
+        {
+            [SerializeField, LabelText("사용")] private bool _enabled = true;
+
+            [SerializeField, LabelText("엘리트 정의")]
+            [Tooltip("비워두면 엘리트가 나오지 않는다. 상자 보상도 같이 사라지므로 디렉터가 경고한다.")]
+            private EnemyDefinition _definition;
+
+            [SerializeField, LabelText("첫 등장 (마디)"), Min(0f)] private float _startBar = 90f;
+            [SerializeField, LabelText("등장 간격 (마디)"), Min(1f)] private float _intervalBars = 120f;
+            [SerializeField, LabelText("총 마리 수"), Min(0)] private int _count = 3;
+
+            public bool Enabled => _enabled;
+            public EnemyDefinition Definition => _definition;
+            public int Count => _count;
+
+            public float GetSpawnBar(int index) => _startBar + _intervalBars * index;
         }
 
         /// <summary>

@@ -9,9 +9,9 @@ namespace FiveWG.Enemies
     /// 스테이지가 달라도 같은 값들이다. 어떤 적이 어떤 비율로 나오는가는
     /// <see cref="StageEnemyPlan"/>에 있다.
     ///
-    /// **곡선은 초, 사건은 마디로 잰다.** HP·스폰율·DPS가 전부 "초당 고정, BPM 비연동"으로
-    /// 정해져 있어 곡선을 마디로 옮기면 BPM이 오를 때 난이도만 빨라진다. 반대로 엘리트 등장은
-    /// 곡 구조상의 위치라 마디여야 BPM이 바뀌어도 같은 자리에 온다.
+    /// **곡선은 초로 잰다.** HP·스폰율·DPS가 전부 "초당 고정, BPM 비연동"으로 정해져 있어
+    /// 마디로 옮기면 BPM이 오를 때 난이도만 빨라진다. 곡 구조상의 위치인 회차·웨이브·엘리트·보스는
+    /// 반대로 마디로 재며, 그쪽은 <see cref="StageEnemyPlan"/>에 있다.
     /// </summary>
     [CreateAssetMenu(fileName = "RunPacingPlan", menuName = "5WG/Enemies/Run Pacing Plan")]
     public sealed class RunPacingPlan : ScriptableObject
@@ -60,9 +60,6 @@ namespace FiveWG.Enemies
         [Tooltip("웨이브는 평상시 상한을 넘겨도 되지만 이 값은 지킨다.")]
         private int _hardCap = 300;
 
-        [Title("엘리트")]
-        [SerializeField, LabelText("엘리트 일정")] private EliteSchedule _elite = new();
-
         public int BeatsPerBar => _beatsPerBar;
         public float BaseMoveSpeed => _baseMoveSpeed;
         public float SpawnRadius => _spawnRadius;
@@ -71,7 +68,6 @@ namespace FiveWG.Enemies
         public float DespawnRadius => _spawnRadius * _despawnRadiusMultiplier;
         public int SoftCap => _softCap;
         public int HardCap => _hardCap;
-        public EliteSchedule Elite => _elite;
 
         public float SampleBaseHealth(float timeSec) => Sample(_baseHealth, timeSec);
         public float SampleSpawnRate(float timeSec) => Sample(_spawnRate, timeSec);
@@ -145,37 +141,6 @@ namespace FiveWG.Enemies
 
             public float TimeSec => _timeSec;
             public float Value => _value;
-        }
-
-        /// <summary>
-        /// 엘리트 등장 일정과 강화 배수. 엘리트는 별도 적이 아니라 그 회차의 추첨에서 뽑은
-        /// 적에 배수를 얹은 것이다.
-        /// </summary>
-        [Serializable]
-        public sealed class EliteSchedule
-        {
-            [SerializeField, LabelText("사용")] private bool _enabled = true;
-            [SerializeField, LabelText("첫 등장 (마디)"), Min(0f)] private float _startBar = 180f;
-            [SerializeField, LabelText("등장 간격 (마디)"), Min(1f)] private float _intervalBars = 45f;
-            [SerializeField, LabelText("총 마리 수"), Min(0)] private int _count = 5;
-
-            // 기획서에 "[ ]"로 남아 있어 1.0으로 둔다. 디렉터가 시작 시 로그로 알린다.
-            [SerializeField, LabelText("HP 배수 (미정)"), Min(0f)] private float _healthMultiplier = 1f;
-            [SerializeField, LabelText("크기 배수 (미정)"), Min(0.01f)] private float _sizeMultiplier = 1f;
-            [SerializeField, LabelText("이동 속도 배수 (미정)"), Min(0f)] private float _moveSpeedMultiplier = 1f;
-
-            public bool Enabled => _enabled;
-            public int Count => _count;
-            public float HealthMultiplier => _healthMultiplier;
-            public float SizeMultiplier => _sizeMultiplier;
-            public float MoveSpeedMultiplier => _moveSpeedMultiplier;
-
-            public bool HasNoDistinction =>
-                Mathf.Approximately(_healthMultiplier, 1f)
-                && Mathf.Approximately(_sizeMultiplier, 1f)
-                && Mathf.Approximately(_moveSpeedMultiplier, 1f);
-
-            public float GetSpawnBar(int index) => _startBar + _intervalBars * index;
         }
 
 #if UNITY_EDITOR

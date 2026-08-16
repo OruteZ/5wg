@@ -57,6 +57,11 @@ namespace FiveWG.Enemies
         [SerializeField, LabelText("넉백 면역")] private bool _immuneToKnockback;
         [SerializeField, LabelText("디스폰 면역")] private bool _immuneToDespawn;
 
+        [Title("분류")]
+        [SerializeField, LabelText("엘리트")]
+        [Tooltip("켜면 처치 시 상자 보상 경로를 탄다. 수치는 다른 적과 똑같이 이 에셋에 적는다.")]
+        private bool _isElite;
+
         [Title("등장")]
         [SerializeField, LabelText("등장 시점 (sec)"), Min(0f)]
         [Tooltip("이 시각 전에는 평상시 추첨에서 빠진다. 지정 웨이브는 이 값을 보지 않는다.")]
@@ -72,23 +77,18 @@ namespace FiveWG.Enemies
         private string UnlockTimeLabel => $"{Mathf.FloorToInt(_unlockTimeSec / 60f)}:{_unlockTimeSec % 60f:00}";
 
         /// <summary>시간 곡선의 기본값과 기본 속도를 받아 이 종류의 최종 수치를 만든다.</summary>
-        public EnemyStats Resolve(
-            float baseHealth, float baseMoveSpeed,
-            float eliteHealthMultiplier = 1f, float eliteSpeedMultiplier = 1f, float eliteSizeMultiplier = 1f,
-            bool isElite = false)
+        public EnemyStats Resolve(float baseHealth, float baseMoveSpeed)
         {
-            // 절대값은 곡선도 엘리트 배수도 타지 않는다. 목표 처치 시간에서 직접 뽑은 값이다.
-            float health = _healthMode == EnemyHealthMode.Absolute
-                ? _absoluteHealth
-                : baseHealth * _healthMultiplier * eliteHealthMultiplier;
+            // 절대값은 곡선을 타지 않는다. 목표 처치 시간에서 직접 뽑은 값이다.
+            float health = _healthMode == EnemyHealthMode.Absolute ? _absoluteHealth : baseHealth * _healthMultiplier;
 
             return new EnemyStats(
                 health,
-                baseMoveSpeed * _moveSpeedMultiplier * eliteSpeedMultiplier,
+                baseMoveSpeed * _moveSpeedMultiplier,
                 _contactDamage,
                 _noteReward,
-                _sizeMultiplier * eliteSizeMultiplier,
-                isElite,
+                _sizeMultiplier,
+                _isElite,
                 _color,
                 _immuneToKnockback,
                 _immuneToDespawn);

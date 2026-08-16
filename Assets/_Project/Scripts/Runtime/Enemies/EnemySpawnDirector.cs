@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Alchemy.Inspector;
 using BeatTemplate;
@@ -48,7 +48,7 @@ namespace FiveWG.Enemies
         private float BaseHealthNow => _pacing != null ? _pacing.SampleBaseHealth(_elapsedSec) : 0f;
 
         [ShowInInspector, ReadOnly, LabelText("남은 엘리트")] private int EliteRemaining =>
-            _pacing != null && _pacing.Elite != null ? Mathf.Max(0, _pacing.Elite.Count - _elitesSpawned) : 0;
+            _plan != null && _plan.Elite != null ? Mathf.Max(0, _plan.Elite.Count - _elitesSpawned) : 0;
 
         [ShowInInspector, ReadOnly, LabelText("경과 마디")] private float ElapsedBarsDebug => ElapsedBars;
 
@@ -141,7 +141,7 @@ namespace FiveWG.Enemies
                     "회차·웨이브·엘리트·보스가 하나도 나오지 않는다.", this);
             }
 
-            WarnIfEliteIsIndistinct();
+            WarnIfEliteMissing();
             WarnIfBossMissing();
         }
 
@@ -187,7 +187,7 @@ namespace FiveWG.Enemies
                 }
             }
 
-            RunPacingPlan.EliteSchedule elite = _pacing?.Elite;
+            StageEnemyPlan.EliteEntry elite = _plan?.Elite;
             if (elite != null)
             {
                 _elitesSpawned = 0;
@@ -316,7 +316,7 @@ namespace FiveWG.Enemies
                         _ => UnityEngine.Random.Range(0f, Mathf.PI * 2f),
                     };
 
-                    SpawnAt(entry.Definition, angle, isElite: false);
+                    SpawnAt(entry.Definition, angle);
                 }
             }
 
@@ -328,25 +328,24 @@ namespace FiveWG.Enemies
             }
         }
 
+        // 상한을 보지 않는다. 한 판 3마리뿐이라 하나가 막히면 상자 보상이 3분의 1 사라진다.
         private void TickElites()
         {
-            RunPacingPlan.EliteSchedule elite = _pacing.Elite;
+            StageEnemyPlan.EliteEntry elite = _plan.Elite;
             if (elite == null || !elite.Enabled || _elitesSpawned >= elite.Count) return;
             if (ElapsedBars < elite.GetSpawnBar(_elitesSpawned)) return;
 
             _elitesSpawned++;
 
-            if (_pool.ActiveCount >= _pacing.HardCap)
+            if (elite.Definition == null)
             {
-                Debug.LogWarning(
-                    $"[{nameof(EnemySpawnDirector)}] {_elitesSpawned}번째 엘리트가 하드 상한에 막혀 나오지 못했다.", this);
+                Debug.LogError(
+                    $"[{nameof(EnemySpawnDirector)}] 엘리트 정의가 비어 있어 {_elitesSpawned}번째 엘리트가 나오지 않았다.",
+                    this);
                 return;
             }
 
-            EnemyDefinition definition = PickWeighted();
-            if (definition == null) return;
-
-            SpawnAt(definition, UnityEngine.Random.Range(0f, Mathf.PI * 2f), isElite: true);
+            SpawnAt(elite.Definition, UnityEngine.Random.Range(0f, Mathf.PI * 2f));
         }
 
         // 상한을 보지 않는다. 보스가 막혀 안 나오면 그 판은 이길 수 없는 판이 된다.
@@ -365,7 +364,7 @@ namespace FiveWG.Enemies
                 return;
             }
 
-            _bossInstance = SpawnAt(boss.Definition, UnityEngine.Random.Range(0f, Mathf.PI * 2f), isElite: false);
+            _bossInstance = SpawnAt(boss.Definition, UnityEngine.Random.Range(0f, Mathf.PI * 2f));
             IsBossAlive = _bossInstance != null;
 
             Debug.Log($"[{nameof(EnemySpawnDirector)}] 보스 \"{boss.Definition.DisplayName}\" 등장 ({ElapsedLabel}).", this);
@@ -390,7 +389,7 @@ namespace FiveWG.Enemies
                 EnemyDefinition definition = PickWeighted();
                 if (definition == null) break;
 
-                SpawnAt(definition, UnityEngine.Random.Range(0f, Mathf.PI * 2f), isElite: false);
+                SpawnAt(definition, UnityEngine.Random.Range(0f, Mathf.PI * 2f));
                 alive++;
             }
         }
@@ -430,7 +429,7 @@ namespace FiveWG.Enemies
             return _candidates[^1].Definition;
         }
 
-        private Enemy SpawnAt(EnemyDefinition definition, float angle, bool isElite)
+        private Enemy SpawnAt(EnemyDefinition definition, float angle)
         {
             if (definition.Prefab == null)
             {
@@ -439,12 +438,7 @@ namespace FiveWG.Enemies
                 return null;
             }
 
-            RunPacingPlan.EliteSchedule elite = _pacing.Elite;
-            EnemyStats stats = isElite && elite != null
-                ? definition.Resolve(
-                    _pacing.SampleBaseHealth(_elapsedSec), _pacing.BaseMoveSpeed,
-                    elite.HealthMultiplier, elite.MoveSpeedMultiplier, elite.SizeMultiplier, isElite: true)
-                : definition.Resolve(_pacing.SampleBaseHealth(_elapsedSec), _pacing.BaseMoveSpeed);
+            EnemyStats stats = definition.Resolve(_pacing.SampleBaseHealth(_elapsedSec), _pacing.BaseMoveSpeed);
 
             Enemy enemy = _pool.Get(definition.Prefab);
             enemy.Spawn((Vector2)_target.position + PointOnSpawnCircle(angle), _target, stats);
@@ -473,14 +467,15 @@ namespace FiveWG.Enemies
             OnBossDefeated?.Invoke(position);
         }
 
-        // 배수가 전부 1이면 화면에서는 "엘리트가 안 나온다"로 보인다. 배선 실수와 구분해준다.
-        private void WarnIfEliteIsIndistinct()
+        // 엘리트가 없으면 상자 보상이 통째로 사라진다. 3분이 돼서야 알게 되면 늦다.
+        private void WarnIfEliteMissing()
         {
-            if (_pacing?.Elite == null || !_pacing.Elite.Enabled || !_pacing.Elite.HasNoDistinction) return;
+            StageEnemyPlan.EliteEntry elite = _plan?.Elite;
+            if (elite == null || !elite.Enabled || elite.Definition != null) return;
 
-            Debug.LogWarning(
-                $"[{nameof(EnemySpawnDirector)}] 엘리트 강화 배수(HP·크기·속도)가 전부 1이다. " +
-                "기획에 아직 값이 없어서다 — 엘리트가 일반 적과 구분되지 않는다.", this);
+            Debug.LogError(
+                $"[{nameof(EnemySpawnDirector)}] \"{_plan.name}\"에 엘리트 정의가 없다. " +
+                "엘리트가 나오지 않아 상자 보상도 없다.", this);
         }
 
         // 12분이 돼서야 알게 되면 늦다.
