@@ -109,6 +109,12 @@ MonoBehaviour:
       _count: 40
     - _definition: {fileID: 11400000, guid: 2d44dd29578ab364e80147d60d3d7d9a, type: 2}
       _count: 40
+  _elite:
+    _enabled: 1
+    _definition: {fileID: 11400000, guid: 3c7af2195b0cfda4ebcb3b9b538bffbe, type: 2}
+    _startBar: 90
+    _intervalBars: 120
+    _count: 3
   _boss:
     _enabled: 1
     _definition: {fileID: 11400000, guid: ba18b49e02cd7674cb96f90daf37320d, type: 2}

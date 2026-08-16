@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,19 +16,19 @@ MonoBehaviour:
   - _timeSec: 0
     _value: 10
   - _timeSec: 120
-    _value: 14
+    _value: 15
   - _timeSec: 240
-    _value: 20
+    _value: 28
   - _timeSec: 360
-    _value: 42
+    _value: 53
   - _timeSec: 480
-    _value: 110
+    _value: 135
   - _timeSec: 600
-    _value: 127
+    _value: 138
   - _timeSec: 720
-    _value: 188
+    _value: 200
   - _timeSec: 810
-    _value: 185
+    _value: 200
   _spawnRate:
   - _timeSec: 0
     _value: 1.2
@@ -41,9 +41,9 @@ MonoBehaviour:
   - _timeSec: 480
     _value: 4.1
   - _timeSec: 600
-    _value: 9.9
+    _value: 9.8
   - _timeSec: 720
-    _value: 22.3
+    _value: 22.5
   - _timeSec: 810
     _value: 5
   _targetAlive:
@@ -71,11 +71,3 @@ MonoBehaviour:
   _oneDirectionArcDegrees: 60
   _softCap: 250
   _hardCap: 300
-  _elite:
-    _enabled: 1
-    _startBar: 180
-    _intervalBars: 45
-    _count: 5
-    _healthMultiplier: 1
-    _sizeMultiplier: 1
-    _moveSpeedMultiplier: 1
