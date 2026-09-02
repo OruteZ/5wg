@@ -26,7 +26,8 @@ Unity project built on the URP Empty Template. `Assets/TutorialInfo/` is stock t
 | 씬 | 용도 |
 | --- | --- |
 | `Scenes/MainMenu.unity` | START / QUIT. Build Settings 0번 |
-| `Scenes/Stage01.unity` | **작업 씬.** 스테이지 본편. Build Settings 1번 |
+| `Scenes/Stage01.unity` | 스테이지 본편. Build Settings 1번. 적은 구 `EnemySpawner` 그대로 |
+| `Scenes/Stage01_Enemy.unity` | **작업 씬.** Stage01 복제본. 표 기반 `EnemySpawnDirector`가 붙어 있다 |
 | `Scenes/Prototype.unity` | 무기 검증용. 스테이지 UI 없음 |
 | `Scenes/Prototype/Prototype_PlayerMovement.unity` | 이동만. 클록·무기 미연결이라 발사 안 됨 |
 | `Scenes/SampleScene.unity` | URP 템플릿 잔재. 안 씀 |
@@ -34,7 +35,9 @@ Unity project built on the URP Empty Template. `Assets/TutorialInfo/` is stock t
 프리팹 `Prefabs/`: `Player` `Enemies/Enemy` `Combat/Projectile` `Combat/DamageField`
 `Progression/ExpOrb` `Pickup/`(티켓 2종 + 아이템 3종).
 ScriptableObjects: `Weapon/`에 악기 10종(`Kick` `Snare` `HiHat` `Crash` `Tom` `Bass`
-`ElectricGuitar` `AcousticGuitar` `Keys` `Synth`), `Pickup/`에 픽업 정의 5종 + 드랍표.
+`ElectricGuitar` `AcousticGuitar` `Keys` `Synth`), `Pickup/`에 픽업 정의 5종 + 드랍표,
+`Enemies/`에 적 정의 7종 + 보스 1종 + 페이싱(`RunPacing_Default`) + 편성(`StageEnemyPlan_Stage01`).
+**적은 8종이 전부 같은 `Enemy.prefab`을 쓴다** — 종류별 스프라이트가 아직 없다.
 
 - **레이어**: `Enemy`(3)와 `Projectile`(8)을 쓴다. 탄↔탄 충돌은 꺼져 있다(적↔적은 켜 둠).
 - **렌더·물리 설정은 빌드에서만 티가 난다** — VSync, Rigidbody2D 보간, Cinemachine 갱신 시점.

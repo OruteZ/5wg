@@ -24,7 +24,7 @@ namespace FiveWG.Core
         [SerializeField, LabelText("박자 클록")] private BpmClock _clock;
         [SerializeField, LabelText("플레이어")] private PlayerController _player;
         [SerializeField, LabelText("플레이어 경험치")] private PlayerExp _playerExp;
-        [SerializeField, LabelText("적 스포너")] private EnemySpawner _spawner;
+        [SerializeField, LabelText("적 스포너")] private EnemySpawnerBase _spawner;
         [SerializeField, LabelText("경험치 오브 풀")] private ExpOrbPool _expOrbs;
         [SerializeField, LabelText("픽업 풀")] private PickupPool _pickups;
         [SerializeField, LabelText("픽업 드랍")] private PickupDropper _dropper;
@@ -54,7 +54,8 @@ namespace FiveWG.Core
         public BpmClock Clock => Resolve(ref _clock);
         public PlayerController Player => Resolve(ref _player);
         public PlayerExp PlayerExp => Resolve(ref _playerExp);
-        public EnemySpawner Spawner => Resolve(ref _spawner);
+        /// <summary>씬의 적 생산자. 구 EnemySpawner든 표 기반 디렉터든 여기로 나온다.</summary>
+        public EnemySpawnerBase Spawner => Resolve(ref _spawner);
         public ExpOrbPool ExpOrbs => Resolve(ref _expOrbs);
         public PickupPool Pickups => Resolve(ref _pickups);
         public StageDirector Director => Resolve(ref _director);
