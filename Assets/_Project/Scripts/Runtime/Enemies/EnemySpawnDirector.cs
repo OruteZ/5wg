@@ -76,12 +76,15 @@ namespace FiveWG.Enemies
 
         public bool IsBossAlive { get; private set; }
 
+        /// <summary>보스 등장 마디. 보스가 꺼져 있으면 0.</summary>
+        public float BossSpawnBar => _plan != null && _plan.Boss != null && _plan.Boss.Enabled ? _plan.Boss.SpawnBar : 0f;
+
         /// <summary>
         /// 경과 시간을 지금 BPM으로 환산한 마디. 클록의 박 인덱스를 직접 읽지 않는 것은
         /// <c>BpmClock.ElapsedSec</c>가 정지 상태에서 0을 돌려주고, 시간 건너뛰기가
         /// 클록을 되감을 수 없기 때문이다.
         /// </summary>
-        private float ElapsedBars
+        public float ElapsedBars
         {
             get
             {
