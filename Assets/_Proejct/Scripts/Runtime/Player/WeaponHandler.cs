@@ -208,7 +208,7 @@ namespace FiveWG.Player
                 IWeapon weapon = Inventory.GetAt(slot);
                 if (weapon is null || !weapon.IsReady) continue;
                 if (!AllGatesAllow(weapon)) continue;
-                if (!weapon.Timing.ShouldFire(tick)) continue;
+                if (!weapon.Timing.ShouldFire(tick, weapon.Level)) continue;
 
                 weapon.Fire(context);
             }
