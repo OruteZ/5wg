@@ -82,7 +82,7 @@ Scripts/Runtime/
     StageState.cs            Ready / Playing / Cleared / Failed
     StageDirector.cs         상태 소유 + 종료 창구
     StageEndSource.cs        종료를 알리는 주체의 추상 베이스
-    BeatTimelineEndSource.cs N마디 생존 → 클리어 (임시)
+    BossEndSource.cs         보스 처치 → 클리어, 보스 제한 시간 초과 → 실패
     PlayerDeathEndSource.cs  사망 → 실패
     GameFlow.cs              씬 이동 (static)
   UI/
@@ -118,7 +118,7 @@ StageDirector.Start
        state = Cleared | Failed        → OnStateChanged 발행 (UI가 여기서 반응)
        clock.Stop()
        SetCombatActive(false)          ← 스폰·발사·입력 차단
-       spawner.ClearAll()              ← 남은 적 회수
+       if Failed: spawner.ClearAll()   ← 클리어는 보스 처치 즉시라 남은 적을 두는 게 기획이다
        각 소스.OnStageEnd()
 ```
 
@@ -185,8 +185,8 @@ public sealed class MusicOrchestrator : StageEndSource
 
 | 구현 | 무엇 | 쓰는 씬 |
 | --- | --- | --- |
-| `EnemySpawner` | 프리팹 하나를 고정 간격으로 | `Stage01` |
-| `EnemySpawnDirector` | 기획 표를 시간축에 얹는다 | `Stage01_Enemy` |
+| `EnemySpawner` | 프리팹 하나를 고정 간격으로 | `Prototype` 씬들 |
+| `EnemySpawnDirector` | 기획 표를 시간축에 얹는다 | `Stage01` |
 
 ### 에셋 두 종류
 
@@ -485,6 +485,18 @@ NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너�
 측정할 때는 **단일 프레임 샘플을 믿으면 안 된다.** 프레임당 값은 배 이상 흔들려서,
 처음엔 이 항목이 메인스레드의 절반을 먹는 것처럼 보였다. 180프레임 평균을 내자 사라졌다.
 
+## 배경
+
+`Stage01`의 `Backdrop` 아래에 바닥 스프라이트 하나와 Cainos 소품 115개가 있다.
+`WrapAroundCamera`가 자식을 **32유닛 주기로 반복**시켜 끝없는 들판처럼 보인다 — 각 자식을
+카메라 중심 32×32 창 안으로 주기 단위만큼만 옮기므로, 되돌아가면 같은 자리에 같은 소품이 있다.
+
+- 바닥 `Art/Stage/TX Ground Grass.png`는 Cainos 잔디 타일 32종을 32×32칸으로 무작위 합성한 것이다.
+  주기와 크기(32유닛)가 같아야 이음새가 안 보인다. 바닥 스프라이트는 3주기(96) 폭으로 타일링한다.
+- 소품은 **장식만** 한다. 콜라이더·리지드바디를 뗐다 — 적이 직선으로 오므로 장애물이 있으면 뭉쳐 끼인다.
+- 그리는 순서: 바닥 -100, 소품 그림자 -51, 소품 -50. `DamageField`(-10)보다 아래여야 공격 범위를 가리지 않는다.
+- 나무·기둥처럼 키 큰 소품은 넣지 않았다. 캐릭터가 항상 위에 그려져 발 밑에 깔린 것처럼 보인다.
+
 ## 카메라
 
 `Stage01`의 Main Camera는 `CinemachineBrain`만 들고, 실제 프레이밍은 `CM Player Camera`
@@ -526,7 +538,12 @@ NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너�
 
 - **박은 프레임과 무관하게 간다.** 클록이 dspTime 기준이라 창이 비활성이거나 긴 히치가 나면
   프레임이 멈춘 동안에도 박이 흐르고, 복귀 순간 진행도가 뛴다.
-- `BeatTimelineEndSource`는 임시다. 마디 수는 기획 확정 시 사라질 값.
+- 보스 제한 시간은 `BossEndSource`가 `Time.deltaTime`으로 잰다(디렉터와 같은 초). 실제 곡을 소유하는
+  오케스트레이터가 생기면 "4곡이 끝나면 실패"로 바뀔 값이다.
+- HUD 진행도는 보스 전에는 보스 등장 마디까지, 보스전에서는 제한 시간을 다시 0부터 채운다.
+  등장 마디는 BPM을 따르고 제한 시간은 초라 한 축에 합칠 수 없다.
+- 클리어 후에도 남은 적이 계속 다가와 접촉 데미지를 준다. 상태가 이미 `Cleared`라
+  사망해도 결과는 바뀌지 않는다.
 - 카운트다운·일시정지 UI 없음. 레벨업 카드는 있다(→ "성장").
 - HUD는 매 프레임 폴링한다. 위젯이 늘면 이벤트 기반으로 바꾸는 게 낫다.
 - 고르지 않은 카드가 먹힐 수 있다 — `Navigation.Mode` 미설정. 전말은 "카드는 아무것도 멈추지 않는다"에.

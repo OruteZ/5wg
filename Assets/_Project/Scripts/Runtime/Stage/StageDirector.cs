@@ -139,7 +139,8 @@ namespace FiveWG.Stage
 
             SetCombatActive(false);
 
-            if (_spawner != null) _spawner.ClearAll();
+            // 클리어는 보스를 잡은 즉시라 남은 적을 두는 것이 기획이다. 실패만 판을 비운다.
+            if (_spawner != null && result == StageState.Failed) _spawner.ClearAll();
 
             foreach (StageEndSource source in _endSources)
             {

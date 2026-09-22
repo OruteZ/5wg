@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Enemy_Unnamed_HP2p0
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Enemies.EnemyDefinition
   _displayName: "[\uC774\uB984 \uBBF8\uC815]"
-  _prefab: {fileID: 1825767638987215925, guid: 5f84069730b712246b2b184280df83f4, type: 3}
+  _prefab: {fileID: 4284844438452597451, guid: 35745a1b502abeb42864a66ecb6030bf, type: 3}
   _note: "\uAE30\uD68D\uC11C\uC5D0 \uC131\uACA9 \uBBF8\uAE30\uC7AC"
-  _color: {r: 0.35, g: 0.72, b: 0.42, a: 1}
+  _color: {r: 1, g: 1, b: 1, a: 1}
   _healthMode: 0
   _healthMultiplier: 2
   _absoluteHealth: 0
@@ -25,4 +25,5 @@ MonoBehaviour:
   _sizeMultiplier: 1
   _immuneToKnockback: 0
   _immuneToDespawn: 0
+  _isElite: 0
   _unlockTimeSec: 480
