@@ -25,14 +25,17 @@ namespace FiveWG.Weapons
         [SerializeField, LabelText("디렉터 (비우면 자동 탐색). 종료 시 전부 회수")]
         private StageDirector _director;
 
-        [ShowInInspector, ReadOnly, LabelText("등록된 프리팹 수 (탄 / 영역)")]
-        private string PrefabCount => $"{_projectiles?.PrefabCount ?? 0} / {_fields?.PrefabCount ?? 0}";
+        [ShowInInspector, ReadOnly, LabelText("등록된 프리팹 수 (탄 / 영역 / 사슬)")]
+        private string PrefabCount =>
+            $"{_projectiles?.PrefabCount ?? 0} / {_fields?.PrefabCount ?? 0} / {_chains?.PrefabCount ?? 0}";
 
-        [ShowInInspector, ReadOnly, LabelText("살아 있는 개체 수 (탄 / 영역)")]
-        private string ActiveCount => $"{_projectiles?.ActiveCount ?? 0} / {_fields?.ActiveCount ?? 0}";
+        [ShowInInspector, ReadOnly, LabelText("살아 있는 개체 수 (탄 / 영역 / 사슬)")]
+        private string ActiveCount =>
+            $"{_projectiles?.ActiveCount ?? 0} / {_fields?.ActiveCount ?? 0} / {_chains?.ActiveCount ?? 0}";
 
         private PrefabPoolSet<Projectile> _projectiles;
         private PrefabPoolSet<DamageField> _fields;
+        private PrefabPoolSet<ChainField> _chains;
         private bool _isSubscribed;
 
         private void Awake()
@@ -40,6 +43,7 @@ namespace FiveWG.Weapons
             // WeaponHandler가 Awake에서 무기를 지급하며 바로 꺼내 갈 수 있으므로 Start보다 앞서 만든다.
             _projectiles = new PrefabPoolSet<Projectile>(_defaultCapacity, _maxSize);
             _fields = new PrefabPoolSet<DamageField>(_defaultCapacity, _maxSize);
+            _chains = new PrefabPoolSet<ChainField>(_defaultCapacity, _maxSize);
         }
 
         private void Start()
@@ -60,11 +64,14 @@ namespace FiveWG.Weapons
 
             _projectiles?.Dispose();
             _fields?.Dispose();
+            _chains?.Dispose();
         }
 
         public Projectile Get(Projectile prefab) => _projectiles?.Get(prefab);
 
         public DamageField Get(DamageField prefab) => _fields?.Get(prefab);
+
+        public ChainField Get(ChainField prefab) => _chains?.Get(prefab);
 
         [Button, LabelText("전부 회수")]
         public void ReleaseAll()
@@ -73,6 +80,7 @@ namespace FiveWG.Weapons
 
             _projectiles?.ReleaseAll();
             _fields?.ReleaseAll();
+            _chains?.ReleaseAll();
         }
 
         private void HandleStageStateChanged(StageState state)
