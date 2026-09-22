@@ -155,59 +155,6 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &56706866
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 56706868}
-  - component: {fileID: 56706867}
-  m_Layer: 0
-  m_Name: EnemySpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &56706867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 56706866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f3edbf6647ca9d44b3881c76d10adf3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Prototype.EnemySpawner2D
-  _enemyPrefab: {fileID: 1825767638987215925, guid: 5f84069730b712246b2b184280df83f4, type: 3}
-  _target: {fileID: 1865809633}
-  _expPool: {fileID: 822901126}
-  _dropper: {fileID: 1121407001}
-  _spawnInterval: 0.8
-  _spawnRadius: 12
-  _maxAlive: 40
-  _poolDefaultCapacity: 32
-  _poolMaxSize: 256
---- !u!4 &56706868
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 56706866}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &84728588
 GameObject:
   m_ObjectHideFlags: 0
@@ -592,7 +539,7 @@ MonoBehaviour:
   _clock: {fileID: 1189532218}
   _player: {fileID: 1865809639}
   _playerExp: {fileID: 1865809641}
-  _spawner: {fileID: 56706867}
+  _spawner: {fileID: 1663101422}
   _expOrbs: {fileID: 822901126}
   _pickups: {fileID: 1121407002}
   _dropper: {fileID: 1121407001}
@@ -2685,8 +2632,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1293250288}
   - component: {fileID: 1293250285}
-  - component: {fileID: 1293250287}
   - component: {fileID: 1293250286}
+  - component: {fileID: 1293250289}
   m_Layer: 0
   m_Name: StageDirector
   m_TagString: Untagged
@@ -2707,10 +2654,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageDirector
   _clock: {fileID: 1189532218}
-  _spawner: {fileID: 56706867}
+  _spawner: {fileID: 1663101422}
   _player: {fileID: 1865809639}
   _endSources:
-  - {fileID: 1293250287}
+  - {fileID: 1293250289}
   - {fileID: 1293250286}
   _beginOnStart: 1
 --- !u!114 &1293250286
@@ -2726,21 +2673,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDeathEndSource
   _player: {fileID: 1865809639}
---- !u!114 &1293250287
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1293250284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6ff66b89451b9c40992c2da1f35da4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BeatTimelineEndSource
-  _clock: {fileID: 1189532218}
-  _beatsPerBar: 4
-  _barsToClear: 64
 --- !u!4 &1293250288
 Transform:
   m_ObjectHideFlags: 0
@@ -2756,6 +2688,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1293250289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293250284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed3975979f16654f84bdd9d3628a42c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Stage.BossEndSource
+  _spawner: {fileID: 1663101422}
+  _timeLimitSec: 120
 --- !u!1 &1321242909
 GameObject:
   m_ObjectHideFlags: 0
@@ -3375,6 +3321,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1621897905}
   m_CullTransparentMesh: 1
+--- !u!1 &1663101421
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1663101423}
+  - component: {fileID: 1663101422}
+  m_Layer: 0
+  m_Name: EnemySpawnDirector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1663101422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663101421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85c0550a4c6c29b448260012d2c60bd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Enemies.EnemySpawnDirector
+  _plan: {fileID: 11400000, guid: 21908b82fdf91d14ea613a8528d1bbce, type: 2}
+  _target: {fileID: 0}
+  _clock: {fileID: 0}
+  _expPool: {fileID: 0}
+  _dropper: {fileID: 0}
+  _poolDefaultCapacity: 64
+  _poolMaxSize: 320
+--- !u!4 &1663101423
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663101421}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1676075258
 GameObject:
   m_ObjectHideFlags: 0
@@ -4174,7 +4171,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 1291069494}
   - {fileID: 336893582221592646}
-  - {fileID: 56706868}
   - {fileID: 1189532219}
   - {fileID: 1678755098}
   - {fileID: 1293250288}
@@ -4184,3 +4180,4 @@ SceneRoots:
   - {fileID: 541343400}
   - {fileID: 243433332}
   - {fileID: 1121407003}
+  - {fileID: 1663101423}
