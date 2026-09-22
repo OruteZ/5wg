@@ -82,7 +82,7 @@ Scripts/Runtime/
     StageState.cs            Ready / Playing / Cleared / Failed
     StageDirector.cs         상태 소유 + 종료 창구
     StageEndSource.cs        종료를 알리는 주체의 추상 베이스
-    BeatTimelineEndSource.cs N마디 생존 → 클리어 (임시)
+    BossEndSource.cs         보스 처치 → 클리어, 보스 제한 시간 초과 → 실패
     PlayerDeathEndSource.cs  사망 → 실패
     GameFlow.cs              씬 이동 (static)
   UI/
@@ -118,7 +118,7 @@ StageDirector.Start
        state = Cleared | Failed        → OnStateChanged 발행 (UI가 여기서 반응)
        clock.Stop()
        SetCombatActive(false)          ← 스폰·발사·입력 차단
-       spawner.ClearAll()              ← 남은 적 회수
+       if Failed: spawner.ClearAll()   ← 클리어는 보스 처치 즉시라 남은 적을 두는 게 기획이다
        각 소스.OnStageEnd()
 ```
 
@@ -185,8 +185,8 @@ public sealed class MusicOrchestrator : StageEndSource
 
 | 구현 | 무엇 | 쓰는 씬 |
 | --- | --- | --- |
-| `EnemySpawner` | 프리팹 하나를 고정 간격으로 | `Stage01` |
-| `EnemySpawnDirector` | 기획 표를 시간축에 얹는다 | `Stage01_Enemy` |
+| `EnemySpawner` | 프리팹 하나를 고정 간격으로 | `Prototype` 씬들 |
+| `EnemySpawnDirector` | 기획 표를 시간축에 얹는다 | `Stage01` |
 
 ### 에셋 두 종류
 
@@ -526,7 +526,12 @@ NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너�
 
 - **박은 프레임과 무관하게 간다.** 클록이 dspTime 기준이라 창이 비활성이거나 긴 히치가 나면
   프레임이 멈춘 동안에도 박이 흐르고, 복귀 순간 진행도가 뛴다.
-- `BeatTimelineEndSource`는 임시다. 마디 수는 기획 확정 시 사라질 값.
+- 보스 제한 시간은 `BossEndSource`가 `Time.deltaTime`으로 잰다(디렉터와 같은 초). 실제 곡을 소유하는
+  오케스트레이터가 생기면 "4곡이 끝나면 실패"로 바뀔 값이다.
+- HUD 진행도는 보스 전에는 보스 등장 마디까지, 보스전에서는 제한 시간을 다시 0부터 채운다.
+  등장 마디는 BPM을 따르고 제한 시간은 초라 한 축에 합칠 수 없다.
+- 클리어 후에도 남은 적이 계속 다가와 접촉 데미지를 준다. 상태가 이미 `Cleared`라
+  사망해도 결과는 바뀌지 않는다.
 - 카운트다운·일시정지 UI 없음. 레벨업 카드는 있다(→ "성장").
 - HUD는 매 프레임 폴링한다. 위젯이 늘면 이벤트 기반으로 바꾸는 게 낫다.
 - 고르지 않은 카드가 먹힐 수 있다 — `Navigation.Mode` 미설정. 전말은 "카드는 아무것도 멈추지 않는다"에.

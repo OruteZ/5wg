@@ -26,8 +26,7 @@ Unity project built on the URP Empty Template. `Assets/TutorialInfo/` is stock t
 | 씬 | 용도 |
 | --- | --- |
 | `Scenes/MainMenu.unity` | START / QUIT. Build Settings 0번 |
-| `Scenes/Stage01.unity` | 스테이지 본편. Build Settings 1번. 적은 구 `EnemySpawner` 그대로 |
-| `Scenes/Stage01_Enemy.unity` | **작업 씬.** Stage01 복제본. 표 기반 `EnemySpawnDirector`가 붙어 있다 |
+| `Scenes/Stage01.unity` | 스테이지 본편. Build Settings 1번. 표 기반 `EnemySpawnDirector`가 붙어 있다 |
 | `Scenes/Prototype.unity` | 무기 검증용. 스테이지 UI 없음 |
 | `Scenes/Prototype/Prototype_PlayerMovement.unity` | 이동만. 클록·무기 미연결이라 발사 안 됨 |
 | `Scenes/SampleScene.unity` | URP 템플릿 잔재. 안 씀 |
