@@ -9,6 +9,9 @@ namespace FiveWG.Weapons
     {
         [InspectorName("발사 주체 위치")] Self,
         [InspectorName("사거리 내 최근접 적 위치")] AtNearestTarget,
+
+        /// <summary>사거리 안에서 자기 반경(AreaRadius) 안에 적이 가장 많이 몰린 위치. 원격 예고 폭발용.</summary>
+        [InspectorName("사거리 내 적이 가장 몰린 위치")] DensestCluster,
     }
 
     /// <summary>
@@ -30,10 +33,20 @@ namespace FiveWG.Weapons
         [SerializeField, LabelText("타격 간격 (sec, 0이면 생길 때 1회만)")]
         private float _tickInterval;
 
+        [Title("형태 (전방 베기처럼 부채꼴이 필요할 때만 채운다)")]
+        [SerializeField, LabelText("부채꼴 반각 (도, 0이면 원형 전체)")]
+        private float _coneHalfAngleDegrees;
+
+        [Title("예고 (원격 폭발처럼 차오른 뒤 터질 때만 채운다)")]
+        [SerializeField, LabelText("예고 시간 (sec, 0이면 즉시 타격)")]
+        private float _telegraphDuration;
+
         public DamageField FieldPrefab => _fieldPrefab;
         public AreaPlacement Placement => _placement;
         public bool FollowOwner => _followOwner;
         public float TickInterval => Mathf.Max(0f, _tickInterval);
+        public float ConeHalfAngleDegrees => Mathf.Max(0f, _coneHalfAngleDegrees);
+        public float TelegraphDuration => Mathf.Max(0f, _telegraphDuration);
 
         public override IWeapon CreateRuntime() => new AreaWeapon(this, CreateTiming());
     }

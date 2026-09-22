@@ -24,7 +24,12 @@ namespace FiveWG.Weapons
             if (_definition.ProjectilePrefab == null || Context.projectiles == null) return;
 
             WeaponLevelData stats = Stats;
-            Vector2 direction = ResolveAimDirection(context);
+
+            // 시계 초침류는 대상을 보지 않는다 - 기본 조준 순서(최근접 적 우선)를 아예 타지 않는다.
+            Vector2 direction = _definition.AimMode == ProjectileAimMode.ClockHand
+                ? ClockHandAim.DirectionFor(context.tick)
+                : ResolveAimDirection(context);
+
             int count = stats.ProjectileCount;
 
             ProjectileSpawnData data = new()
@@ -38,6 +43,9 @@ namespace FiveWG.Weapons
                 Knockback = stats.Knockback,
                 Owner = Context.owner,
                 OwnerFaction = Context.Faction,
+                LifetimeOverride = _definition.LifetimeOverride,
+                DamageDecayFloor = _definition.DamageDecayFloor,
+                ScaleDecayFloor = _definition.ScaleDecayFloor,
             };
 
             for (int i = 0; i < count; i++)

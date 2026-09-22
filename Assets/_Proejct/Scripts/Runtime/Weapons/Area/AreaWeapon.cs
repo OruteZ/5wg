@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FiveWG.Combat;
 using UnityEngine;
 
@@ -13,6 +14,10 @@ namespace FiveWG.Weapons
     public sealed class AreaWeapon : WeaponBase
     {
         private readonly AreaWeaponDefinition _definition;
+
+        // ponytail: 사거리 내 대상 목록을 담는 버퍼 하나. 발사가 서브비트마다 일어나긴 하지만
+        // DensestCluster를 쓰는 무기가 한 자릿수라(원격 예고 폭발 하나) 공유 정적 리스트로 충분하다.
+        private static readonly List<Transform> Candidates = new();
 
         public AreaWeapon(AreaWeaponDefinition definition, IFireTiming timing)
             : base(definition, timing)
@@ -31,6 +36,8 @@ namespace FiveWG.Weapons
             DamageField field = Context.projectiles.Get(_definition.FieldPrefab);
             if (field == null) return;
 
+            float coneHalfAngle = _definition.ConeHalfAngleDegrees;
+
             field.Begin(position, new DamageFieldData
             {
                 Damage = stats.Damage,
@@ -44,6 +51,11 @@ namespace FiveWG.Weapons
                 Follow = _definition.Placement == AreaPlacement.Self && _definition.FollowOwner
                     ? Context.owner
                     : null,
+
+                // 부채꼴이 아니면 방향을 구할 필요가 없다 — 매 발사마다 조준 탐색을 공짜로 건너뛴다.
+                FacingDirection = coneHalfAngle > 0f ? ResolveAimDirection(context) : Vector2.zero,
+                ConeHalfAngleDegrees = coneHalfAngle,
+                TelegraphDuration = _definition.TelegraphDuration,
             });
         }
 
@@ -59,6 +71,11 @@ namespace FiveWG.Weapons
                 return true;
             }
 
+            if (_definition.Placement == AreaPlacement.DensestCluster)
+            {
+                return TryResolveDensestCluster(stats, context.origin, out position);
+            }
+
             if (Context.targets is not null &&
                 Context.targets.TryGetNearest(context.origin, stats.Range, out Transform target))
             {
@@ -68,6 +85,42 @@ namespace FiveWG.Weapons
 
             position = default;
             return false;
+        }
+
+        /// <summary>
+        /// 사거리 안 후보 각각을 중심으로 자기 반경(AreaRadius) 안에 몇 마리가 도는지 세어 가장 붐비는
+        /// 후보를 고른다. 후보 수만큼 제곱 비교라 느리지만, 이 배치를 쓰는 무기가 한 자릿수라 괜찮다.
+        /// </summary>
+        private bool TryResolveDensestCluster(in WeaponLevelData stats, Vector2 origin, out Vector2 position)
+        {
+            position = default;
+            if (Context.targets is null) return false;
+
+            int count = Context.targets.GetInRange(origin, stats.Range, Candidates);
+            if (count == 0) return false;
+
+            float clusterRadiusSqr = stats.AreaRadius * stats.AreaRadius;
+            int bestScore = -1;
+            Vector2 bestPosition = default;
+
+            for (int i = 0; i < count; i++)
+            {
+                Vector2 center = Candidates[i].position;
+                int score = 0;
+
+                for (int j = 0; j < count; j++)
+                {
+                    if (((Vector2)Candidates[j].position - center).sqrMagnitude <= clusterRadiusSqr) score++;
+                }
+
+                if (score <= bestScore) continue;
+
+                bestScore = score;
+                bestPosition = center;
+            }
+
+            position = bestPosition;
+            return true;
         }
     }
 }
