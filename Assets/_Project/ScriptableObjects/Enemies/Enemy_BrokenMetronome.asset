@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Enemy_BrokenMetronome
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Enemies.EnemyDefinition
   _displayName: "\uBD80\uC11C\uC9C4 \uBA54\uD2B8\uB85C\uB188"
-  _prefab: {fileID: 1825767638987215925, guid: 5f84069730b712246b2b184280df83f4, type: 3}
+  _prefab: {fileID: 7794418966125617805, guid: d46b4a55fd6c9c4469e4c3f221a8ea83, type: 3}
   _note: "\uAE30\uBCF8. \uC218\uB85C \uBC00\uC5B4\uBD99\uC778\uB2E4"
-  _color: {r: 0.78, g: 0.6, b: 0.4, a: 1}
+  _color: {r: 1, g: 1, b: 1, a: 1}
   _healthMode: 0
   _healthMultiplier: 1
   _absoluteHealth: 0
@@ -25,4 +25,5 @@ MonoBehaviour:
   _sizeMultiplier: 1
   _immuneToKnockback: 0
   _immuneToDespawn: 0
+  _isElite: 0
   _unlockTimeSec: 0

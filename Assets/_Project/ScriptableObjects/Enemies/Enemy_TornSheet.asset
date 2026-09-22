@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Enemy_TornSheet
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Enemies.EnemyDefinition
   _displayName: "\uCC22\uC5B4\uC9C4 \uC545\uBCF4"
-  _prefab: {fileID: 1825767638987215925, guid: 5f84069730b712246b2b184280df83f4, type: 3}
+  _prefab: {fileID: 4876358363836360272, guid: c0234bc1575d10e48ab7da63f9bff785, type: 3}
   _note: "\uC57D\uD558\uACE0 \uBE60\uB974\uB2E4. \uB5BC\uB85C \uC628\uB2E4"
-  _color: {r: 0.88, g: 0.82, b: 0.62, a: 1}
+  _color: {r: 1, g: 1, b: 1, a: 1}
   _healthMode: 0
   _healthMultiplier: 0.6
   _absoluteHealth: 0
@@ -25,4 +25,5 @@ MonoBehaviour:
   _sizeMultiplier: 1
   _immuneToKnockback: 0
   _immuneToDespawn: 0
+  _isElite: 0
   _unlockTimeSec: 0

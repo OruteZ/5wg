@@ -84,8 +84,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 7b776888d5fd36c4bbfab9f4119fd820, type: 3}
-  m_Color: {r: 0.9, g: 0.3, b: 0.35, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 2a5cee4ac42504f8c85eeeb7993f8d10, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -174,6 +174,7 @@ MonoBehaviour:
   _expReward: 1
   _contactDamage: 10
   _contactInterval: 0.8
-  _hitColor: {r: 1, g: 1, b: 1, a: 1}
+  _hitColor: {r: 1, g: 0.35, b: 0.35, a: 1}
   _hitFlashDuration: 0.08
   _knockbackDuration: 0.15
+  _beatPulseScale: 0.18
