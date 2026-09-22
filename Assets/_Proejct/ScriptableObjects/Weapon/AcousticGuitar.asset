@@ -12,87 +12,203 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
   m_Name: AcousticGuitar
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
-  _displayName: "\uC5B4\uCFE0\uC2A4\uD2F1"
+  _displayName: "\uCD94\uC801 \uC74C\uD45C"
   _icon: {fileID: 0}
   _levels:
-  - Damage: 5
+  - Damage: 5.3
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 6
-    Range: 10
+    Pierce: 0
+    Range: 8
     AreaRadius: 0
-    ProjectileScale: 2.2
+    ProjectileScale: 1
     Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 8
-    Homing: 0
+    ProjectileSpeed: 7
+    Homing: 180
     Knockback: 0
     Bounce: 0
-  - Damage: 6
+  - Damage: 6.9
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 7
-    Range: 10
+    Pierce: 0
+    Range: 8
     AreaRadius: 0
-    ProjectileScale: 2.4
+    ProjectileScale: 1
     Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 8
-    Homing: 0
+    ProjectileSpeed: 7
+    Homing: 180
+    Knockback: 0
+    Bounce: 0
+  - Damage: 9.5
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 8
+    AreaRadius: 0
+    ProjectileScale: 1
+    Duration: 0
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 7
+    Homing: 270
+    Knockback: 0
+    Bounce: 0
+  - Damage: 6.1
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 8
+    AreaRadius: 0
+    ProjectileScale: 1
+    Duration: 0
+    ProjectileCount: 2
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 7
+    Homing: 270
     Knockback: 0
     Bounce: 0
   - Damage: 8
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 8
-    Range: 10
+    Pierce: 0
+    Range: 8
     AreaRadius: 0
-    ProjectileScale: 2.6
+    ProjectileScale: 1
     Duration: 0
-    ProjectileCount: 1
+    ProjectileCount: 2
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 9
-    Homing: 0
+    Homing: 270
     Knockback: 0
     Bounce: 0
-  - Damage: 10
-    CritChance: 0
-    CritMultiplier: 2
-    Pierce: 10
-    Range: 11
-    AreaRadius: 0
-    ProjectileScale: 2.8
-    Duration: 0
-    ProjectileCount: 1
-    NoteDensity: 1
-    CooldownReduction: 0
-    ProjectileSpeed: 9
-    Homing: 0
-    Knockback: 0
-    Bounce: 0
-  - Damage: 12
-    CritChance: 0
-    CritMultiplier: 2
-    Pierce: 12
-    Range: 11
-    AreaRadius: 0
-    ProjectileScale: 3.2
-    Duration: 0
-    ProjectileCount: 1
-    NoteDensity: 1
-    CooldownReduction: 0
-    ProjectileSpeed: 10
-    Homing: 0
-    Knockback: 0
-    Bounce: 0
-  _intervalBeats: 2
-  _offsetBeats: 1
-  _burstCount: 1
-  _burstSubStep: 1
+  _triggerPatterns:
+  - PatternBars: 4
+    Cells:
+    - 0
+    - 4
+    - 6
+    - 10
+    - 12
+    - 14
+    - 16
+    - 20
+    - 24
+    - 28
+    - 30
+    - 32
+    - 36
+    - 38
+    - 42
+    - 44
+    - 46
+    - 48
+    - 52
+    - 56
+    - 60
+  - PatternBars: 4
+    Cells:
+    - 0
+    - 4
+    - 6
+    - 10
+    - 12
+    - 14
+    - 16
+    - 20
+    - 24
+    - 28
+    - 30
+    - 32
+    - 36
+    - 38
+    - 42
+    - 44
+    - 46
+    - 48
+    - 52
+    - 56
+    - 60
+  - PatternBars: 4
+    Cells:
+    - 0
+    - 4
+    - 6
+    - 10
+    - 12
+    - 14
+    - 16
+    - 20
+    - 24
+    - 28
+    - 30
+    - 32
+    - 36
+    - 38
+    - 42
+    - 44
+    - 46
+    - 48
+    - 52
+    - 56
+    - 60
+  - PatternBars: 4
+    Cells:
+    - 0
+    - 4
+    - 6
+    - 10
+    - 12
+    - 14
+    - 16
+    - 20
+    - 24
+    - 28
+    - 30
+    - 32
+    - 36
+    - 38
+    - 42
+    - 44
+    - 46
+    - 48
+    - 52
+    - 56
+    - 60
+  - PatternBars: 4
+    Cells:
+    - 0
+    - 4
+    - 6
+    - 10
+    - 12
+    - 14
+    - 16
+    - 20
+    - 24
+    - 28
+    - 30
+    - 32
+    - 36
+    - 38
+    - 42
+    - 44
+    - 46
+    - 48
+    - 52
+    - 56
+    - 60
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
-  _spreadDegrees: 0
+  _spreadDegrees: 30
+  _aimMode: 0
+  _lifetimeOverride: 2
+  _damageDecayFloor: 1
+  _scaleDecayFloor: 1

@@ -12,87 +12,159 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
   m_Name: HiHat
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
-  _displayName: "\uD558\uC774\uD5F7"
+  _displayName: "\uC2DC\uACC4 \uCD08\uCE68"
   _icon: {fileID: 0}
   _levels:
-  - Damage: 4
+  - Damage: 8.3
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 7
+    Range: 4
     AreaRadius: 0
-    ProjectileScale: 0.7
+    ProjectileScale: 0.4
     Duration: 0
-    ProjectileCount: 3
+    ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 18
+    ProjectileSpeed: 16
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 5
+  - Damage: 10.8
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 7
+    Range: 4
     AreaRadius: 0
-    ProjectileScale: 0.7
+    ProjectileScale: 0.4
     Duration: 0
-    ProjectileCount: 3
+    ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 18
+    ProjectileSpeed: 16
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 6
+  - Damage: 7.6
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 7
+    Range: 4
     AreaRadius: 0
-    ProjectileScale: 0.7
+    ProjectileScale: 0.4
     Duration: 0
-    ProjectileCount: 4
+    ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 19
+    ProjectileSpeed: 16
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 8
+  - Damage: 9.5
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 8
+    Range: 5
     AreaRadius: 0
-    ProjectileScale: 0.75
+    ProjectileScale: 0.5
     Duration: 0
-    ProjectileCount: 5
+    ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 19
+    ProjectileSpeed: 16
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 10
+  - Damage: 12.5
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 8
+    Range: 5
     AreaRadius: 0
-    ProjectileScale: 0.8
+    ProjectileScale: 0.6
     Duration: 0
-    ProjectileCount: 6
+    ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 20
+    ProjectileSpeed: 16
     Homing: 0
     Knockback: 0
     Bounce: 0
-  _intervalBeats: 1
-  _offsetBeats: 0
-  _burstCount: 1
-  _burstSubStep: 1
+  _triggerPatterns:
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    - 12
+    - 14
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    - 12
+    - 14
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
-  _spreadDegrees: 35
+  _spreadDegrees: 0
+  _aimMode: 1

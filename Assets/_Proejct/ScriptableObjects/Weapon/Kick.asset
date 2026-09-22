@@ -12,88 +12,103 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06cb7583c8ae5234b832d66d124249df, type: 3}
   m_Name: Kick
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.AreaWeaponDefinition
-  _displayName: "\uD0A5"
+  _displayName: "\uCDA9\uACA9\uD30C \uB9C1"
   _icon: {fileID: 0}
   _levels:
-  - Damage: 12
+  - Damage: 8.9
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
     Range: 0
-    AreaRadius: 2.6
+    AreaRadius: 3
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.2
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 9
+    Knockback: 6
     Bounce: 0
-  - Damage: 16
+  - Damage: 11.6
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
     Range: 0
-    AreaRadius: 2.9
+    AreaRadius: 3
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.2
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 10
+    Knockback: 6
     Bounce: 0
-  - Damage: 21
+  - Damage: 8.1
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
     Range: 0
-    AreaRadius: 3.2
+    AreaRadius: 3
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.2
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 11
+    Knockback: 6
     Bounce: 0
-  - Damage: 27
+  - Damage: 10.2
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
     Range: 0
-    AreaRadius: 3.6
+    AreaRadius: 3.5
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.2
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 12
+    Knockback: 6
     Bounce: 0
-  - Damage: 34
+  - Damage: 13.4
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
     Range: 0
     AreaRadius: 4
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.2
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 14
+    Knockback: 6
     Bounce: 0
-  _intervalBeats: 2
-  _offsetBeats: 0
-  _burstCount: 1
-  _burstSubStep: 1
+  _triggerPatterns:
+  - PatternBars: 1
+    Cells:
+    - 0
+  - PatternBars: 1
+    Cells:
+    - 0
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 8
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 8
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 8
   _fieldPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
   _placement: 0
   _followOwner: 0

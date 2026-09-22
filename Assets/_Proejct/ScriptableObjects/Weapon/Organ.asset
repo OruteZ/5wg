@@ -10,85 +10,85 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
-  m_Name: Bass
+  m_Name: Organ
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
-  _displayName: "\uC74C\uD30C \uBCBD"
+  _displayName: "감쇠 음탄"
   _icon: {fileID: 0}
   _levels:
-  - Damage: 9.9
+  - Damage: 16.5
     CritChance: 0
     CritMultiplier: 2
     Pierce: 999
     Range: 8
-    AreaRadius: 0
-    ProjectileScale: 2
+    AreaRadius: 1
+    ProjectileScale: 1
     Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 4
     Homing: 0
-    Knockback: 14
+    Knockback: 0
     Bounce: 0
-  - Damage: 12.9
+  - Damage: 21.5
     CritChance: 0
     CritMultiplier: 2
     Pierce: 999
     Range: 8
-    AreaRadius: 0
-    ProjectileScale: 2
+    AreaRadius: 1
+    ProjectileScale: 1
     Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 4
     Homing: 0
-    Knockback: 14
+    Knockback: 0
     Bounce: 0
-  - Damage: 9
+  - Damage: 29.7
     CritChance: 0
     CritMultiplier: 2
     Pierce: 999
     Range: 8
-    AreaRadius: 0
-    ProjectileScale: 2
+    AreaRadius: 1.3
+    ProjectileScale: 1
     Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 4
     Homing: 0
-    Knockback: 14
+    Knockback: 0
     Bounce: 0
-  - Damage: 11.4
+  - Damage: 38
     CritChance: 0
     CritMultiplier: 2
     Pierce: 999
     Range: 8
-    AreaRadius: 0
-    ProjectileScale: 2.6
+    AreaRadius: 1.3
+    ProjectileScale: 1
     Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 4
     Homing: 0
-    Knockback: 14
+    Knockback: 0
     Bounce: 0
-  - Damage: 14.9
+  - Damage: 24.8
     CritChance: 0
     CritMultiplier: 2
     Pierce: 999
-    Range: 10
-    AreaRadius: 0
-    ProjectileScale: 2.6
+    Range: 8
+    AreaRadius: 1.3
+    ProjectileScale: 1
     Duration: 0
-    ProjectileCount: 1
+    ProjectileCount: 2
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 4
     Homing: 0
-    Knockback: 14
+    Knockback: 0
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 1
@@ -100,15 +100,15 @@ MonoBehaviour:
   - PatternBars: 1
     Cells:
     - 0
-    - 8
   - PatternBars: 1
     Cells:
     - 0
-    - 8
   - PatternBars: 1
     Cells:
     - 0
-    - 8
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
-  _spreadDegrees: 0
+  _spreadDegrees: 30
   _aimMode: 0
+  _lifetimeOverride: 2
+  _damageDecayFloor: 0.2
+  _scaleDecayFloor: 0.5

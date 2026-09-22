@@ -9,92 +9,117 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06cb7583c8ae5234b832d66d124249df, type: 3}
+  m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
   m_Name: Keys
-  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.AreaWeaponDefinition
-  _displayName: "\uAC74\uBC18"
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
+  _displayName: "\uC625\uD0C0\uBE0C \uC30D\uD0C4"
   _icon: {fileID: 0}
   _levels:
-  - Damage: 8
+  - Damage: 6.4
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 10
-    AreaRadius: 1.6
+    Pierce: 1
+    Range: 6
+    AreaRadius: 0
     ProjectileScale: 1
     Duration: 0
-    ProjectileCount: 1
+    ProjectileCount: 2
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 0
+    ProjectileSpeed: 8
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 10
+  - Damage: 8.3
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 10
-    AreaRadius: 1.8
+    Pierce: 1
+    Range: 6
+    AreaRadius: 0
     ProjectileScale: 1
     Duration: 0
-    ProjectileCount: 1
+    ProjectileCount: 2
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 0
+    ProjectileSpeed: 8
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 13
+  - Damage: 5.8
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 11
-    AreaRadius: 2
+    Pierce: 1
+    Range: 6
+    AreaRadius: 0
     ProjectileScale: 1
     Duration: 0
-    ProjectileCount: 1
+    ProjectileCount: 2
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 0
+    ProjectileSpeed: 8
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 17
+  - Damage: 7.4
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 11
-    AreaRadius: 2.2
+    Pierce: 2
+    Range: 6
+    AreaRadius: 0
     ProjectileScale: 1
     Duration: 0
-    ProjectileCount: 1
+    ProjectileCount: 2
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 0
+    ProjectileSpeed: 8
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 21
+  - Damage: 9.6
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 12
-    AreaRadius: 2.5
+    Pierce: 2
+    Range: 8
+    AreaRadius: 0
     ProjectileScale: 1
     Duration: 0
-    ProjectileCount: 1
+    ProjectileCount: 2
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 0
+    ProjectileSpeed: 8
     Homing: 0
     Knockback: 0
     Bounce: 0
-  _intervalBeats: 2
-  _offsetBeats: 1
-  _burstCount: 4
-  _burstSubStep: 1
-  _fieldPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
-  _placement: 1
-  _followOwner: 0
-  _tickInterval: 0
+  _triggerPatterns:
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 8
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 8
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 4
+    - 8
+    - 12
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 4
+    - 8
+    - 12
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 4
+    - 8
+    - 12
+  _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
+  _spreadDegrees: 8
+  _aimMode: 0
+  _lifetimeOverride: 1
+  _damageDecayFloor: 1
+  _scaleDecayFloor: 1

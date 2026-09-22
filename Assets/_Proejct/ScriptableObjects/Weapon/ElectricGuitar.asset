@@ -12,87 +12,130 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
   m_Name: ElectricGuitar
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
-  _displayName: "\uAE30\uD0C0 (\uC77C\uB809)"
+  _displayName: "\uC18C\uD615 \uC0B0\uD0C4"
   _icon: {fileID: 0}
   _levels:
-  - Damage: 8
+  - Damage: 4.4
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 11
+    Range: 3
     AreaRadius: 0
-    ProjectileScale: 1
-    Duration: 0
-    ProjectileCount: 2
-    NoteDensity: 1
-    CooldownReduction: 0
-    ProjectileSpeed: 11
-    Homing: 220
-    Knockback: 0
-    Bounce: 0
-  - Damage: 11
-    CritChance: 0
-    CritMultiplier: 2
-    Pierce: 0
-    Range: 11
-    AreaRadius: 0
-    ProjectileScale: 1
-    Duration: 0
-    ProjectileCount: 2
-    NoteDensity: 1
-    CooldownReduction: 0
-    ProjectileSpeed: 11
-    Homing: 260
-    Knockback: 0
-    Bounce: 0
-  - Damage: 14
-    CritChance: 0
-    CritMultiplier: 2
-    Pierce: 0
-    Range: 12
-    AreaRadius: 0
-    ProjectileScale: 1
+    ProjectileScale: 0.6
     Duration: 0
     ProjectileCount: 3
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 12
-    Homing: 300
+    ProjectileSpeed: 10
+    Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 18
+  - Damage: 5.7
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 12
+    Range: 3
     AreaRadius: 0
-    ProjectileScale: 1
+    ProjectileScale: 0.6
     Duration: 0
     ProjectileCount: 3
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 12
-    Homing: 340
+    ProjectileSpeed: 10
+    Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 22
+  - Damage: 4
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 13
+    Range: 3
     AreaRadius: 0
-    ProjectileScale: 1
+    ProjectileScale: 0.6
     Duration: 0
-    ProjectileCount: 4
+    ProjectileCount: 3
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 13
-    Homing: 400
+    ProjectileSpeed: 10
+    Homing: 0
     Knockback: 0
     Bounce: 0
-  _intervalBeats: 2
-  _offsetBeats: 0
-  _burstCount: 1
-  _burstSubStep: 1
+  - Damage: 5.1
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 3.5
+    AreaRadius: 0
+    ProjectileScale: 0.6
+    Duration: 0
+    ProjectileCount: 3
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 10
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  - Damage: 6.6
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 0
+    Range: 3.5
+    AreaRadius: 0
+    ProjectileScale: 0.6
+    Duration: 0
+    ProjectileCount: 3
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 10
+    Homing: 0
+    Knockback: 0
+    Bounce: 0
+  _triggerPatterns:
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 4
+    - 8
+    - 12
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 4
+    - 8
+    - 12
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    - 12
+    - 14
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    - 12
+    - 14
+  - PatternBars: 1
+    Cells:
+    - 0
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    - 12
+    - 14
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
-  _spreadDegrees: 25
+  _spreadDegrees: 30
+  _aimMode: 0
+  _lifetimeOverride: 0.4
+  _damageDecayFloor: 1
+  _scaleDecayFloor: 1

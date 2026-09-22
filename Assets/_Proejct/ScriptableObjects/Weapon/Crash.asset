@@ -12,89 +12,103 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06cb7583c8ae5234b832d66d124249df, type: 3}
   m_Name: Crash
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.AreaWeaponDefinition
-  _displayName: "\uD06C\uB798\uC2DC"
+  _displayName: "\uD654\uBA74 \uB300\uD3ED\uBC1C"
   _icon: {fileID: 0}
   _levels:
-  - Damage: 30
+  - Damage: 21
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 10
-    AreaRadius: 3.4
+    Range: 0
+    AreaRadius: 6
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.3
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 4
+    Knockback: 0
     Bounce: 0
-  - Damage: 40
+  - Damage: 27
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 10
-    AreaRadius: 3.8
+    Range: 0
+    AreaRadius: 6
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.3
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 4
+    Knockback: 0
     Bounce: 0
-  - Damage: 52
+  - Damage: 38
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 11
-    AreaRadius: 4.2
+    Range: 0
+    AreaRadius: 7
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.3
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 5
+    Knockback: 0
     Bounce: 0
-  - Damage: 66
+  - Damage: 48
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 11
-    AreaRadius: 4.6
+    Range: 0
+    AreaRadius: 7
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.3
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 5
+    Knockback: 0
     Bounce: 0
-  - Damage: 84
+  - Damage: 63
     CritChance: 0
     CritMultiplier: 2
     Pierce: 0
-    Range: 12
-    AreaRadius: 5.2
+    Range: 0
+    AreaRadius: 7
     ProjectileScale: 1
-    Duration: 0
+    Duration: 0.3
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
     ProjectileSpeed: 0
     Homing: 0
-    Knockback: 6
+    Knockback: 8
     Bounce: 0
-  _intervalBeats: 4
-  _offsetBeats: 2
-  _burstCount: 1
-  _burstSubStep: 1
+  _triggerPatterns:
+  - PatternBars: 8
+    Cells:
+    - 0
+  - PatternBars: 8
+    Cells:
+    - 0
+  - PatternBars: 8
+    Cells:
+    - 0
+  - PatternBars: 8
+    Cells:
+    - 0
+  - PatternBars: 8
+    Cells:
+    - 0
   _fieldPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
-  _placement: 1
+  _placement: 0
   _followOwner: 0
   _tickInterval: 0
+  _coneHalfAngleDegrees: 0
+  _telegraphDuration: 0
