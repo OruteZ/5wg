@@ -11,6 +11,7 @@ namespace FiveWG.Player
         private float _moveSpeed = 6f;
 
         private Rigidbody2D _rigidbody;
+        private SpriteRenderer _body;
         private Vector2 _moveInput;
 
         public Vector2 MoveInput => _moveInput;
@@ -21,6 +22,7 @@ namespace FiveWG.Player
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
+            _body = GetComponentInChildren<SpriteRenderer>();
 
             // 탑다운이라 중력과 물리 회전을 쓰지 않는다.
             _rigidbody.gravityScale = 0f;
@@ -36,6 +38,9 @@ namespace FiveWG.Player
             {
                 FacingDirection = input.normalized;
             }
+
+            // 스프라이트는 오른쪽을 본다. 위아래로만 움직일 때는 마지막 좌우를 유지한다.
+            if (_body != null && input.x != 0f) _body.flipX = input.x < 0f;
         }
 
         private void FixedUpdate()

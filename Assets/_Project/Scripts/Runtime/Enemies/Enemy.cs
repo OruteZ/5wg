@@ -210,6 +210,9 @@ namespace FiveWG.Enemies
 
             Vector2 toTarget = (Vector2)_target.position - _rigidbody.position;
             _rigidbody.linearVelocity = toTarget.normalized * _stats.MoveSpeed;
+
+            // 스프라이트는 오른쪽을 본다. 넉백 중에는 뒤집지 않아 밀려나도 플레이어를 보고 있다.
+            if (_spriteRenderer != null && toTarget.x != 0f) _spriteRenderer.flipX = toTarget.x < 0f;
         }
 
         private void Die()
