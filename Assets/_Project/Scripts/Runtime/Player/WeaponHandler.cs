@@ -217,14 +217,6 @@ namespace FiveWG.Player
             }
         }
 
-        /// <summary>
-        /// 클록 BPM이 바뀐 뒤(스테이지 구간 전환) 호출한다. 장착 중인 악기 전부를 새 BPM 샘플로
-        /// 바꿔 끼우고 다음 마디부터 다시 맞물려 돈다. BPM을 바꾸는 쪽(StageTempoDirector 등)이
-        /// BpmClock.SetBpm 직후 이걸 불러야 한다 — 둘을 따로 부르면 그 사이 프레임 동안 클록은
-        /// 새 BPM인데 악기는 옛 샘플을 틀고 있는 상태가 된다.
-        /// </summary>
-        public void HandleBpmChanged() => RescheduleAllInstrumentLoops(resumeImmediately: false);
-
         private void RescheduleAllInstrumentLoops(bool resumeImmediately)
         {
             for (int slot = 0; slot < WeaponInventory.Capacity; slot++)
@@ -279,8 +271,6 @@ namespace FiveWG.Player
         /// 다음 마디 경계에 틀되, 클립 처음이 아니라 클록 위치에 해당하는 지점부터 튼다.
         /// 샘플은 1마디가 아니라 8마디 프레이즈라서, 처음부터 틀면 마디 박자는 맞아도 이미 도는
         /// 다른 악기와 프레이즈가 몇 마디씩 어긋난다(3마디째에 습득한 악기는 영영 3마디 늦게 돈다).
-        /// 예전엔 BPM 전환이 클록을 비트0으로 되돌리며 모든 루프를 동시에 처음부터 다시 틀어서
-        /// 이 어긋남이 16마디마다 저절로 덮였다.
         /// 클록이 돌지 않으면(시작 무기 지급 시점·일시정지·종료) 클립만 끼워 두고 틀지 않는다 —
         /// 클록이 Playing이 되면 SyncLoopsToClockState가 다시 스케줄한다.
         /// </summary>
