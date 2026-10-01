@@ -16,7 +16,7 @@ description: Check .claude/docs and rules against the actual code, then fix what
 
 ```bash
 for n in $(grep -oh '`[A-Z][A-Za-z0-9_]*`' .claude/docs/*.md .claude/rules/*.md CLAUDE.md | tr -d '`' | sort -u); do
-  grep -rq "\b$n\b" Assets/_Proejct/Scripts/ 2>/dev/null || echo "코드에 없음: $n"
+  grep -rq "\b$n\b" Assets/_Project/Scripts/ 2>/dev/null || echo "코드에 없음: $n"
 done
 ```
 
@@ -53,7 +53,7 @@ cd .claude/docs && grep -h "^| " *.md | grep -v "^| --" | sed 's/ *$//' | sort |
 grep -rn "[0-9]\+개\|[0-9]\+종\|[0-9]\+축\|[0-9]\+줄\|[0-9]\+마디" .claude/docs/*.md
 ```
 
-각각 세어본다. 스크립트 수는 `find Assets/_Proejct/Scripts -name "*.cs" | wc -l`.
+각각 세어본다. 스크립트 수는 `find Assets/_Project/Scripts -name "*.cs" | wc -l`.
 임시 수치(클리어 마디 수 등)는 **씬·프리팹에서 실제 값을 확인**한다 — 바꿔놓고 문서를 안 고친 게 흔하다.
 
 ## 4. 유예·부재 주장이 아직 참인가

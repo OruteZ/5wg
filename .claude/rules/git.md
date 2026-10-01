@@ -1,5 +1,13 @@
 # Git
 
+## 브랜치
+
+- **`main`에 직접 커밋하지 않는다.** 브랜치를 파고 PR로 올린다.
+- 종류별로 나눈다. 기능·수정·리팩터링·문서를 한 커밋에 섞지 않는다(→ `split-commits` 스킬).
+- 순서는 시간순이 아니라 **의존 방향**. 뒤 커밋이 앞 커밋의 API를 쓰도록 배치하면
+  각 커밋 시점에 컴파일이 깨지지 않는다.
+- 본문에 **왜**를 적는다. 무엇을 바꿨는지는 diff에 있다.
+
 ## Commit naming
 
 Prefix every commit message with one of the following tags.

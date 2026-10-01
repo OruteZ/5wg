@@ -11,7 +11,7 @@ description: Diagnose Unity scene/prefab wiring by reading YAML — which compon
 ## 1. 어떤 컴포넌트가 붙어 있나
 
 ```bash
-grep -n "m_Script:\|m_Name:\|m_EditorClassIdentifier" Assets/_Proejct/Scenes/<씬>.unity
+grep -n "m_Script:\|m_Name:\|m_EditorClassIdentifier" Assets/_Project/Scenes/<씬>.unity
 ```
 
 `m_EditorClassIdentifier`에 옛 클래스명이 남아 있는 건 정상이다. Unity가 다음 저장 때 정리한다.
@@ -26,7 +26,7 @@ grep -rl "<guid>" Assets --include=*.meta
 반대 방향(스크립트 → GUID):
 
 ```bash
-grep guid Assets/_Proejct/Scripts/Runtime/<경로>/<파일>.cs.meta
+grep guid Assets/_Project/Scripts/Runtime/<경로>/<파일>.cs.meta
 ```
 
 **씬에 GUID가 아예 안 나타나면 그 컴포넌트는 씬에 없는 것이다.** 코드를 더 파기 전에 이걸 먼저 본다.
