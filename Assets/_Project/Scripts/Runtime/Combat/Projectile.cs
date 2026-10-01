@@ -32,6 +32,15 @@ namespace FiveWG.Combat
         public Transform Owner;
 
         public Faction OwnerFaction;
+
+        /// <summary>0 이하면 프리팹의 기본 수명을 쓴다. 무기마다 수명이 다른데 프리팹은 10종이 공유하기 때문.</summary>
+        public float LifetimeOverride;
+
+        /// <summary>수명이 다할 때 데미지가 이 배율까지 줄어든다. 1이면 감쇠 없음(기본값).</summary>
+        public float DamageDecayFloor;
+
+        /// <summary>수명이 다할 때 크기가 이 배율까지 줄어든다. 1이면 감쇠 없음(기본값).</summary>
+        public float ScaleDecayFloor;
     }
 
     [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
@@ -46,6 +55,7 @@ namespace FiveWG.Combat
         private Vector3 _baseScale;
         private Action<Projectile> _release;
         private float _remainingLifetime;
+        private float _totalLifetime;
         private int _remainingHits;
         private bool _isSpent;
 
@@ -79,14 +89,30 @@ namespace FiveWG.Combat
             transform.localScale = _baseScale * (data.Scale > 0f ? data.Scale : 1f);
 
             _rigidbody.linearVelocity = normalized * data.Speed;
-            _remainingLifetime = _lifetime;
+            _totalLifetime = data.LifetimeOverride > 0f ? data.LifetimeOverride : _lifetime;
+            _remainingLifetime = _totalLifetime;
             _isSpent = false;
         }
+
+        /// <summary>0(발사 직후) ~ 1(수명 끝). 감쇠 계산의 기준값.</summary>
+        private float LifeFraction() =>
+            _totalLifetime > 0f ? Mathf.Clamp01(1f - _remainingLifetime / _totalLifetime) : 0f;
 
         private void Update()
         {
             _remainingLifetime -= Time.deltaTime;
-            if (_remainingLifetime <= 0f) Despawn();
+            if (_remainingLifetime <= 0f)
+            {
+                Despawn();
+                return;
+            }
+
+            // 감쇠가 없는 무기(ScaleDecayFloor 기본값 1)는 매 프레임 같은 배율을 곱하는 셈이라 사실상 공짜다.
+            if (_data.ScaleDecayFloor < 1f)
+            {
+                float scale = Mathf.Lerp(1f, Mathf.Max(0.01f, _data.ScaleDecayFloor), LifeFraction());
+                transform.localScale = _baseScale * (_data.Scale > 0f ? _data.Scale : 1f) * scale;
+            }
         }
 
         private void FixedUpdate()
@@ -121,7 +147,10 @@ namespace FiveWG.Combat
             if (!other.TryGetComponent(out IDamageable damageable)) return;
             if (damageable.Faction == _data.OwnerFaction) return;
 
-            damageable.TakeDamage(_data.Damage);
+            float damage = _data.DamageDecayFloor < 1f
+                ? _data.Damage * Mathf.Lerp(1f, _data.DamageDecayFloor, LifeFraction())
+                : _data.Damage;
+            damageable.TakeDamage(damage);
 
             if (_data.Knockback > 0f)
             {

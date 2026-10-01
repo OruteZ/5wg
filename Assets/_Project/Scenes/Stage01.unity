@@ -7024,7 +7024,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9501743723a94a69b592ad629d102386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BeatTemplate.BpmClock
-  bpm: 120
+  bpm: 80
   subPerBeat: 4
   playOnStart: 0
 --- !u!4 &1189532219
@@ -7715,6 +7715,7 @@ GameObject:
   - component: {fileID: 1291069493}
   - component: {fileID: 1291069492}
   - component: {fileID: 1291069495}
+  - component: {fileID: 1291069496}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -7864,6 +7865,14 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!81 &1291069496
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1291069491}
+  m_Enabled: 1
 --- !u!1 &1293250284
 GameObject:
   m_ObjectHideFlags: 0

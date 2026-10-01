@@ -17,16 +17,45 @@ namespace FiveWG.Weapons
         [SerializeField, LabelText("레벨별 수치 (1레벨부터)")]
         private WeaponLevelData[] _levels = { WeaponLevelData.Default };
 
-        [Title("타이밍 (기획서 확정 전 임시)")]
-        [SerializeField, LabelText("발사 주기 (정박)")] private int _intervalBeats = 1;
-        [SerializeField, LabelText("시작 오프셋 (정박)")] private int _offsetBeats;
+        [Title("타이밍 (레벨별 고정 칸 패턴)")]
+        [SerializeField, LabelText("레벨별 트리거 칸 (1레벨부터, 레벨 표와 같은 길이)")]
+        private TriggerPattern[] _triggerPatterns = { TriggerPattern.Empty };
 
-        [SerializeField, LabelText("연타 수 (1이면 단발)")] private int _burstCount = 1;
-        [SerializeField, LabelText("연타 간격 (서브비트 수)")] private int _burstSubStep = 1;
+        [Title("악기 루프 (BPM별 샘플. 장착 중 계속 도는 마디 루프 — 발사할 때마다 트는 효과음이 아니다)")]
+        [SerializeField, LabelText("BPM별 샘플")] private WeaponSoundClip[] _sounds;
 
         public string DisplayName => string.IsNullOrEmpty(_displayName) ? name : _displayName;
         public Sprite Icon => _icon;
         public int MaxLevel => _levels is { Length: > 0 } ? _levels.Length : 1;
+
+        /// <summary>
+        /// 등록된 샘플 중 요청 BPM에 가장 가까운 것과 그 샘플이 실제로 녹음된 BPM.
+        /// 녹음 BPM을 같이 돌려주는 이유: 곡 BPM과 정확히 안 맞으면 호출부가 피치를 보정해서
+        /// (재생 속도 = 곡BPM/녹음BPM) 틀어야 마디 루프가 계속 맞물려 돈다.
+        /// </summary>
+        public bool TryGetClipForBpm(double bpm, out AudioClip clip, out int clipBpm)
+        {
+            clip = null;
+            clipBpm = 0;
+
+            if (_sounds is not { Length: > 0 }) return false;
+
+            double bestDiff = double.MaxValue;
+
+            foreach (WeaponSoundClip sound in _sounds)
+            {
+                if (sound.Clip == null) continue;
+
+                double diff = System.Math.Abs(sound.Bpm - bpm);
+                if (diff >= bestDiff) continue;
+
+                bestDiff = diff;
+                clip = sound.Clip;
+                clipBpm = sound.Bpm;
+            }
+
+            return clip != null;
+        }
 
         public WeaponLevelData GetLevelData(int level)
         {
@@ -37,8 +66,25 @@ namespace FiveWG.Weapons
         // 표를 저장할 때 한 번만 보정한다. 예전엔 발사마다 돌았다.
         private void OnValidate()
         {
-            if (_levels == null) return;
-            for (int i = 0; i < _levels.Length; i++) _levels[i] = _levels[i].Sanitized();
+            if (_levels != null)
+            {
+                for (int i = 0; i < _levels.Length; i++) _levels[i] = _levels[i].Sanitized();
+            }
+
+            // 트리거 칸을 비워두면 그 레벨에서 영원히 발사가 안 된다 — 조용히 묻히기 쉬운 실수라 저장 시 바로 알린다.
+            for (int i = 0; _triggerPatterns != null && i < _triggerPatterns.Length; i++)
+            {
+                if (_triggerPatterns[i].Cells is { Length: > 0 }) continue;
+
+                Debug.LogWarning(
+                    $"[{nameof(WeaponDefinition)}] '{DisplayName}' {i + 1}레벨의 트리거 칸이 비어 있다. 이 레벨에서는 발사되지 않는다.",
+                    this);
+            }
+
+            if (_sounds is not { Length: > 0 })
+            {
+                Debug.LogWarning($"[{nameof(WeaponDefinition)}] '{DisplayName}'에 악기 루프가 없다. 소리 없이 장착된다.", this);
+            }
         }
 
         // 밸런싱은 인스펙터에서 15축 × 5레벨을 무기마다 따로 만지는 것보다 스프레드시트에서 10종을
@@ -68,13 +114,6 @@ namespace FiveWG.Weapons
         /// <summary>런타임 무기 인스턴스를 만든다. 무기 종류마다 구현한다.</summary>
         public abstract IWeapon CreateRuntime();
 
-        /// <summary>
-        /// 기획서 확정 전까지 쓰는 임시 타이밍 생성. 확정되면 이 메서드만 무기별 패턴으로 교체하면 된다.
-        /// 연타 수를 종류로 두지 않고 개수로 둔다 — 단발은 "1연타"라서 열거형이 따로 필요 없다.
-        /// </summary>
-        protected IFireTiming CreateTiming() =>
-            _burstCount > 1
-                ? new BurstTiming(_intervalBeats, _offsetBeats, _burstCount, _burstSubStep)
-                : new EveryBeatTiming(_intervalBeats, _offsetBeats);
+        protected IFireTiming CreateTiming() => new CellPatternTiming(_triggerPatterns);
     }
 }

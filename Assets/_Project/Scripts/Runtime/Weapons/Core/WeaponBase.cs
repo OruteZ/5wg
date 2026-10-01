@@ -75,6 +75,9 @@ namespace FiveWG.Weapons
             return context.facingDirection;
         }
 
+        // 소리는 발사할 때마다 트는 효과음이 아니라 장착 중 계속 도는 마디 루프다
+        // (→ WeaponHandler의 인벤토리 이벤트 구독). 발사 한 번마다 여기서 틀면
+        // 트리거 칸이 여러 번 오는 사이 같은 악기가 겹쳐 재생된다.
         public void Fire(in FireContext context) => OnFire(context);
 
         protected abstract void OnFire(in FireContext context);

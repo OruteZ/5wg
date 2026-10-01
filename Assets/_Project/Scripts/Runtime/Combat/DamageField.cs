@@ -25,6 +25,15 @@ namespace FiveWG.Combat
 
         /// <summary>따라다닐 대상. null이면 생성 위치에 고정된다(장판). 오라는 여기에 플레이어가 들어온다.</summary>
         public Transform Follow;
+
+        /// <summary>부채꼴 판정의 정면 방향. ConeHalfAngleDegrees가 0이면 안 쓴다(원형 그대로).</summary>
+        public Vector2 FacingDirection;
+
+        /// <summary>0이면 원형 전체. 0보다 크면 FacingDirection 기준 이 각도 안쪽만 때린다(전방 베기용).</summary>
+        public float ConeHalfAngleDegrees;
+
+        /// <summary>0이면 즉시 때린다. 0보다 크면 그만큼 예고(차오름)한 뒤 한 번만 때린다(원격 폭발용).</summary>
+        public float TelegraphDuration;
     }
 
     /// <summary>
@@ -101,8 +110,16 @@ namespace FiveWG.Combat
             _nextTick = 0f;
             _isSpent = false;
 
-            // 첫 타격은 생성 즉시다. 충격파가 한 프레임 뒤에 터지면 박자와 어긋난다.
-            TickDamage();
+            if (_data.TelegraphDuration > 0f)
+            {
+                // 예고형(원격 폭발)은 차오르는 동안 때리지 않는다. 예고가 끝나는 순간 한 번만 때린다.
+                _nextTick = _data.TelegraphDuration;
+            }
+            else
+            {
+                // 첫 타격은 생성 즉시다. 충격파가 한 프레임 뒤에 터지면 박자와 어긋난다.
+                TickDamage();
+            }
         }
 
         private void Update()
@@ -136,6 +153,8 @@ namespace FiveWG.Combat
                 if (!hit.TryGetComponent(out IDamageable damageable)) continue;
                 if (damageable.Faction == _data.OwnerFaction) continue;
 
+                if (_data.ConeHalfAngleDegrees > 0f && !IsInsideCone(hit.transform.position)) continue;
+
                 damageable.TakeDamage(_data.Damage);
 
                 if (_data.Knockback <= 0f) continue;
@@ -146,6 +165,16 @@ namespace FiveWG.Combat
                     damageable.ApplyKnockback(away.normalized * _data.Knockback);
                 }
             }
+        }
+
+        /// <summary>전방 베기처럼 원 전체가 아니라 정면 부채꼴 안만 맞아야 하는 무기가 쓴다.</summary>
+        private bool IsInsideCone(Vector2 targetPosition)
+        {
+            Vector2 toTarget = targetPosition - (Vector2)transform.position;
+            if (toTarget.sqrMagnitude <= 0.0001f) return true;
+
+            float angle = Vector2.Angle(_data.FacingDirection, toTarget);
+            return angle <= _data.ConeHalfAngleDegrees;
         }
 
         private void UpdateFade()

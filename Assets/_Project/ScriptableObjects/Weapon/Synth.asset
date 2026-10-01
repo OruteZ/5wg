@@ -9,20 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06cb7583c8ae5234b832d66d124249df, type: 3}
+  m_Script: {fileID: 11500000, guid: e67b643a0f0e35c4fbc11934b01c53a7, type: 3}
   m_Name: Synth
-  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.AreaWeaponDefinition
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ChainWeaponDefinition
   _displayName: "\uC2E0\uC2A4"
   _icon: {fileID: 0}
   _levels:
-  - Damage: 5
+  - Damage: 0.45
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 9
-    AreaRadius: 2.2
+    Pierce: 1
+    Range: 0
+    AreaRadius: 0
     ProjectileScale: 1
-    Duration: 3
+    Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
@@ -30,14 +30,14 @@ MonoBehaviour:
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 7
+  - Damage: 0.59
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 9
-    AreaRadius: 2.4
+    Pierce: 2
+    Range: 0
+    AreaRadius: 0
     ProjectileScale: 1
-    Duration: 3.5
+    Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
@@ -45,14 +45,14 @@ MonoBehaviour:
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 9
+  - Damage: 0.81
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 10
-    AreaRadius: 2.6
+    Pierce: 3
+    Range: 0
+    AreaRadius: 0
     ProjectileScale: 1
-    Duration: 4
+    Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
@@ -60,14 +60,14 @@ MonoBehaviour:
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 11
+  - Damage: 1.04
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 10
-    AreaRadius: 2.8
+    Pierce: 4
+    Range: 0
+    AreaRadius: 0
     ProjectileScale: 1
-    Duration: 4.5
+    Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
@@ -75,14 +75,14 @@ MonoBehaviour:
     Homing: 0
     Knockback: 0
     Bounce: 0
-  - Damage: 14
+  - Damage: 1.35
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 0
-    Range: 11
-    AreaRadius: 3.2
+    Pierce: 5
+    Range: 0
+    AreaRadius: 0
     ProjectileScale: 1
-    Duration: 5
+    Duration: 0
     ProjectileCount: 1
     NoteDensity: 1
     CooldownReduction: 0
@@ -90,11 +90,28 @@ MonoBehaviour:
     Homing: 0
     Knockback: 0
     Bounce: 0
-  _intervalBeats: 4
-  _offsetBeats: 0
-  _burstCount: 1
-  _burstSubStep: 1
-  _fieldPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
-  _placement: 1
-  _followOwner: 0
-  _tickInterval: 0.4
+  _triggerPatterns:
+  - PatternBars: 1
+    Cells: 0000000008000000
+  - PatternBars: 1
+    Cells: 0000000008000000
+  - PatternBars: 1
+    Cells: 0000000008000000
+  - PatternBars: 1
+    Cells: 0000000008000000
+  - PatternBars: 1
+    Cells: 0000000008000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: e4fb913e15e0a51459a7fef6937b3463, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 2cbdf43af69dbca4e9479ec3b943d69b, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: 1bd6d1be8d17dd045b06174772dffa30, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: dbd267fb981b2674abec1d7ffb96fe7b, type: 3}
+  _fieldPrefab: {fileID: 5973845192659806854, guid: 4043dc6695609db40a72b21eeef64434, type: 3}
+  _firstLinkRange: 7
+  _linkDistance: 3
+  _tickInterval: 0.1
+  _activeDuration: 2
