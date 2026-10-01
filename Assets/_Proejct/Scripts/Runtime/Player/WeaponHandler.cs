@@ -26,6 +26,9 @@ namespace FiveWG.Player
         [SerializeField, LabelText("타겟 탐색")] private RegistryTargetProvider _targetProvider;
         [SerializeField, LabelText("발사구 (비우면 자기 자신)")] private Transform _muzzle;
 
+        [Title("악기 루프 사운드")]
+        [SerializeField, LabelText("악기 루프 음량 (0~1)")] private float _instrumentVolume = 0.5f;
+
         [Title("시작 무기")]
         [SerializeField, LabelText("시작 시 지급 (최대 6)")]
         private WeaponDefinition[] _startingWeapons;
@@ -53,6 +56,11 @@ namespace FiveWG.Player
         private Vector2 _aimInput;
         private long _lastSubIndex = -1;
 
+        // 슬롯당 악기 루프 하나. 장착 중 계속 도는 마디 루프라 발사 이벤트가 아니라
+        // 인벤토리의 획득·해제 이벤트에 붙는다.
+        private readonly AudioSource[] _instrumentLoops = new AudioSource[WeaponInventory.Capacity];
+        private bool _clockWasPlaying;
+
         /// <summary>보유 무기 목록. 획득·업그레이드·UI 연동은 이쪽으로 한다.</summary>
         public WeaponInventory Inventory { get; private set; }
 
@@ -72,6 +80,9 @@ namespace FiveWG.Player
 
             Inventory = new WeaponInventory(
                 new WeaponContext(transform, _projectilePool, _targetProvider, _camera, faction));
+
+            Inventory.Acquired += HandleWeaponAcquired;
+            Inventory.Removed += HandleWeaponRemoved;
 
             GrantStartingWeapons();
             WarnIfCannotFire();
@@ -118,6 +129,16 @@ namespace FiveWG.Player
                     this);
                 _targetProvider = gameObject.AddComponent<RegistryTargetProvider>();
             }
+
+            for (int i = 0; i < _instrumentLoops.Length; i++)
+            {
+                AudioSource source = gameObject.AddComponent<AudioSource>();
+                source.playOnAwake = false;
+                source.spatialBlend = 0f;
+                source.loop = true;
+                source.volume = _instrumentVolume;
+                _instrumentLoops[i] = source;
+            }
         }
 
         private void GrantStartingWeapons()
@@ -152,6 +173,115 @@ namespace FiveWG.Player
         {
             Inventory.Tick(Time.deltaTime);
             PumpBeatTicks();
+            DetectStageBeginForLoops();
+        }
+
+        /// <summary>
+        /// 시작 무기는 클록이 돌기 전(Awake) 에 지급되므로, 그때는 맞춰 돌 마디 자체가 없어
+        /// 루프를 걸지 못한다. StageDirector가 클록을 Stop→Play로 재앵커해 실제로 곡이 시작되는
+        /// 순간을 여기서 잡아 그때 한 번 전부 다시 스케줄한다.
+        /// </summary>
+        private void DetectStageBeginForLoops()
+        {
+            bool nowPlaying = _clock != null && _clock.State == BeatState.Playing;
+            if (nowPlaying && !_clockWasPlaying) RescheduleAllInstrumentLoops();
+            _clockWasPlaying = nowPlaying;
+        }
+
+        /// <summary>
+        /// 클록 BPM이 바뀐 뒤(스테이지 구간 전환) 호출한다. 장착 중인 악기 전부를 새 BPM 샘플로
+        /// 바꿔 끼우고 다음 마디부터 다시 맞물려 돈다. BPM을 바꾸는 쪽(StageTempoDirector 등)이
+        /// BpmClock.SetBpm 직후 이걸 불러야 한다 — 둘을 따로 부르면 그 사이 프레임 동안 클록은
+        /// 새 BPM인데 악기는 옛 샘플을 틀고 있는 상태가 된다.
+        /// </summary>
+        public void HandleBpmChanged() => RescheduleAllInstrumentLoops();
+
+        private void RescheduleAllInstrumentLoops()
+        {
+            for (int slot = 0; slot < WeaponInventory.Capacity; slot++)
+            {
+                IWeapon weapon = Inventory.GetAt(slot);
+                if (weapon != null) StartInstrumentLoop(slot, weapon);
+            }
+        }
+
+        private void HandleWeaponAcquired(int slot, IWeapon weapon) => StartInstrumentLoop(slot, weapon);
+
+        private void HandleWeaponRemoved(int slot, IWeapon weapon)
+        {
+            AudioSource source = _instrumentLoops[slot];
+            if (source == null) return;
+
+            source.Stop();
+            source.clip = null;
+        }
+
+        /// <summary>
+        /// 그 악기의 마디 루프를 다음 마디 경계에 맞춰 건다. 지금 당장 트는 게 아니라
+        /// PlayScheduled로 예약하는 이유는, 이미 도는 다른 악기들과 위상이 맞아야 하기 때문이다 —
+        /// 즉시 재생하면 습득한 그 프레임의 애매한 위치에서 끼어들어 다른 루프와 어긋난다.
+        /// </summary>
+        private void StartInstrumentLoop(int slot, IWeapon weapon)
+        {
+            AudioSource source = _instrumentLoops[slot];
+            if (source == null || _clock == null) return;
+
+            // 곡 BPM은 항상 녹음된 4단계(80/90/100/110) 중 하나여야 한다 — 피치로 억지로
+            // 맞추면 음정이 틀어진다. 클록 BPM이 그 목록 밖이면 가장 가까운 샘플을 골라도
+            // 마디 길이가 안 맞아 돌수록 어긋나니, 그건 재생 속도가 아니라 클록 쪽을 고쳐야 한다.
+            if (!weapon.Definition.TryGetClipForBpm(_clock.Bpm, out AudioClip clip, out int clipBpm)) return;
+
+            if (clipBpm != _clock.Bpm)
+            {
+                Debug.LogWarning(
+                    $"[{nameof(WeaponHandler)}] '{weapon.Definition.DisplayName}' 클록 BPM({_clock.Bpm})에 맞는 샘플이 없어 " +
+                    $"{clipBpm}bpm으로 대신 재생한다. 마디가 진행될수록 다른 악기와 어긋난다.", this);
+            }
+
+            source.Stop();
+            source.clip = clip;
+            source.volume = _instrumentVolume;
+            source.pitch = 1f;
+            ScheduleAlignedToClock(source, clip);
+        }
+
+        /// <summary>
+        /// 다음 마디 경계에 틀되, 클립 처음이 아니라 클록 위치에 해당하는 지점부터 튼다.
+        /// 샘플은 1마디가 아니라 8마디 프레이즈라서, 처음부터 틀면 마디 박자는 맞아도 이미 도는
+        /// 다른 악기와 프레이즈가 몇 마디씩 어긋난다(3마디째에 습득한 악기는 영영 3마디 늦게 돈다).
+        /// 예전엔 BPM 전환이 클록을 비트0으로 되돌리며 모든 루프를 동시에 처음부터 다시 틀어서
+        /// 이 어긋남이 16마디마다 저절로 덮였다.
+        /// 클록이 아직 안 돌면(시작 무기 지급 시점) 맞출 대상이 없으므로 처음부터 바로 튼다.
+        /// </summary>
+        private void ScheduleAlignedToClock(AudioSource source, AudioClip clip)
+        {
+            double now = AudioSettings.dspTime;
+
+            if (_clock.State != BeatState.Playing)
+            {
+                source.timeSamples = 0;
+                source.PlayScheduled(now);
+                return;
+            }
+
+            double elapsed = _clock.ElapsedSec;
+            double secPerBar = 60.0 / _clock.Bpm * CellMath.BeatsPerBar;
+            double phase = elapsed % secPerBar;
+
+            // 이미 마디 경계에 있으면(스테이지 막 시작한 순간·구간 전환 직후 등, 오차 범위 안) 그
+            // 경계에서 바로 튼다. 무조건 "다음" 경계(한 마디 뒤)로 계산하면 phase가 0에 가까울 때도
+            // 한 마디를 통째로 기다리게 되어, 공격은 칸 0에서 바로 나가는데 소리만 한 마디 늦게
+            // 시작하는 것처럼 들렸다. 바로 틀 때는 지난 phase만큼 클립 위치를 당겨 늦음을 없앤다.
+            double startElapsed = phase < 0.05 ? elapsed : elapsed - phase + secPerBar;
+            PlayFromClockPosition(source, clip, now + (startElapsed - elapsed), startElapsed);
+        }
+
+        private static void PlayFromClockPosition(AudioSource source, AudioClip clip, double startDsp, double clockSec)
+        {
+            double clipSec = (double)clip.samples / clip.frequency;
+            double offsetSec = clockSec % clipSec;
+            source.timeSamples = Mathf.Clamp((int)(offsetSec * clip.frequency), 0, clip.samples - 1);
+            source.PlayScheduled(startDsp);
         }
 
         /// <summary>

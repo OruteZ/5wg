@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
   m_Name: Keys
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
-  _displayName: "\uC625\uD0C0\uBE0C \uC30D\uD0C4"
+  _displayName: "\uD53C\uC544\uB178"
   _icon: {fileID: 0}
   _levels:
   - Damage: 6.4
@@ -92,31 +92,24 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000004000000080000000c000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000004000000080000000c000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 4
-    - 8
-    - 12
+    Cells: 0000000004000000080000000c000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 4
-    - 8
-    - 12
+    Cells: 0000000004000000080000000c000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 4
-    - 8
-    - 12
+    Cells: 0000000004000000080000000c000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: 1b38b6cb99bafcb4db95781989351558, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 11c2db200df48f64ca55b92a8c93d5ec, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: f7d3d36e3e48cea4db3302a90aa42008, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: b90e505331503f84283aacca74e1b4d2, type: 3}
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
   _spreadDegrees: 8
   _aimMode: 0

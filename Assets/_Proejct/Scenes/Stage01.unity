@@ -242,10 +242,10 @@ RectTransform:
   - {fileID: 1514500189}
   m_Father: {fileID: 1973627170}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 604.6667, y: -66}
+  m_SizeDelta: {x: 230.66667, y: 132}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &84728590
 MonoBehaviour:
@@ -2205,7 +2205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9501743723a94a69b592ad629d102386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BeatTemplate.BpmClock
-  bpm: 120
+  bpm: 80
   subPerBeat: 4
   playOnStart: 0
 --- !u!4 &1189532219
@@ -2360,10 +2360,10 @@ RectTransform:
   - {fileID: 181327794}
   m_Father: {fileID: 1973627170}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 115.333336, y: -66}
+  m_SizeDelta: {x: 230.66667, y: 132}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1203535376
 MonoBehaviour:
@@ -2459,6 +2459,7 @@ GameObject:
   - component: {fileID: 1291069493}
   - component: {fileID: 1291069492}
   - component: {fileID: 1291069495}
+  - component: {fileID: 1291069496}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2608,6 +2609,14 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!81 &1291069496
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1291069491}
+  m_Enabled: 1
 --- !u!1 &1293250284
 GameObject:
   m_ObjectHideFlags: 0
@@ -2620,6 +2629,7 @@ GameObject:
   - component: {fileID: 1293250285}
   - component: {fileID: 1293250287}
   - component: {fileID: 1293250286}
+  - component: {fileID: 1293250289}
   m_Layer: 0
   m_Name: StageDirector
   m_TagString: Untagged
@@ -2689,6 +2699,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1293250289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293250284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa51cf4ba8456544b56295a93e87843, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Stage.StageTempoDirector
+  _clock: {fileID: 0}
+  _weaponHandler: {fileID: 0}
+  _bpmSteps: 500000005a000000640000006e000000
+  _barsPerPhase: 16
 --- !u!1 &1321242909
 GameObject:
   m_ObjectHideFlags: 0
@@ -3945,10 +3971,10 @@ RectTransform:
   - {fileID: 1620438094}
   m_Father: {fileID: 1973627170}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 360, y: -66}
+  m_SizeDelta: {x: 230.66667, y: 132}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2079895350
 MonoBehaviour:

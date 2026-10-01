@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
   m_Name: ElectricGuitar
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
-  _displayName: "\uC18C\uD615 \uC0B0\uD0C4"
+  _displayName: "\uB9AC\uB4EC \uAE30\uD0C0"
   _icon: {fileID: 0}
   _levels:
   - Damage: 4.4
@@ -92,47 +92,24 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 1
-    Cells:
-    - 0
-    - 4
-    - 8
-    - 12
+    Cells: 00000000020000000400000006000000080000000a0000000c0000000e000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 4
-    - 8
-    - 12
+    Cells: 00000000020000000400000006000000080000000a0000000c0000000e000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    - 12
-    - 14
+    Cells: 00000000020000000400000006000000080000000a0000000c0000000e000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    - 12
-    - 14
+    Cells: 00000000020000000400000006000000080000000a0000000c0000000e000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    - 12
-    - 14
+    Cells: 00000000020000000400000006000000080000000a0000000c0000000e000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: ac8398931487cac4b8d80597ea84387c, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 4e4afc033d9eb2a4a8540ce8837adc10, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: 6c352259ed3628b41a319b68f43e116e, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: e4c011ef7a71e854eadbb66d28f42362, type: 3}
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
   _spreadDegrees: 30
   _aimMode: 0

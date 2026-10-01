@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
   m_Name: Organ
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
-  _displayName: "감쇠 음탄"
+  _displayName: "\uC624\uB974\uAC04"
   _icon: {fileID: 0}
   _levels:
   - Damage: 16.5
@@ -92,20 +92,24 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 1
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 1
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 1
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 1
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 1
-    Cells:
-    - 0
+    Cells: 00000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: 1be136c47aebcb043859e896d2d56347, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 4aeb113c212a70f4d9d99455e502653e, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: 0a3100585613e584f9177be484e03ab4, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: 351875815df017d4490c2baf0bea479b, type: 3}
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
   _spreadDegrees: 30
   _aimMode: 0

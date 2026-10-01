@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06cb7583c8ae5234b832d66d124249df, type: 3}
   m_Name: String
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.AreaWeaponDefinition
-  _displayName: "원격 예고 폭발"
+  _displayName: "\uC2A4\uD2B8\uB9C1"
   _icon: {fileID: 0}
   _levels:
   - Damage: 9.9
@@ -92,20 +92,24 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 2
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 2
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 2
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 2
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 2
-    Cells:
-    - 0
+    Cells: 00000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: 5b5349e7bd48de440bd2890338667957, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 553df88a8fed8f444977e2652392bb28, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: 9edbddd5a3c987a4ca191d1ceb305462, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: ee089afc2e3f22a4ea8c4b880c89e20e, type: 3}
   _fieldPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
   _placement: 2
   _followOwner: 0

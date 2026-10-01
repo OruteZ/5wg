@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e67b643a0f0e35c4fbc11934b01c53a7, type: 3}
   m_Name: Synth
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ChainWeaponDefinition
-  _displayName: "\uCCB4\uC778 \uBE54"
+  _displayName: "\uC2E0\uC2A4"
   _icon: {fileID: 0}
   _levels:
   - Damage: 0.45
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 3
+    Pierce: 1
     Range: 0
     AreaRadius: 0
     ProjectileScale: 1
@@ -33,7 +33,7 @@ MonoBehaviour:
   - Damage: 0.59
     CritChance: 0
     CritMultiplier: 2
-    Pierce: 3
+    Pierce: 2
     Range: 0
     AreaRadius: 0
     ProjectileScale: 1
@@ -92,25 +92,24 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: e4fb913e15e0a51459a7fef6937b3463, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 2cbdf43af69dbca4e9479ec3b943d69b, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: 1bd6d1be8d17dd045b06174772dffa30, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: dbd267fb981b2674abec1d7ffb96fe7b, type: 3}
   _fieldPrefab: {fileID: 5973845192659806854, guid: 4043dc6695609db40a72b21eeef64434, type: 3}
   _firstLinkRange: 7
   _linkDistance: 3

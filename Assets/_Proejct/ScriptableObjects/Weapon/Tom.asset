@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79d73e9e39858f74f8601c9924c8e0fe, type: 3}
   m_Name: Tom
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.MeteorWeaponDefinition
-  _displayName: "\uBCC4\uB625\uBCC4 \uC77C\uC790 \uCC29\uD0C4"
+  _displayName: "\uBCA8"
   _icon: {fileID: 0}
   _levels:
   - Damage: 7.4
@@ -92,63 +92,24 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 1
-    Cells:
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
+    Cells: 00000000010000000200000003000000040000000500000008000000090000000a0000000b0000000c0000000d000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
+    Cells: 00000000010000000200000003000000040000000500000008000000090000000a0000000b0000000c0000000d000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 8
-    - 9
-    - 10
-    - 11
-    - 12
-    - 13
+    Cells: 00000000010000000200000003000000040000000500000008000000090000000a0000000b0000000c0000000d000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 8
-    - 9
-    - 10
-    - 11
-    - 12
-    - 13
+    Cells: 00000000010000000200000003000000040000000500000008000000090000000a0000000b0000000c0000000d000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 8
-    - 9
-    - 10
-    - 11
-    - 12
-    - 13
+    Cells: 00000000010000000200000003000000040000000500000008000000090000000a0000000b0000000c0000000d000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: ee166e08c3205df4d868c56b640df1c1, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 21ddb7928b006e442b105f23d9a94f32, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: f0f3f75571ab4974fb2c661a725ae591, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: 6b28020c85224574580d7ab83c42f4e7, type: 3}
   _impactPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
   _meteorCount: 6
   _lineLength: 4

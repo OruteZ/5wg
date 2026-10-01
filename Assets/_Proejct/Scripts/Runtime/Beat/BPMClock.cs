@@ -122,5 +122,24 @@ namespace BeatTemplate
             if (_beatState is BeatState.Playing or BeatState.Paused)
                 _beatState = BeatState.Stopped;
         }
+
+        /// <summary>
+        /// 곡 도중 BPM을 바꾼다(스테이지 구간 전환 등). 앵커를 그냥 두면 이전 BPM으로 쌓인 경과
+        /// 시간을 새 BPM으로 다시 나눠 CurrentBeat가 그 프레임에 널뛴다. 그렇다고 "지금"을 비트0으로
+        /// 재앵커하면 CurrentBeat가 0으로 돌아가, 그걸 스테이지 진행도로 읽는 쪽
+        /// (BeatTimelineEndSource·StageTempoDirector)이 전부 초기화된다. 그래서 지금까지 센
+        /// 박 위치는 그대로 두고, 새 BPM으로 계산해도 같은 박이 나오도록 앵커를 뒤로 옮긴다.
+        /// </summary>
+        public void SetBpm(int newBpm)
+        {
+            double beatPos = ElapsedSec * bpm / 60.0;
+            bpm = Mathf.Max(1, newBpm);
+
+            if (_beatState is not (BeatState.Playing or BeatState.Paused)) return;
+
+            double nowDsp = (_beatState == BeatState.Paused) ? _pauseDspStart : AudioSettings.dspTime;
+            _dspBeat0       = nowDsp - beatPos * 60.0 / bpm;
+            _pausedAccumSec = 0.0;
+        }
     }
 }

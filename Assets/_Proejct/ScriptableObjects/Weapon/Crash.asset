@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06cb7583c8ae5234b832d66d124249df, type: 3}
   m_Name: Crash
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.AreaWeaponDefinition
-  _displayName: "\uD654\uBA74 \uB300\uD3ED\uBC1C"
+  _displayName: "\uD06C\uB798\uC2DC"
   _icon: {fileID: 0}
   _levels:
   - Damage: 21
@@ -92,20 +92,24 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 8
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 8
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 8
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 8
-    Cells:
-    - 0
+    Cells: 00000000
   - PatternBars: 8
-    Cells:
-    - 0
+    Cells: 00000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: fa68801835d71a54cb151a6f55b2f08b, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: bbdf091610ca6304aa40603e8a850bed, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: 80eb3608bffb753408ae661911e03df4, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: 7e29b2113ffb76244a793cd4b4778341, type: 3}
   _fieldPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
   _placement: 0
   _followOwner: 0

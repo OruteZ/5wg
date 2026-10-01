@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06cb7583c8ae5234b832d66d124249df, type: 3}
   m_Name: Snare
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.AreaWeaponDefinition
-  _displayName: "\uC804\uBC29 \uBCA0\uAE30"
+  _displayName: "\uC2A4\uB124\uC5B4"
   _icon: {fileID: 0}
   _levels:
   - Damage: 10.7
@@ -92,23 +92,24 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 1
-    Cells:
-    - 12
+    Cells: 040000000c000000
   - PatternBars: 1
-    Cells:
-    - 12
+    Cells: 040000000c000000
   - PatternBars: 1
-    Cells:
-    - 4
-    - 12
+    Cells: 040000000c000000
   - PatternBars: 1
-    Cells:
-    - 4
-    - 12
+    Cells: 040000000c000000
   - PatternBars: 1
-    Cells:
-    - 4
-    - 12
+    Cells: 040000000c000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: 38e4a4fe551482848a91fc1ea9069ba9, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 1e58d05b64fa8df4cbb5766a6ef00374, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: f7acf61c1932ec64580d21c7b148cce1, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: 2861e1b51ac807d48872a2f53e0b5652, type: 3}
   _fieldPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
   _placement: 0
   _followOwner: 0

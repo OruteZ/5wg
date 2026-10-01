@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
   m_Name: Bass
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
-  _displayName: "\uC74C\uD30C \uBCBD"
+  _displayName: "\uBCA0\uC774\uC2A4"
   _icon: {fileID: 0}
   _levels:
   - Damage: 9.9
@@ -92,23 +92,27 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 1
-    Cells:
-    - 0
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: 77d933ad4d42d5b4d834898dd306b0e4, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 7f77a50b62ed4594c92b195a7f9957e3, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: 36294f559c23b9c4f981dc332fd722bf, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: 51d7b34a2dba30141ab9cbd4d49e6ab2, type: 3}
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
   _spreadDegrees: 0
   _aimMode: 0
+  _lifetimeOverride: 0
+  _damageDecayFloor: 1
+  _scaleDecayFloor: 1

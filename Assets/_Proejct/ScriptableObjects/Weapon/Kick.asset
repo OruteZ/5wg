@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06cb7583c8ae5234b832d66d124249df, type: 3}
   m_Name: Kick
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.AreaWeaponDefinition
-  _displayName: "\uCDA9\uACA9\uD30C \uB9C1"
+  _displayName: "\uD0A5"
   _icon: {fileID: 0}
   _levels:
   - Damage: 8.9
@@ -92,24 +92,27 @@ MonoBehaviour:
     Bounce: 0
   _triggerPatterns:
   - PatternBars: 1
-    Cells:
-    - 0
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
   - PatternBars: 1
-    Cells:
-    - 0
-    - 8
+    Cells: 0000000008000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: 796674f4054af3a49b620af46262f22e, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: a512b92153d1cb440bf9f7006e01db7e, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: 33f837a75d43ede4ea145ecc2b423002, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: d2a6c27b72885a54293c8f86e85ff0be, type: 3}
   _fieldPrefab: {fileID: 3149922145129736088, guid: 78004f7768a41104b887dd5170e70465, type: 3}
   _placement: 0
   _followOwner: 0
   _tickInterval: 0
+  _coneHalfAngleDegrees: 0
+  _telegraphDuration: 0
