@@ -59,7 +59,7 @@ namespace FiveWG.Player
         // 슬롯당 악기 루프 하나. 장착 중 계속 도는 마디 루프라 발사 이벤트가 아니라
         // 인벤토리의 획득·해제 이벤트에 붙는다.
         private readonly AudioSource[] _instrumentLoops = new AudioSource[WeaponInventory.Capacity];
-        private bool _clockWasPlaying;
+        private BeatState _lastClockState = BeatState.Idle;
 
         /// <summary>보유 무기 목록. 획득·업그레이드·UI 연동은 이쪽으로 한다.</summary>
         public WeaponInventory Inventory { get; private set; }
@@ -173,19 +173,48 @@ namespace FiveWG.Player
         {
             Inventory.Tick(Time.deltaTime);
             PumpBeatTicks();
-            DetectStageBeginForLoops();
+            SyncLoopsToClockState();
         }
 
         /// <summary>
-        /// 시작 무기는 클록이 돌기 전(Awake) 에 지급되므로, 그때는 맞춰 돌 마디 자체가 없어
-        /// 루프를 걸지 못한다. StageDirector가 클록을 Stop→Play로 재앵커해 실제로 곡이 시작되는
-        /// 순간을 여기서 잡아 그때 한 번 전부 다시 스케줄한다.
+        /// 악기 루프는 클록 상태를 그대로 따른다. 일시정지·스테이지 종료를 부르는 쪽이 각자 루프를
+        /// 멈추게 하면 한 곳만 빠뜨려도 소리만 계속 도는 상태가 되므로, 클록 하나만 보고 여기서 맞춘다.
+        /// 시작 무기는 클록이 돌기 전(Awake)에 지급되므로 그때는 클립만 끼워 두고, 클록이 Playing이
+        /// 되는 순간(스테이지 시작·재개) 전부 다시 스케줄한다.
         /// </summary>
-        private void DetectStageBeginForLoops()
+        private void SyncLoopsToClockState()
         {
-            bool nowPlaying = _clock != null && _clock.State == BeatState.Playing;
-            if (nowPlaying && !_clockWasPlaying) RescheduleAllInstrumentLoops();
-            _clockWasPlaying = nowPlaying;
+            BeatState state = _clock != null ? _clock.State : BeatState.Idle;
+            if (state == _lastClockState) return;
+
+            BeatState previous = _lastClockState;
+            _lastClockState = state;
+
+            switch (state)
+            {
+                case BeatState.Playing:
+                    // 재개는 클록이 멈춘 박 위치에서 이어지므로 마디 경계를 기다리지 않고 바로 잇는다.
+                    RescheduleAllInstrumentLoops(resumeImmediately: previous == BeatState.Paused);
+                    break;
+
+                case BeatState.Paused:
+                    // Pause가 아니라 Stop한다. 재개 때 어차피 클록 위치로 다시 예약하므로 AudioSource가
+                    // 기억한 재생 위치는 쓰지 않는다 — UnPause로 이으면 예약 대기 중이던 루프가 꼬인다.
+                    StopAllInstrumentLoops();
+                    break;
+
+                default:
+                    StopAllInstrumentLoops();
+                    break;
+            }
+        }
+
+        private void StopAllInstrumentLoops()
+        {
+            foreach (AudioSource source in _instrumentLoops)
+            {
+                if (source != null) source.Stop();
+            }
         }
 
         /// <summary>
@@ -194,18 +223,19 @@ namespace FiveWG.Player
         /// BpmClock.SetBpm 직후 이걸 불러야 한다 — 둘을 따로 부르면 그 사이 프레임 동안 클록은
         /// 새 BPM인데 악기는 옛 샘플을 틀고 있는 상태가 된다.
         /// </summary>
-        public void HandleBpmChanged() => RescheduleAllInstrumentLoops();
+        public void HandleBpmChanged() => RescheduleAllInstrumentLoops(resumeImmediately: false);
 
-        private void RescheduleAllInstrumentLoops()
+        private void RescheduleAllInstrumentLoops(bool resumeImmediately)
         {
             for (int slot = 0; slot < WeaponInventory.Capacity; slot++)
             {
                 IWeapon weapon = Inventory.GetAt(slot);
-                if (weapon != null) StartInstrumentLoop(slot, weapon);
+                if (weapon != null) StartInstrumentLoop(slot, weapon, resumeImmediately);
             }
         }
 
-        private void HandleWeaponAcquired(int slot, IWeapon weapon) => StartInstrumentLoop(slot, weapon);
+        private void HandleWeaponAcquired(int slot, IWeapon weapon) =>
+            StartInstrumentLoop(slot, weapon, resumeImmediately: false);
 
         private void HandleWeaponRemoved(int slot, IWeapon weapon)
         {
@@ -221,7 +251,7 @@ namespace FiveWG.Player
         /// PlayScheduled로 예약하는 이유는, 이미 도는 다른 악기들과 위상이 맞아야 하기 때문이다 —
         /// 즉시 재생하면 습득한 그 프레임의 애매한 위치에서 끼어들어 다른 루프와 어긋난다.
         /// </summary>
-        private void StartInstrumentLoop(int slot, IWeapon weapon)
+        private void StartInstrumentLoop(int slot, IWeapon weapon, bool resumeImmediately)
         {
             AudioSource source = _instrumentLoops[slot];
             if (source == null || _clock == null) return;
@@ -242,7 +272,7 @@ namespace FiveWG.Player
             source.clip = clip;
             source.volume = _instrumentVolume;
             source.pitch = 1f;
-            ScheduleAlignedToClock(source, clip);
+            ScheduleAlignedToClock(source, clip, resumeImmediately);
         }
 
         /// <summary>
@@ -251,22 +281,26 @@ namespace FiveWG.Player
         /// 다른 악기와 프레이즈가 몇 마디씩 어긋난다(3마디째에 습득한 악기는 영영 3마디 늦게 돈다).
         /// 예전엔 BPM 전환이 클록을 비트0으로 되돌리며 모든 루프를 동시에 처음부터 다시 틀어서
         /// 이 어긋남이 16마디마다 저절로 덮였다.
-        /// 클록이 아직 안 돌면(시작 무기 지급 시점) 맞출 대상이 없으므로 처음부터 바로 튼다.
+        /// 클록이 돌지 않으면(시작 무기 지급 시점·일시정지·종료) 클립만 끼워 두고 틀지 않는다 —
+        /// 클록이 Playing이 되면 SyncLoopsToClockState가 다시 스케줄한다.
         /// </summary>
-        private void ScheduleAlignedToClock(AudioSource source, AudioClip clip)
+        private void ScheduleAlignedToClock(AudioSource source, AudioClip clip, bool resumeImmediately)
         {
+            if (_clock.State != BeatState.Playing) return;
+
             double now = AudioSettings.dspTime;
-
-            if (_clock.State != BeatState.Playing)
-            {
-                source.timeSamples = 0;
-                source.PlayScheduled(now);
-                return;
-            }
-
             double elapsed = _clock.ElapsedSec;
             double secPerBar = 60.0 / _clock.Bpm * CellMath.BeatsPerBar;
             double phase = elapsed % secPerBar;
+
+            if (resumeImmediately)
+            {
+                // PlayScheduled(지금)은 다음 오디오 버퍼에서야 소리가 나므로, 약간 앞을 예약하고
+                // 클립 위치도 그만큼 앞으로 잡아 클록과 같은 지점에서 이어지게 한다.
+                const double ResumeLeadSec = 0.05;
+                PlayFromClockPosition(source, clip, now + ResumeLeadSec, elapsed + ResumeLeadSec);
+                return;
+            }
 
             // 이미 마디 경계에 있으면(스테이지 막 시작한 순간·구간 전환 직후 등, 오차 범위 안) 그
             // 경계에서 바로 튼다. 무조건 "다음" 경계(한 마디 뒤)로 계산하면 phase가 0에 가까울 때도

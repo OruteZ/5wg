@@ -61,6 +61,27 @@ namespace FiveWG.Stage
             if (_beginOnStart) Begin();
         }
 
+        // 클록은 dspTime 기준이라 앱이 멈춰도 박이 계속 흐른다. 오디오는 엔진이 멈췄다 이어 트는데
+        // 클록만 앞서 가면 재개 순간 악기 루프와 발사 그리드가 어긋나고 밀린 틱이 몰아친다.
+        // 그래서 일시정지 동안 클록도 같이 세운다. 악기 루프는 WeaponHandler가 클록 상태를 따라간다.
+        private void OnApplicationPause(bool paused) => SetClockPaused(paused);
+
+#if UNITY_EDITOR
+        private void OnEnable() => UnityEditor.EditorApplication.pauseStateChanged += HandleEditorPause;
+        private void OnDisable() => UnityEditor.EditorApplication.pauseStateChanged -= HandleEditorPause;
+
+        private void HandleEditorPause(UnityEditor.PauseState state) =>
+            SetClockPaused(state == UnityEditor.PauseState.Paused);
+#endif
+
+        private void SetClockPaused(bool paused)
+        {
+            if (_clock == null || State != StageState.Playing) return;
+
+            if (paused) _clock.Pause();
+            else _clock.Play();
+        }
+
         private void ResolveReferences()
         {
             if (_clock == null) _clock = SceneServices.Instance.Clock;
