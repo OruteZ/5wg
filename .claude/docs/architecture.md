@@ -87,7 +87,7 @@ Scripts/Runtime/
     GameFlow.cs              씬 이동 (static)
   UI/
     StageHud.cs              체력·진행도 (상시)
-    StageResultView.cs       결과 오버레이 (종료 시)
+    StageResultView.cs       결과 오버레이 + 판 집계 (종료 시)
     MainMenuView.cs          START / QUIT
 ```
 
@@ -481,6 +481,17 @@ NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너�
 
 측정할 때는 **단일 프레임 샘플을 믿으면 안 된다.** 프레임당 값은 배 이상 흔들려서,
 처음엔 이 항목이 메인스레드의 절반을 먹는 것처럼 보였다. 180프레임 평균을 내자 사라졌다.
+
+### 결과 집계
+
+`StageResultView`가 종료 순간에 **각자가 이미 들고 있는 값을 읽어** 한 번 그린다.
+처치 수·엘리트 수·생존 시간은 `EnemySpawnDirector`, 레벨은 `PlayerExp`, 티켓은 `PlayerInventory`.
+
+집계 전용 수집기를 두지 않는 이유는 같은 수를 두 곳에서 세게 되기 때문이다. 적 사망은 이미
+디렉터의 `HandleEnemyDied` 한 곳을 지나므로 거기서 센다.
+
+**처치 수에 디스폰은 포함되지 않는다.** 멀어져서 반대편으로 옮겨진 적은 사망 경로를 타지 않는다 —
+보상이 나오지 않는 것과 같은 이유다.
 
 ## 배경
 
