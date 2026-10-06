@@ -55,8 +55,12 @@ namespace FiveWG.UI
         private WeaponHandler _handler;
         private int _pending;
 
+        private UiSfx _sfx;
+
         private void Awake()
         {
+            _sfx = GetComponent<UiSfx>();
+
             if (_player == null) _player = SceneServices.Instance.Player;
 
             // 디렉터가 없는 검증용 씬에서는 일시정지가 없으므로 비어 있어도 된다.
@@ -162,6 +166,7 @@ namespace FiveWG.UI
             }
 
             if (_panel != null) _panel.SetActive(true);
+            if (_sfx != null) _sfx.PlayCardShow();
 
             // 직전 회차에 클릭한 버튼이 선택된 채로 남으면, 다음 카드가 떴을 때
             // Submit(Enter·Space) 한 번에 그게 먹힌다. 띄울 때마다 선택을 비워 끊는다.
@@ -173,6 +178,9 @@ namespace FiveWG.UI
         private void Choose(int index)
         {
             if (index < 0 || index >= _shown.Count) return;
+
+            // 숫자키로도 고를 수 있어 버튼 쪽이 아니라 여기서 낸다.
+            if (_sfx != null) _sfx.PlayCardPick();
 
             _shown[index].Apply(_handler.Inventory);
             _shown.Clear();

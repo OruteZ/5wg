@@ -463,6 +463,7 @@ ElectricGuitar→리듬 기타(소형 산탄), AcousticGuitar→멜로디 기타
 보스 기획(옵시디언 `[10-12]`)을 대조했더니 이미 `Stage01`에 다 들어가 있어서(HP 25,000·0.4배·접촉 35·
 3배·면역 둘·360마디 등장·처치 즉시 클리어·120초 초과 패배), 보스 작업 대신 아래를 했다.
 작업 씬은 `Stage01`을 복제한 **`Stage01_Finishing.unity`**다. `Stage01`은 손대지 않았다.
+(**이 씬과 복제 무기 에셋은 뒤의 "결과 집계·UI 효과음·씬 통합"에서 `Stage01`로 합쳐지며 사라졌다.**)
 
 - **일시정지.** ESC로 여닫고 RESUME / MENU 두 버튼. 구조는 `architecture.md`의 "일시정지".
   패널은 결과 패널을 복제해 문구만 바꿨고 `StageCanvas`의 `PauseMenuView`가 잡는다.
@@ -489,6 +490,21 @@ ElectricGuitar→리듬 기타(소형 산탄), AcousticGuitar→멜로디 기타
 - 일시정지 중 클록 경과·경과 마디·적 위치가 그대로이고 루프가 꺼진다. RESUME 후 클록이 멈춘
   지점(9.92초)에서 이어지고 루프 오차 0.0ms. 주입한 ESC 키로 열리고, MENU로 메인 메뉴에 가면 timeScale 1.
 - 적 296마리에서 `Physics2D.Simulate` 0.63ms(전 2.44ms), 펄스는 `Visual`에서만 돈다.
+
+## 결과 집계·UI 효과음·씬 통합 (브랜치 `feat/stage-result`)
+
+- **결과 집계.** 판이 끝나면 처치·엘리트·생존·보스·레벨·레벨업·티켓 일곱 줄을 보여준다.
+  구조는 `architecture.md`의 "결과 집계".
+- **UI 효과음.** `UiSfx`가 캔버스 하나의 소리를 맡는다. 구조는 `architecture.md`의 "UI 효과음".
+  외부 팩(297MB, wav 2,682개)은 `.gitignore`에 올리고 쓰는 것만 `Sounds/UI/`로 복사했다.
+  버튼 올림 소리는 원래 팩에서 고른 것을 쓰다가 `POP.mp3`로 바꿨다.
+- **`Stage01_Finishing`을 `Stage01`에 합쳤다.** 두 씬의 차이는 일시정지 메뉴(Finishing)와
+  결과 집계판(Stage01) 둘뿐이었다. 집계판을 Finishing 쪽에 옮겨 심은 뒤 그 내용을 `Stage01`에
+  덮어썼다 — 파일이 아니라 내용만 옮긴 것은 Build Settings가 `Stage01`의 GUID를 들고 있어서다.
+  이걸로 "Finishing은 Build Settings에 없어 RETRY가 실패한다"던 문제도 사라졌다.
+- **투사체 속도 1.5배를 원본 무기 에셋에 옮겼다.** `Weapon/Finishing/*_Finishing` 5종의 값을
+  원본에 넣고 씬 참조를 원본으로 돌린 뒤 복제본을 지웠다. 수명 보정값도 같이 옮겼다
+  (어쿠스틱·베이스·하이햇 1.33, 일렉 0.27, 건반 0.67). **이제 다른 씬도 같은 값을 쓴다.**
 
 ## 해결한 문제
 
@@ -549,7 +565,5 @@ ElectricGuitar→리듬 기타(소형 산탄), AcousticGuitar→멜로디 기타
 - 클록이 dspTime 기준이라 프레임이 멈춰도(창 비활성·긴 히치) 박은 계속 간다. 복귀 순간 진행도가
   한 번에 뛴다. `runInBackground`가 꺼져 있으면 빌드에서 알트탭 시 드러난다.
 - 카운트다운 UI 없음.
-- **`Stage01_Finishing`은 Build Settings에 없다.** 그 씬에서 RETRY를 누르면 `RestartCurrentScene`이
-  빌드 인덱스로 다시 로드하려다 실패한다. 내용을 `Stage01`로 옮길 때(→ 적 시스템 때처럼) 해소된다.
 - 스테이지 밸런스 미조정. 스폰 간격 0.8초 / 접촉 데미지 10 / 체력 100 / 클리어 64마디(120BPM에서 약 2분).
   이동으로 카이팅하는 걸 전제한 값이다.

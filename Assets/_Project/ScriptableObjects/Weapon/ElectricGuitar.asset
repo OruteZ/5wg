@@ -26,7 +26,7 @@ MonoBehaviour:
     ProjectileCount: 3
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 10
+    ProjectileSpeed: 15
     Homing: 0
     Knockback: 0
     Bounce: 0
@@ -41,7 +41,7 @@ MonoBehaviour:
     ProjectileCount: 3
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 10
+    ProjectileSpeed: 15
     Homing: 0
     Knockback: 0
     Bounce: 0
@@ -56,7 +56,7 @@ MonoBehaviour:
     ProjectileCount: 3
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 10
+    ProjectileSpeed: 15
     Homing: 0
     Knockback: 0
     Bounce: 0
@@ -71,7 +71,7 @@ MonoBehaviour:
     ProjectileCount: 3
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 10
+    ProjectileSpeed: 15
     Homing: 0
     Knockback: 0
     Bounce: 0
@@ -86,7 +86,7 @@ MonoBehaviour:
     ProjectileCount: 3
     NoteDensity: 1
     CooldownReduction: 0
-    ProjectileSpeed: 10
+    ProjectileSpeed: 15
     Homing: 0
     Knockback: 0
     Bounce: 0
@@ -113,6 +113,6 @@ MonoBehaviour:
   _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
   _spreadDegrees: 30
   _aimMode: 0
-  _lifetimeOverride: 0.4
+  _lifetimeOverride: 0.27
   _damageDecayFloor: 1
   _scaleDecayFloor: 1

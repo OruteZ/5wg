@@ -76,6 +76,18 @@ namespace FiveWG.Enemies
 
         public bool IsBossAlive { get; private set; }
 
+        /// <summary>사망으로 죽은 적 수. 멀어져서 회수된 적은 사망 경로를 타지 않아 포함되지 않는다.</summary>
+        public int DefeatedCount { get; private set; }
+
+        /// <summary>그중 엘리트 수.</summary>
+        public int EliteDefeatedCount { get; private set; }
+
+        /// <summary>이 판의 보스를 잡았는가. 일괄 회수로 사라진 경우는 포함하지 않는다.</summary>
+        public bool BossDefeated { get; private set; }
+
+        /// <summary>판이 시작하고 흐른 시간. 스폰이 꺼진 동안은 늘지 않는다.</summary>
+        public float ElapsedSec => _elapsedSec;
+
         /// <summary>보스 등장 마디. 보스가 꺼져 있으면 0.</summary>
         public float BossSpawnBar => _plan != null && _plan.Boss != null && _plan.Boss.Enabled ? _plan.Boss.SpawnBar : 0f;
 
@@ -460,13 +472,20 @@ namespace FiveWG.Enemies
             if (_expPool != null) _expPool.Drop(position, reward);
             if (_dropper != null) _dropper.RollDrops(position);
 
-            if (enemy.IsElite) OnEliteDefeated?.Invoke(position);
+            DefeatedCount++;
+
+            if (enemy.IsElite)
+            {
+                EliteDefeatedCount++;
+                OnEliteDefeated?.Invoke(position);
+            }
 
             // 보스 프리팹을 일반 적과 공유해도 그 판의 보스 한 마리만 걸리도록 인스턴스로 비교한다.
             if (enemy != _bossInstance) return;
 
             _bossInstance = null;
             IsBossAlive = false;
+            BossDefeated = true;
             OnBossDefeated?.Invoke(position);
         }
 
