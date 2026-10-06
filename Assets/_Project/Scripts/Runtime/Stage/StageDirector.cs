@@ -12,8 +12,9 @@ namespace FiveWG.Stage
     /// 스테이지의 상태만 소유하는 조정자. "언제 끝나는가"는 모른다.
     /// 종료 판단은 StageEndSource가 하고, 디렉터는 RequestClear/RequestFail 창구만 연다.
     ///
-    /// 시간을 Time.timeScale로 멈추지 않는다. 박자 클록이 dspTime 기준이라
+    /// 종료 시 시간을 Time.timeScale로 멈추지 않는다. 박자 클록이 dspTime 기준이라
     /// timeScale을 건드리면 비트 그리드와 어긋난다. 대신 각 축을 개별로 끈다.
+    /// 예외는 플레이어가 거는 일시정지 하나다(→ <see cref="SetPaused"/>).
     /// </summary>
     public sealed class StageDirector : MonoBehaviour
     {
@@ -32,8 +33,13 @@ namespace FiveWG.Stage
         [Title("디버그")]
         [ShowInInspector, ReadOnly, LabelText("상태")] private StageState StateDebug => State;
         [ShowInInspector, ReadOnly, LabelText("진행도")] private float ProgressDebug => Progress;
+        [ShowInInspector, ReadOnly, LabelText("일시정지")] private bool PausedDebug => IsPaused;
 
         private WeaponHandler _weapon;
+
+        // 앱 포커스·에디터 일시정지. 플레이어 일시정지와 따로 들고 있어야 한쪽이 풀릴 때 다른 쪽이 건
+        // 정지까지 풀어버리지 않는다(일시정지 메뉴를 연 채 알트탭했다 돌아오면 박이 다시 흐르던 경우).
+        private bool _systemPaused;
 
         public StageState State { get; private set; } = StageState.Ready;
 
@@ -43,7 +49,13 @@ namespace FiveWG.Stage
         /// <summary>종료 소스들이 보고하는 진행도 중 가장 앞선 값.</summary>
         public float Progress { get; private set; }
 
+        /// <summary>플레이어가 건 일시정지. 앱 포커스로 인한 정지는 포함하지 않는다.</summary>
+        public bool IsPaused { get; private set; }
+
         public event Action<StageState> OnStateChanged;
+
+        /// <summary>인자는 새 일시정지 상태. 값이 실제로 바뀔 때만 발행된다.</summary>
+        public event Action<bool> OnPauseChanged;
 
         private void Awake()
         {
@@ -64,22 +76,55 @@ namespace FiveWG.Stage
         // 클록은 dspTime 기준이라 앱이 멈춰도 박이 계속 흐른다. 오디오는 엔진이 멈췄다 이어 트는데
         // 클록만 앞서 가면 재개 순간 악기 루프와 발사 그리드가 어긋나고 밀린 틱이 몰아친다.
         // 그래서 일시정지 동안 클록도 같이 세운다. 악기 루프는 WeaponHandler가 클록 상태를 따라간다.
-        private void OnApplicationPause(bool paused) => SetClockPaused(paused);
+        private void OnApplicationPause(bool paused)
+        {
+            _systemPaused = paused;
+            ApplyClockPause();
+        }
 
 #if UNITY_EDITOR
         private void OnEnable() => UnityEditor.EditorApplication.pauseStateChanged += HandleEditorPause;
         private void OnDisable() => UnityEditor.EditorApplication.pauseStateChanged -= HandleEditorPause;
 
-        private void HandleEditorPause(UnityEditor.PauseState state) =>
-            SetClockPaused(state == UnityEditor.PauseState.Paused);
+        private void HandleEditorPause(UnityEditor.PauseState state)
+        {
+            _systemPaused = state == UnityEditor.PauseState.Paused;
+            ApplyClockPause();
+        }
 #endif
 
-        private void SetClockPaused(bool paused)
+        // 멈춘 채 플레이 모드를 나가거나 씬이 내려가면 다음 씬·다음 실행이 정지한 채로 시작한다.
+        private void OnDestroy()
+        {
+            if (IsPaused) Time.timeScale = 1f;
+        }
+
+        private void ApplyClockPause()
         {
             if (_clock == null || State != StageState.Playing) return;
 
-            if (paused) _clock.Pause();
+            if (IsPaused || _systemPaused) _clock.Pause();
             else _clock.Play();
+        }
+
+        /// <summary>
+        /// 플레이어가 거는 일시정지. 진행 중일 때만 걸리고, 판이 끝나면 저절로 풀린다.
+        ///
+        /// 여기서만 <c>Time.timeScale</c>을 쓴다. 적 이동(물리)·투사체 수명·스폰 시간축·보스 제한 시간이
+        /// 전부 deltaTime이라 축별 스위치로는 화면이 멈추지 않기 때문이다. 대신 timeScale로 안 서는
+        /// 박자 클록은 직접 세운다 — 그래야 재개했을 때 비트 그리드가 화면과 같은 지점에서 이어진다.
+        /// 악기 루프는 WeaponHandler가 클록 상태를 따라 멈춘다.
+        /// </summary>
+        public void SetPaused(bool paused)
+        {
+            if (paused == IsPaused) return;
+            if (paused && State != StageState.Playing) return;
+
+            IsPaused = paused;
+            Time.timeScale = paused ? 0f : 1f;
+            ApplyClockPause();
+
+            OnPauseChanged?.Invoke(paused);
         }
 
         private void ResolveReferences()
@@ -153,6 +198,9 @@ namespace FiveWG.Stage
         {
             // 같은 프레임에 두 소스가 동시에 끝을 알려도 먼저 온 쪽만 반영한다.
             if (State != StageState.Playing) return;
+
+            // 결과 화면이 멈춘 시간 위에 뜨지 않게 먼저 푼다. 클록은 아래에서 어차피 멈춘다.
+            SetPaused(false);
 
             ChangeState(result);
 

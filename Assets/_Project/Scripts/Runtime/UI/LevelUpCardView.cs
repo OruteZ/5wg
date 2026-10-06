@@ -3,6 +3,7 @@ using Alchemy.Inspector;
 using FiveWG.Core;
 using FiveWG.Player;
 using FiveWG.Progression;
+using FiveWG.Stage;
 using FiveWG.Weapons;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -49,6 +50,7 @@ namespace FiveWG.UI
 
         private readonly List<LevelUpOption> _shown = new();
 
+        private StageDirector _director;
         private PlayerExp _exp;
         private WeaponHandler _handler;
         private int _pending;
@@ -56,6 +58,9 @@ namespace FiveWG.UI
         private void Awake()
         {
             if (_player == null) _player = SceneServices.Instance.Player;
+
+            // 디렉터가 없는 검증용 씬에서는 일시정지가 없으므로 비어 있어도 된다.
+            _director = SceneServices.Instance.Director;
 
             if (_player == null)
             {
@@ -108,6 +113,9 @@ namespace FiveWG.UI
         private void Update()
         {
             if (_shown.Count == 0 || Keyboard.current is null) return;
+
+            // 일시정지 패널이 카드를 가려 클릭은 막히지만 숫자키는 그대로 들어온다.
+            if (_director != null && _director.IsPaused) return;
 
             // 숫자키는 UI 단축키라 InputActionAsset에 액션을 늘리지 않고 키보드를 직접 읽는다.
             if (Keyboard.current.digit1Key.wasPressedThisFrame) Choose(0);
