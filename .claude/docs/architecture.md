@@ -88,6 +88,7 @@ Scripts/Runtime/
   UI/
     StageHud.cs              체력·진행도 (상시)
     StageResultView.cs       결과 오버레이 (종료 시)
+    PauseMenuView.cs         ESC 일시정지 오버레이 (RESUME / MENU)
     MainMenuView.cs          START / QUIT
 ```
 
@@ -165,6 +166,27 @@ public sealed class MusicOrchestrator : StageEndSource
 
 상점·컷신처럼 스테이지를 끝내지 않고 전투만 멈추는 경우는 `WeaponHandler.AttackEnabled`나
 `IFireGate` 등록으로 처리한다. 디렉터의 상태를 건드리지 않는다.
+
+### 일시정지
+
+화면 전체를 세우는 일시정지는 `StageDirector.SetPaused`가 소유하고, `PauseMenuView`는 ESC 입력과
+패널만 맡는다. **이 프로젝트에서 `Time.timeScale`을 쓰는 유일한 자리다.**
+
+축별 스위치로는 화면이 안 멈춘다 — 적 이동(물리), 투사체·장판 수명, 스폰 시간축, 보스 제한 시간이
+전부 `deltaTime`이다. 그래서 timeScale을 0으로 두되, timeScale로 서지 않는 것을 직접 세운다.
+
+| 대상 | 멈추는 방법 |
+| --- | --- |
+| 물리·`deltaTime` 타이머 전부 | `Time.timeScale = 0` |
+| `BpmClock` (dspTime) | `Pause()` / `Play()` — 재개하면 멈춘 박 위치에서 잇는다 |
+| 악기 루프 | `WeaponHandler`가 클록 상태를 보고 Stop → 재개 시 클록 위치로 재예약 |
+| 레벨업 카드 숫자키 | `LevelUpCardView`가 `IsPaused`를 보고 무시. 클릭은 패널이 가린다 |
+
+- 진행 중(`Playing`)에만 걸리고, 판이 끝나면 `End`가 먼저 푼다. 결과 화면은 멈춘 시간 위에 뜨지 않는다.
+- 앱 포커스·에디터 일시정지(`_systemPaused`)와 플레이어 일시정지(`IsPaused`)를 **따로** 들고
+  클록은 둘의 OR로 정한다. 하나로 합치면 메뉴를 연 채 알트탭했다 돌아올 때 박이 다시 흐른다.
+- 디렉터가 파괴될 때(씬 이동·플레이 모드 종료) 멈춘 상태면 timeScale을 1로 되돌린다.
+  MENU 버튼은 그래서 `GameFlow.LoadMainMenu`만 부른다.
 
 ## 사망 판정
 
@@ -479,6 +501,20 @@ NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너�
 그래서 콜라이더는 스프라이트 반폭(0.16 × 스케일 2.5 = 0.40)을 유지한다. 피격 판정이 겉보기와
 일치한다는 이점도 같이 지킨다.
 
+### 콜라이더가 붙은 트랜스폼은 스케일하지 않는다
+
+적 프리팹은 **루트(Rigidbody2D·CircleCollider2D·`Enemy`) + 자식 `Visual`(SpriteRenderer)**이다.
+박 펄스는 `Visual`만 키운다. 예전엔 스프라이트까지 루트에 있어 펄스가 루트 스케일을 매 프레임 바꿨고,
+2D 물리는 스케일이 바뀐 콜라이더의 형상을 **지웠다 다시 만든다.**
+
+| 적 250~300마리 (에디터, 플레이 모드) | 루트 스케일 | `Visual`만 스케일 |
+| --- | --- | --- |
+| `Physics2D.Simulate` | 2.44ms | 0.63ms |
+| 그중 형상 재생성(`SyncColliderTransformChanges`·`DestroyShapes`·`CreateShapes`·접촉 재생성) | 약 1.5ms | 0 |
+
+크기 배수(보스 3배 등)는 스폰 때 한 번만 루트에 건다 — 판정도 같이 커져야 하기 때문이다.
+위의 200마리 측정에서 이게 안 보인 건 그때는 박 펄스가 없었기 때문이다.
+
 측정할 때는 **단일 프레임 샘플을 믿으면 안 된다.** 프레임당 값은 배 이상 흔들려서,
 처음엔 이 항목이 메인스레드의 절반을 먹는 것처럼 보였다. 180프레임 평균을 내자 사라졌다.
 
@@ -541,7 +577,7 @@ NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너�
   등장 마디는 BPM을 따르고 제한 시간은 초라 한 축에 합칠 수 없다.
 - 클리어 후에도 남은 적이 계속 다가와 접촉 데미지를 준다. 상태가 이미 `Cleared`라
   사망해도 결과는 바뀌지 않는다.
-- 카운트다운·일시정지 UI 없음. 레벨업 카드는 있다(→ "성장").
+- 카운트다운 UI 없음. 일시정지는 있다(→ "스테이지 플레이 루프"의 "일시정지").
 - HUD는 매 프레임 폴링한다. 위젯이 늘면 이벤트 기반으로 바꾸는 게 낫다.
 - 고르지 않은 카드가 먹힐 수 있다 — `Navigation.Mode` 미설정. 전말은 "카드는 아무것도 멈추지 않는다"에.
 - 픽업 드랍표의 `_dropUntilMinutes`는 아무도 안 읽는다. 스테이지 경과 시간을 알려주는 것이
