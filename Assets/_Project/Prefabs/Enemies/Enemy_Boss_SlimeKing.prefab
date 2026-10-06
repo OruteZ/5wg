@@ -48,26 +48,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1686253325734476382, guid: 5f84069730b712246b2b184280df83f4, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: d7baaab0f29b64991a3b8803e3746a78, type: 3}
-    - target: {fileID: 1686253325734476382, guid: 5f84069730b712246b2b184280df83f4, type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1686253325734476382, guid: 5f84069730b712246b2b184280df83f4, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1686253325734476382, guid: 5f84069730b712246b2b184280df83f4, type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6966441204724614930, guid: 5f84069730b712246b2b184280df83f4, type: 3}
       propertyPath: m_Name
       value: Enemy_Boss_SlimeKing
       objectReference: {fileID: 0}
+    - target: {fileID: 8384827351654462302, guid: 5f84069730b712246b2b184280df83f4, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d7baaab0f29b64991a3b8803e3746a78, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
