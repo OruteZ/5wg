@@ -85,3 +85,9 @@ crashlytics-build.properties
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+## 외부 사운드 팩 ##
+# 297MB에 wav 2,682개다. 저장소에 넣으면 기록에서 지울 수 없으므로,
+# 실제로 쓰는 클립만 Assets/_Project/Sounds/ 아래로 복사해 커밋한다.
+/Assets/UI SFX Mega Pack/
+/Assets/UI SFX Mega Pack.meta
