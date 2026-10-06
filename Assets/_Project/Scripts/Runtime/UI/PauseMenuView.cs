@@ -22,8 +22,12 @@ namespace FiveWG.UI
         [SerializeField, LabelText("계속하기 버튼")] private Button _resumeButton;
         [SerializeField, LabelText("메인 메뉴 버튼")] private Button _menuButton;
 
+        private UiSfx _sfx;
+
         private void Awake()
         {
+            _sfx = GetComponent<UiSfx>();
+
             if (_director == null) _director = SceneServices.Instance.Director;
 
             if (_panel != null) _panel.SetActive(false);
@@ -62,6 +66,9 @@ namespace FiveWG.UI
         private void HandlePauseChanged(bool paused)
         {
             if (_panel != null) _panel.SetActive(paused);
+
+            // ESC로도 여닫으므로 버튼이 아니라 여기서 낸다. 여는 소리와 닫는 소리는 같다.
+            if (_sfx != null) _sfx.PlayClick();
 
             // 직전에 누른 버튼이 선택된 채 남으면 다음에 열었을 때 Space 한 번에 그게 눌린다.
             if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
