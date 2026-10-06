@@ -36,8 +36,12 @@ namespace FiveWG.UI
         private readonly StringBuilder _names = new();
         private readonly StringBuilder _values = new();
 
+        private UiSfx _sfx;
+
         private void Awake()
         {
+            _sfx = GetComponent<UiSfx>();
+
             if (_director == null) _director = SceneServices.Instance.Director;
 
             if (_panel != null) _panel.SetActive(false);
@@ -69,6 +73,8 @@ namespace FiveWG.UI
             }
 
             FillStats();
+
+            if (_sfx != null) _sfx.PlayResult(state == StageState.Cleared);
 
             if (_panel != null) _panel.SetActive(true);
         }
