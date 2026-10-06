@@ -82,6 +82,9 @@ namespace FiveWG.Enemies
         /// <summary>그중 엘리트 수.</summary>
         public int EliteDefeatedCount { get; private set; }
 
+        /// <summary>이 판의 보스를 잡았는가. 일괄 회수로 사라진 경우는 포함하지 않는다.</summary>
+        public bool BossDefeated { get; private set; }
+
         /// <summary>판이 시작하고 흐른 시간. 스폰이 꺼진 동안은 늘지 않는다.</summary>
         public float ElapsedSec => _elapsedSec;
 
@@ -482,6 +485,7 @@ namespace FiveWG.Enemies
 
             _bossInstance = null;
             IsBossAlive = false;
+            BossDefeated = true;
             OnBossDefeated?.Invoke(position);
         }
 

@@ -89,10 +89,17 @@ namespace FiveWG.UI
                 Row("처치", $"{spawner.DefeatedCount:N0}마리");
                 Row("엘리트", $"{spawner.EliteDefeatedCount}마리");
                 Row("생존", $"{Mathf.FloorToInt(spawner.ElapsedSec / 60f)}:{Mathf.FloorToInt(spawner.ElapsedSec % 60f):00}");
+
+                // 보스가 없는 판에서 "미처치"라고 적으면 못 잡은 것처럼 읽힌다.
+                if (spawner.BossSpawnBar > 0f) Row("보스", spawner.BossDefeated ? "처치" : "미처치");
             }
 
             PlayerExp exp = SceneServices.Instance.PlayerExp;
-            if (exp != null) Row("레벨", $"Lv {exp.Level}");
+            if (exp != null)
+            {
+                Row("레벨", $"Lv {exp.Level}");
+                Row("레벨업", $"{exp.Level - 1}회");
+            }
 
             PlayerController player = SceneServices.Instance.Player;
             PlayerInventory inventory = player != null ? player.GetComponent<PlayerInventory>() : null;
