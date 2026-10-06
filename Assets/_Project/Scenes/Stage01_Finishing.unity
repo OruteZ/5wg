@@ -8855,7 +8855,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FiveWG.UI.UiSfx
   _click: {fileID: 8300000, guid: 3f633d4ea8a04ad4db911527d32472d3, type: 3}
-  _hover: {fileID: 8300000, guid: 39e3d89c2145a2745810130c43c90ac9, type: 3}
+  _hover: {fileID: 8300000, guid: ced8baa41817eaf42ad5957303fe8c11, type: 3}
   _cardShow: {fileID: 8300000, guid: b4882c36870d8ff43a00a15b2b0302ca, type: 3}
   _cardPick: {fileID: 8300000, guid: ba31bea1170c76a4b900ca81267f01b3, type: 3}
   _clear: {fileID: 8300000, guid: e5276c5d685b99a4cbd1ce82587be277, type: 3}
