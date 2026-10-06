@@ -485,7 +485,9 @@ NPC처럼 서로 다른 계층에 있는 같은 편이 생기는 순간 무너�
 ### 결과 집계
 
 `StageResultView`가 종료 순간에 **각자가 이미 들고 있는 값을 읽어** 한 번 그린다.
-처치 수·엘리트 수·생존 시간은 `EnemySpawnDirector`, 레벨은 `PlayerExp`, 티켓은 `PlayerInventory`.
+처치 수·엘리트 수·생존 시간·보스 처치 여부는 `EnemySpawnDirector`, 레벨과 레벨업 횟수는 `PlayerExp`,
+티켓은 `PlayerInventory`. 보스 줄은 그 판의 편성에 보스가 있을 때만 나온다 — 보스가 없는 판에
+"미처치"라고 적으면 못 잡은 것처럼 읽힌다.
 
 집계 전용 수집기를 두지 않는 이유는 같은 수를 두 곳에서 세게 되기 때문이다. 적 사망은 이미
 디렉터의 `HandleEnemyDied` 한 곳을 지나므로 거기서 센다.
