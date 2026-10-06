@@ -40,6 +40,8 @@ namespace FiveWG.Enemies
 
         private Rigidbody2D _rigidbody;
         private SpriteRenderer _spriteRenderer;
+        private Transform _visual;
+        private Vector3 _visualBaseScale;
         private Action<Enemy> _release;
         private Transform _target;
         private Color _prefabColor;
@@ -74,6 +76,19 @@ namespace FiveWG.Enemies
 
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             if (_spriteRenderer != null) _prefabColor = _spriteRenderer.color;
+
+            // 박 펄스는 자식 스프라이트만 키운다. 콜라이더가 붙은 루트를 스케일하면 2D 물리가
+            // 적마다 매 프레임 형상을 지웠다 다시 만든다 — 250마리에서 물리 시간의 60%가 그것이었다.
+            if (_spriteRenderer != null && _spriteRenderer.transform != transform)
+            {
+                _visual = _spriteRenderer.transform;
+                _visualBaseScale = _visual.localScale;
+            }
+            else if (_beatPulseScale > 0f)
+            {
+                Debug.LogWarning(
+                    $"[{nameof(Enemy)}] 스프라이트가 루트에 있어 박 펄스를 끈다. 자식 오브젝트로 옮겨야 펄스가 보인다.", this);
+            }
             _baseColor = _prefabColor;
 
             _prefabScale = transform.localScale;
@@ -133,9 +148,9 @@ namespace FiveWG.Enemies
         /// </summary>
         public void ApplyBeatPulse(float pulse01)
         {
-            if (_beatPulseScale <= 0f) return;
+            if (_beatPulseScale <= 0f || _visual == null) return;
 
-            transform.localScale = _baseScale * (1f + _beatPulseScale * pulse01);
+            _visual.localScale = _visualBaseScale * (1f + _beatPulseScale * pulse01);
         }
 
         public void TakeDamage(float amount)

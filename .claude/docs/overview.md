@@ -27,6 +27,7 @@ Unity project built on the URP Empty Template. `Assets/TutorialInfo/` is stock t
 | --- | --- |
 | `Scenes/MainMenu.unity` | START / QUIT. Build Settings 0번 |
 | `Scenes/Stage01.unity` | 스테이지 본편. Build Settings 1번. 표 기반 `EnemySpawnDirector`가 붙어 있다 |
+| `Scenes/Stage01_Finishing.unity` | `Stage01` 복제. 일시정지 메뉴가 붙은 마무리 작업용. Build Settings 미등록 |
 | `Scenes/Stage01_WeaponLab.unity` | `Stage01`을 복제한 무기 작업용. 시작 무기를 자유롭게 갈아끼우며 검증한다. Build Settings 미등록 |
 | `Scenes/Prototype.unity` | 무기 검증용. 스테이지 UI 없음 |
 | `Scenes/Prototype/Prototype_PlayerMovement.unity` | 이동만. 클록·무기 미연결이라 발사 안 됨 |
@@ -39,7 +40,8 @@ ScriptableObjects: `Weapon/`에 무기 12종(`Kick` `Snare` `HiHat` `Crash` `Tom
 그대로 재활용한 게 반, 새로 만든 게 둘이라 이름과 실제 무기가 1:1로 안 읽힌다(→ `weapons.md`의
 "12종 무기" 표에서 매핑 확인). `Pickup/`에 픽업 정의 5종 + 드랍표,
 `Enemies/`에 적 정의 7종 + 보스 1종 + 페이싱(`RunPacing_Default`) + 편성(`StageEnemyPlan_Stage01`).
-**적은 8종이 전부 같은 `Enemy.prefab`을 쓴다** — 종류별 스프라이트가 아직 없다.
+적 프리팹은 `Enemy.prefab`과 그 변형들이다. 스프라이트는 루트가 아니라 자식 `Visual`에 있다
+(박 펄스가 콜라이더를 스케일하지 않도록 → `architecture.md`).
 
 - **레이어**: `Enemy`(3)와 `Projectile`(8)을 쓴다. 탄↔탄 충돌은 꺼져 있다(적↔적은 켜 둠).
 - **렌더·물리 설정은 빌드에서만 티가 난다** — VSync, Rigidbody2D 보간, Cinemachine 갱신 시점.

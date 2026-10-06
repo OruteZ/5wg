@@ -33,6 +33,7 @@
 프레임 카운트를 쓰지 않는다. 박은 프레임과 무관하게 가므로, 긴 히치 뒤에는 진행도가 뛴다.
 
 **`Time.timeScale`은 박에 영향을 주지 않는다.** timeScale로 멈춰도 박은 계속 가고 화면과 어긋난다.
+유일한 예외는 `StageDirector.SetPaused`(화면 전체 일시정지)이고, 거기서는 클록을 따로 세운다.
 전투를 멈춰야 하면 축별 스위치를 쓴다
 (`WeaponHandler.AttackEnabled` `PlayerController.ControlEnabled` `EnemySpawner2D.SetSpawning`).
 

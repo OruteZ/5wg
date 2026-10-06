@@ -217,17 +217,40 @@ namespace FiveWG.Player
             }
         }
 
+        /// <summary>
+        /// 전 슬롯을 한 시각 기준으로 다시 건다. 클립 준비(로드)를 먼저 전부 끝내고 시각은 그 뒤에 한 번만
+        /// 읽는다 — 슬롯마다 따로 읽으면 앞 슬롯의 로드가 메인 스레드를 잡는 동안 dspTime이 흘러,
+        /// 시작 무기가 여럿일 때 루프끼리 수십 ms씩 어긋났다.
+        /// </summary>
         private void RescheduleAllInstrumentLoops(bool resumeImmediately)
         {
+            if (_clock == null || _clock.State != BeatState.Playing) return;
+
             for (int slot = 0; slot < WeaponInventory.Capacity; slot++)
             {
                 IWeapon weapon = Inventory.GetAt(slot);
-                if (weapon != null) StartInstrumentLoop(slot, weapon, resumeImmediately);
+                if (weapon != null) PrepareInstrumentLoop(slot, weapon);
+            }
+
+            double now = AudioSettings.dspTime;
+            double elapsed = _clock.ElapsedSec;
+
+            foreach (AudioSource source in _instrumentLoops)
+            {
+                if (source != null && source.clip != null) ScheduleAlignedToClock(source, now, elapsed, resumeImmediately);
             }
         }
 
-        private void HandleWeaponAcquired(int slot, IWeapon weapon) =>
-            StartInstrumentLoop(slot, weapon, resumeImmediately: false);
+        private void HandleWeaponAcquired(int slot, IWeapon weapon)
+        {
+            if (!PrepareInstrumentLoop(slot, weapon)) return;
+
+            // 클록이 돌지 않으면(시작 무기 지급 시점·일시정지·종료) 클립만 끼워 두고 틀지 않는다 —
+            // 클록이 Playing이 되면 SyncLoopsToClockState가 다시 스케줄한다.
+            if (_clock.State != BeatState.Playing) return;
+
+            ScheduleAlignedToClock(_instrumentLoops[slot], AudioSettings.dspTime, _clock.ElapsedSec, resumeImmediately: false);
+        }
 
         private void HandleWeaponRemoved(int slot, IWeapon weapon)
         {
@@ -239,19 +262,19 @@ namespace FiveWG.Player
         }
 
         /// <summary>
-        /// 그 악기의 마디 루프를 다음 마디 경계에 맞춰 건다. 지금 당장 트는 게 아니라
-        /// PlayScheduled로 예약하는 이유는, 이미 도는 다른 악기들과 위상이 맞아야 하기 때문이다 —
-        /// 즉시 재생하면 습득한 그 프레임의 애매한 위치에서 끼어들어 다른 루프와 어긋난다.
+        /// 그 악기의 클립을 슬롯에 끼우고 오디오 데이터를 미리 올린다. 틀지는 않는다.
+        /// 악기 샘플은 Preload Audio Data가 꺼져 있어, 미리 올리지 않으면 첫 재생 순간에 동기 로드가
+        /// 일어나고 그동안 예약 시각이 이미 지나가 버린다.
         /// </summary>
-        private void StartInstrumentLoop(int slot, IWeapon weapon, bool resumeImmediately)
+        private bool PrepareInstrumentLoop(int slot, IWeapon weapon)
         {
             AudioSource source = _instrumentLoops[slot];
-            if (source == null || _clock == null) return;
+            if (source == null || _clock == null) return false;
 
             // 곡 BPM은 항상 녹음된 4단계(80/90/100/110) 중 하나여야 한다 — 피치로 억지로
             // 맞추면 음정이 틀어진다. 클록 BPM이 그 목록 밖이면 가장 가까운 샘플을 골라도
             // 마디 길이가 안 맞아 돌수록 어긋나니, 그건 재생 속도가 아니라 클록 쪽을 고쳐야 한다.
-            if (!weapon.Definition.TryGetClipForBpm(_clock.Bpm, out AudioClip clip, out int clipBpm)) return;
+            if (!weapon.Definition.TryGetClipForBpm(_clock.Bpm, out AudioClip clip, out int clipBpm)) return false;
 
             if (clipBpm != _clock.Bpm)
             {
@@ -260,44 +283,39 @@ namespace FiveWG.Player
                     $"{clipBpm}bpm으로 대신 재생한다. 마디가 진행될수록 다른 악기와 어긋난다.", this);
             }
 
+            // 백그라운드 로드가 꺼진 클립이라 여기서 끝까지 로드된다.
+            if (clip.loadState != AudioDataLoadState.Loaded) clip.LoadAudioData();
+
             source.Stop();
             source.clip = clip;
             source.volume = _instrumentVolume;
             source.pitch = 1f;
-            ScheduleAlignedToClock(source, clip, resumeImmediately);
+            return true;
         }
 
         /// <summary>
         /// 다음 마디 경계에 틀되, 클립 처음이 아니라 클록 위치에 해당하는 지점부터 튼다.
         /// 샘플은 1마디가 아니라 8마디 프레이즈라서, 처음부터 틀면 마디 박자는 맞아도 이미 도는
         /// 다른 악기와 프레이즈가 몇 마디씩 어긋난다(3마디째에 습득한 악기는 영영 3마디 늦게 돈다).
-        /// 클록이 돌지 않으면(시작 무기 지급 시점·일시정지·종료) 클립만 끼워 두고 틀지 않는다 —
-        /// 클록이 Playing이 되면 SyncLoopsToClockState가 다시 스케줄한다.
+        /// 지금 당장이 아니라 PlayScheduled로 예약하는 이유는, 이미 도는 다른 악기들과 위상이 맞아야 하기 때문이다.
         /// </summary>
-        private void ScheduleAlignedToClock(AudioSource source, AudioClip clip, bool resumeImmediately)
+        private void ScheduleAlignedToClock(AudioSource source, double now, double elapsed, bool resumeImmediately)
         {
-            if (_clock.State != BeatState.Playing) return;
+            // PlayScheduled에 지금이나 지난 시각을 주면 오디오 스레드가 집어 가는 버퍼에서야 시작해
+            // 시작 지점이 소스마다 달라진다. 바로 틀 때도 약간 앞을 예약하고 클립 위치도 그만큼 당긴다.
+            const double LeadSec = 0.1;
 
-            double now = AudioSettings.dspTime;
-            double elapsed = _clock.ElapsedSec;
             double secPerBar = 60.0 / _clock.Bpm * CellMath.BeatsPerBar;
             double phase = elapsed % secPerBar;
 
-            if (resumeImmediately)
-            {
-                // PlayScheduled(지금)은 다음 오디오 버퍼에서야 소리가 나므로, 약간 앞을 예약하고
-                // 클립 위치도 그만큼 앞으로 잡아 클록과 같은 지점에서 이어지게 한다.
-                const double ResumeLeadSec = 0.05;
-                PlayFromClockPosition(source, clip, now + ResumeLeadSec, elapsed + ResumeLeadSec);
-                return;
-            }
+            // 재개는 클록이 멈춘 박 위치에서 바로 잇는다. 이미 마디 경계 근처면(스테이지 막 시작한 순간 등)
+            // 한 마디를 통째로 기다리지 않고 바로 튼다 — 공격은 칸 0에서 바로 나가는데 소리만 한 마디 늦게
+            // 시작하는 것처럼 들렸다.
+            double startElapsed = resumeImmediately || phase < LeadSec
+                ? elapsed + LeadSec
+                : elapsed - phase + secPerBar;
 
-            // 이미 마디 경계에 있으면(스테이지 막 시작한 순간·구간 전환 직후 등, 오차 범위 안) 그
-            // 경계에서 바로 튼다. 무조건 "다음" 경계(한 마디 뒤)로 계산하면 phase가 0에 가까울 때도
-            // 한 마디를 통째로 기다리게 되어, 공격은 칸 0에서 바로 나가는데 소리만 한 마디 늦게
-            // 시작하는 것처럼 들렸다. 바로 틀 때는 지난 phase만큼 클립 위치를 당겨 늦음을 없앤다.
-            double startElapsed = phase < 0.05 ? elapsed : elapsed - phase + secPerBar;
-            PlayFromClockPosition(source, clip, now + (startElapsed - elapsed), startElapsed);
+            PlayFromClockPosition(source, source.clip, now + (startElapsed - elapsed), startElapsed);
         }
 
         private static void PlayFromClockPosition(AudioSource source, AudioClip clip, double startDsp, double clockSec)
