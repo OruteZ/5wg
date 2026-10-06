@@ -1,0 +1,118 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f8e6694499b9643ad821a2728ef113, type: 3}
+  m_Name: Bass_Finishing
+  m_EditorClassIdentifier: Assembly-CSharp::FiveWG.Weapons.ProjectileWeaponDefinition
+  _displayName: "\uBCA0\uC774\uC2A4"
+  _icon: {fileID: 0}
+  _levels:
+  - Damage: 9.9
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 999
+    Range: 8
+    AreaRadius: 0
+    ProjectileScale: 2
+    Duration: 0
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 6
+    Homing: 0
+    Knockback: 14
+    Bounce: 0
+  - Damage: 12.9
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 999
+    Range: 8
+    AreaRadius: 0
+    ProjectileScale: 2
+    Duration: 0
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 6
+    Homing: 0
+    Knockback: 14
+    Bounce: 0
+  - Damage: 9
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 999
+    Range: 8
+    AreaRadius: 0
+    ProjectileScale: 2
+    Duration: 0
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 6
+    Homing: 0
+    Knockback: 14
+    Bounce: 0
+  - Damage: 11.4
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 999
+    Range: 8
+    AreaRadius: 0
+    ProjectileScale: 2.6
+    Duration: 0
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 6
+    Homing: 0
+    Knockback: 14
+    Bounce: 0
+  - Damage: 14.9
+    CritChance: 0
+    CritMultiplier: 2
+    Pierce: 999
+    Range: 10
+    AreaRadius: 0
+    ProjectileScale: 2.6
+    Duration: 0
+    ProjectileCount: 1
+    NoteDensity: 1
+    CooldownReduction: 0
+    ProjectileSpeed: 6
+    Homing: 0
+    Knockback: 14
+    Bounce: 0
+  _triggerPatterns:
+  - PatternBars: 1
+    Cells: 0000000008000000
+  - PatternBars: 1
+    Cells: 0000000008000000
+  - PatternBars: 1
+    Cells: 0000000008000000
+  - PatternBars: 1
+    Cells: 0000000008000000
+  - PatternBars: 1
+    Cells: 0000000008000000
+  _sounds:
+  - Bpm: 80
+    Clip: {fileID: 8300000, guid: 77d933ad4d42d5b4d834898dd306b0e4, type: 3}
+  - Bpm: 90
+    Clip: {fileID: 8300000, guid: 7f77a50b62ed4594c92b195a7f9957e3, type: 3}
+  - Bpm: 100
+    Clip: {fileID: 8300000, guid: 36294f559c23b9c4f981dc332fd722bf, type: 3}
+  - Bpm: 110
+    Clip: {fileID: 8300000, guid: 51d7b34a2dba30141ab9cbd4d49e6ab2, type: 3}
+  _projectilePrefab: {fileID: 1361714089064341092, guid: fab0c0648549c884ab38eff96ec17f41, type: 3}
+  _spreadDegrees: 0
+  _aimMode: 0
+  _lifetimeOverride: 1.33
+  _damageDecayFloor: 1
+  _scaleDecayFloor: 1
